@@ -11,11 +11,24 @@
          class="item"
     />
 
-    <div class="hint" *ngIf="meta.showHint">
+    <div *ngIf="meta.hint.show"
+         [style.top]='meta.hint.top  + "px"'
+         [style.left]='meta.hint.left  + "px"'
+         [style.width]='meta.hint.width  + "px"'
+         [style.height]='meta.hint.height  + "px"'
+         (mousedown)="moveHintStart($event)"
+         (mousemove)="moveHint($event)"
+         (mouseup)="moveHintStop($event)"
+         class="hint"
+    >
         <i (click)="closeHint()" class="fa fa-times closeButton" aria-hidden="true" ></i>
         Mouse Wheel = vertical scroll<br />
         +Shift = horizontal <br />
         +Alt = per-pixel<br />
+        <br/>
+        Image Width x Height: {{ imgItem.width }} x {{ imgItem.height }}<br />
+        Screen Width x Height: {{ this.meta.windowWidth }} x {{ this.meta.windowHeight }}<br />
+        Left x Top: {{ meta.left }} x {{ meta.top }} <br />
     </div>
 
 </div>
@@ -36,13 +49,14 @@
 
     .hint {
         position: absolute;
-        background: red;
-        width: 300px;
+        background: hsla(20,50%,50%,0.5);
+        padding: 10px;
+        cursor: move;
     }
 
     .closeButton {
         float: right;
-        padding: 10px;
         color: black;
+        cursor: pointer;
     }
 </style>

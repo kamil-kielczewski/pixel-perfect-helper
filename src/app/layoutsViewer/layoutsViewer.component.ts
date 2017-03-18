@@ -18,11 +18,21 @@ export class LayoutsViewer implements OnInit
         top: 0,
         left: 0,
         windowHeight: 0,
-        windowWidth: 0.
+        windowWidth: 0,
         pixelScroll: false,
         verticalScroll: false,
-        showHint:true,
         pristineVertical: true,
+
+        hint : {
+            width: 270,
+            height: 170,
+            top: 0,
+            left: 0,
+            show:true,
+            move: false,
+            moveStartMouseTop: 0,
+            moveStartMouseLeft: 0,
+        },
     };
 
     constructor(private _route: ActivatedRoute)
@@ -38,7 +48,7 @@ export class LayoutsViewer implements OnInit
         });
 
         this.resizeWindow(null);
-        setTimeout( () => { this.meta.showHint=false}, 10000);
+        //setTimeout( () => { this.meta.hint.show=false}, 10000);
     }
 
     handleKeyboardEvents(event: KeyboardEvent) {
@@ -74,11 +84,11 @@ export class LayoutsViewer implements OnInit
     handleMouseScrollEvents(event: WheelEvent) {
         if(this.meta.verticalScroll) {
             this.meta.pristineVertical = false;
-            this.meta.left -= this.meta.pixelScroll ? this.sign(event.deltaX) : event.deltaX;
+            this.meta.left -= this.meta.pixelScroll ? this.sign(event.deltaX) : Math.round(event.deltaX);
             if(this.meta.left < -this.imgItem.width) this.meta.left = -this.imgItem.width;
             if(this.meta.left > this.meta.windowWidth) this.meta.left = this.meta.windowWidth;
         } else {
-            this.meta.top -= this.meta.pixelScroll ? this.sign(event.deltaY) : event.deltaY;
+            this.meta.top -= this.meta.pixelScroll ? this.sign(event.deltaY) : Math.round(event.deltaY);
             let sub = this.imgItem.height-this.meta.windowHeight;
 
             if(sub>0) {
@@ -110,12 +120,31 @@ export class LayoutsViewer implements OnInit
     }
 
     closeHint() {
-        this.meta.showHint=false;
+        this.meta.hint.show=false;
     }
 
     sign(x)
     {
         return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : x === x ? 0 : NaN : NaN;
+    }
+
+    // ---------- move hint -----------------
+    moveHintStart(event:any) {
+        this.meta.hint.move = true;
+        this.meta.hint.moveStartMouseTop = event.screenY - this.meta.hint.top;
+        this.meta.hint.moveStartMouseLeft = event.screenX - this.meta.hint.left;
+    }
+
+    moveHintStop(event) {
+        this.meta.hint.move = false
+    }
+
+    moveHint(event) {
+        if(this.meta.hint.move) {
+            this.meta.hint.top = event.screenY-this.meta.hint.moveStartMouseTop;
+            this.meta.hint.left = event.screenX - this.meta.hint.moveStartMouseLeft;
+            console.log(event);
+        }
     }
 
 }
