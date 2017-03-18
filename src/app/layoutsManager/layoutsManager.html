@@ -1,0 +1,21 @@
+<div>
+    <h1 x-large class="sample-content">Wyświetlarka obrazków (localstorage)</h1>
+
+    <div>
+        <input type="file" (change)="onImport($event)"  #file/>
+    </div>
+
+    <div style="height:220px; margin-top:20px;">
+        <img *ngIf="meta.selectedImage" src="{{ meta.selectedImage.image }}" style="max-height:200px;"/>
+    </div>
+
+    <div>
+        <ul>
+            <li *ngFor="let item of meta.list" (click)="select(item)">
+                <i (click)='show(item)' class="fa fa-eye" aria-hidden="true"></i>
+                {{ item.name }}
+                <i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>
+            </li>
+        </ul>
+    </div>
+</div>

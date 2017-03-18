@@ -1,0 +1,48 @@
+<div *ngIf="imgItem"
+     [style.height]='meta.windowHeight + "px"'
+     (window:resize)="resizeWindow($event)"
+     (wheel)="handleMouseScrollEvents($event)"
+     class="container"
+>
+
+    <img src="{{ imgItem.image }}"
+         [style.top]='meta.top  + "px"'
+         [style.left]='meta.left  + "px"'
+         class="item"
+    />
+
+    <div class="hint" *ngIf="meta.showHint">
+        <i (click)="closeHint()" class="fa fa-times closeButton" aria-hidden="true" ></i>
+        Mouse Wheel = vertical scroll<br />
+        +Shift = horizontal <br />
+        +Alt = per-pixel<br />
+    </div>
+
+</div>
+
+<style>
+    .container {
+        position: absolute;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .item {
+        position: absolute;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hint {
+        position: absolute;
+        background: red;
+        width: 300px;
+    }
+
+    .closeButton {
+        float: right;
+        padding: 10px;
+        color: black;
+    }
+</style>
