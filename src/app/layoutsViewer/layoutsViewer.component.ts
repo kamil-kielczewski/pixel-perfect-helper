@@ -2,6 +2,9 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '../common';
 
+// TODO color picker http://stackoverflow.com/...
+//   .../questions/8751020/how-to-get-a-pixels-x-y-coordinate-color-from-an-image
+
 @Component({
     selector: 'layouts-viewer',
     templateUrl: './layoutsViewer.html',
@@ -34,12 +37,19 @@ export class LayoutsViewerComponent implements OnInit {
         box: {
             move: false,
             draw: false,
-            x: 0,
-            y: 0,
+            moveLine: false,
+            selectedLine: 0,
+            l: 0,
+            t: 0,
+            r: 0,
+            b: 0,
             width: 0,
             height: 0,
             moveStartMouseX: 0,
             moveStartMouseY: 0,
+            lastAction: null,
+            isVisible: false,
+
         }
     };
 
@@ -70,6 +80,25 @@ export class LayoutsViewerComponent implements OnInit {
 
         if (event.key === 'Shift') {
             this.meta.verticalScroll = event.type === 'keydown';
+        }
+        console.log(event);
+
+        if (event.type === 'keyup') {
+            if (event.key === 'ArrowRight') {
+                this.boxArrowsManipulate(1, 0);
+            }
+
+            if (event.key === 'ArrowLeft') {
+                this.boxArrowsManipulate(-1, 0);
+            }
+
+            if (event.key === 'ArrowUp') {
+                this.boxArrowsManipulate(0, -1);
+            }
+
+            if (event.key === 'ArrowDown') {
+                this.boxArrowsManipulate(0, 1);
+            }
         }
 
         event.preventDefault();
@@ -122,12 +151,27 @@ export class LayoutsViewerComponent implements OnInit {
         this.meta.hint.show = false;
     }
 
+    public showHintOrHideBox() {
+
+        if (this.meta.hint.show) {
+
+            this.meta.box.isVisible = false;
+            this.meta.box.l = 0;
+            this.meta.box.r = 0;
+            this.meta.box.t = 0;
+            this.meta.box.b = 0;
+        }
+
+        this.meta.hint.show = true;
+    }
+
     public sign(x) {
         return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : x === x ? 0 : NaN : NaN;
     }
 
     // ---------- move hint -----------------
     public moveHintStart(event: any) {
+        console.log('moveHintStart');
         this.meta.hint.move = true;
         this.meta.hint.moveStartMouseTop = event.screenY - this.meta.hint.top;
         this.meta.hint.moveStartMouseLeft = event.screenX - this.meta.hint.left;
@@ -141,36 +185,93 @@ export class LayoutsViewerComponent implements OnInit {
         if (this.meta.hint.move) {
             this.meta.hint.top = event.screenY - this.meta.hint.moveStartMouseTop;
             this.meta.hint.left = event.screenX - this.meta.hint.moveStartMouseLeft;
-            console.log(event);
         }
     }
 
     // ---------- box -----------------
+    public refreshBoxData() {
+        this.meta.box.width = Math.abs(this.meta.box.l - this.meta.box.r);
+        this.meta.box.height = Math.abs(this.meta.box.t - this.meta.box.b);
+    }
+
+    public boxVertices() {
+        let l = this.meta.box.l;
+        let r = this.meta.box.r;
+        let t = this.meta.box.t;
+        let b = this.meta.box.b;
+
+        return [
+            {x: l, y: t}, {x: r, y: t}, {x: r, y: b}, {x: l, y: b}
+        ];
+    }
+
+    public boxVerticesSvg() {
+        let s = '';
+        for (let v of this.boxVertices()) {
+            s += v.x + ',' + v.y + ' ';
+        }
+        return s;
+    }
+
+    public svgMouseMove(event: any) {
+        console.log('svgMouseMove');
+        if (this.meta.box.move) { this.moveBox(event); }
+        if (this.meta.box.draw) { this.boxDraw(event); }
+        if (this.meta.box.moveLine) { this.boxMoveLine(event); }
+    }
+
+    public svgMouseMoveUp(event: any) {
+        if (this.meta.box.draw) { this.boxDrawStop(event); }
+        if (this.meta.box.moveLine) { this.boxMoveLineStop(event); }
+    }
+
+    public boxArrowsManipulate(x, y) {
+
+        if (this.meta.box.lastAction === 'moveBox') {
+
+            this.arrowsBoxMove(x, y);
+        }
+
+        if (this.meta.box.lastAction === 'moveLine') {
+
+            this.arrowsBoxEdgeMove(x, y);
+        }
+    }
+
+    // ------- Box draw -------
+
     public boxDrawStart(event: any) {
-        if (this.meta.box.move) { return; }
-        this.meta.box.draw = true;
-        this.meta.box.y = event.pageY;
-        this.meta.box.x = event.pageX;
-        this.meta.box.width = 0;
-        this.meta.box.height = 0;
+
+        if (!this.meta.box.isVisible) {
+
+            this.meta.box.isVisible = true;
+            this.meta.box.draw = true;
+            this.meta.box.l = event.pageX;
+            this.meta.box.t = event.pageY;
+            this.meta.box.r = event.pageX;
+            this.meta.box.b = event.pageY;
+
+            event.stopPropagation();
+        }
+    }
+
+    public boxDraw(event) {
+        this.meta.box.b = event.pageY;
+        this.meta.box.r = event.pageX;
+        this.refreshBoxData();
     }
 
     public boxDrawStop(event) {
         this.meta.box.draw = false;
     }
 
-    public boxDraw(event) {
-        if (this.meta.box.move) { return; }
-        if (this.meta.box.draw) {
-            this.meta.box.height = event.pageY - this.meta.box.y;
-            this.meta.box.width = event.pageX - this.meta.box.x;
-        }
-    }
+    // --------- Box Move -----------
 
     public moveBoxStart(event) {
         this.meta.box.move = true;
-        this.meta.box.moveStartMouseX = event.pageX - this.meta.box.x;
-        this.meta.box.moveStartMouseY = event.pageY - this.meta.box.y;
+        this.meta.box.moveStartMouseX = event.pageX - this.meta.box.l;
+        this.meta.box.moveStartMouseY = event.pageY - this.meta.box.t;
+        event.stopPropagation();
     }
 
     public moveBoxStop(event) {
@@ -178,10 +279,98 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public moveBox(event) {
-        if (this.meta.box.move) {
-            this.meta.box.x = event.pageX - this.meta.box.moveStartMouseX;
-            this.meta.box.y = event.pageY - this.meta.box.moveStartMouseY;
+        if (this.meta.box.move ) {
+
+            this.meta.box.lastAction = 'moveBox';
+            let oldL = this.meta.box.l;
+            let oldT = this.meta.box.t;
+            this.meta.box.l = event.pageX - this.meta.box.moveStartMouseX;
+            this.meta.box.t = event.pageY - this.meta.box.moveStartMouseY;
+            this.meta.box.r += this.meta.box.l - oldL;
+            this.meta.box.b += this.meta.box.t - oldT;
+            this.refreshBoxData();
         }
+    }
+
+    public arrowsBoxMove(shiftX, shiftY) {
+        this.meta.box.l += shiftX;
+        this.meta.box.t += shiftY;
+        this.meta.box.r += shiftX;
+        this.meta.box.b += shiftY;
+        this.refreshBoxData();
+    }
+
+    public boxLineVertices() {
+        let result = [];
+        let tmp = 0;
+        let l = this.meta.box.l + 1;
+        let r = this.meta.box.r;
+        let t = this.meta.box.t + 1;
+        let b = this.meta.box.b;
+
+        result.push({ x1: l - 1, y1: t, x2: r, y2: t, });
+        result.push({ x1: r, y1: t, x2: r, y2: b, });
+        result.push({ x1: r, y1: b, x2: l, y2: b, });
+        result.push({ x1: l, y1: b, x2: l, y2: t, });
+
+        return result;
+    }
+
+    public boxMoveLineStart(i, event) {
+        this.meta.box.selectedLine = i;
+        this.meta.box.moveLine = true;
+        event.stopPropagation();
+    }
+
+    public boxMoveLine(event) {
+        let i = this.meta.box.selectedLine;
+        if (this.meta.box.moveLine) {
+
+            this.meta.box.lastAction = 'moveLine';
+
+            if (i === 0) { // top line
+                this.meta.box.t = event.pageY;
+            }
+
+            if (i === 1) { // right line
+                this.meta.box.r = event.pageX;
+            }
+
+            if (i === 2) { // bottom line
+                this.meta.box.b = event.pageY;
+            }
+
+            if (i === 3) { // left line
+                this.meta.box.l = event.pageX;
+            }
+
+            this.refreshBoxData();
+        }
+        event.stopPropagation();
+    }
+
+    public boxMoveLineStop(event) {
+        this.meta.box.moveLine = false;
+    }
+
+    public arrowsBoxEdgeMove(shiftX, shiftY) {
+        let i = this.meta.box.selectedLine;
+        if (i === 0) { // top line
+            this.meta.box.t += shiftY;
+        }
+
+        if (i === 1) { // right line
+            this.meta.box.r += shiftX;
+        }
+
+        if (i === 2) { // bottom line
+            this.meta.box.b += shiftY;
+        }
+
+        if (i === 3) { // left line
+            this.meta.box.l += shiftX;
+        }
+        this.refreshBoxData();
     }
 
 }
