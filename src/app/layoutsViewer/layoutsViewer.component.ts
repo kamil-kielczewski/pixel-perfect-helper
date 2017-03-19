@@ -108,7 +108,6 @@ export class LayoutsViewerComponent implements OnInit {
         if (event.key === 'Shift') {
             this.meta.verticalScroll = event.type === 'keydown';
         }
-        console.log(event);
 
         if (event.type === 'keyup') {
             if (event.key === 'ArrowRight') {
@@ -203,7 +202,7 @@ export class LayoutsViewerComponent implements OnInit {
 
     // ---------- move hint -----------------
     public moveHintStart(event: any) {
-        console.log('moveHintStart');
+
         this.meta.hint.move = true;
         this.meta.hint.moveStartMouseTop = event.screenY - this.meta.hint.top;
         this.meta.hint.moveStartMouseLeft = event.screenX - this.meta.hint.left;
@@ -247,7 +246,7 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public svgMouseMove(event: any) {
-        console.log('svgMouseMove');
+
         if (this.meta.box.move) { this.moveBox(event); }
         if (this.meta.box.draw) { this.boxDraw(event); }
         if (this.meta.box.moveLine) { this.boxMoveLine(event); }
