@@ -31,8 +31,8 @@ import { XLargeDirective } from './home/x-large';
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
-import { LayoutsManager } from "./layoutsManager/layoutsManager.component";
-import { LayoutsViewer } from "./layoutsViewer/layoutsViewer.component";
+import { LayoutsManagerComponent } from './layoutsManager/layoutsManager.component';
+import { LayoutsViewerComponent } from './layoutsViewer/layoutsViewer.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -53,8 +53,8 @@ type StoreType = {
   bootstrap: [ AppComponent ],
   declarations: [
     AppComponent,
-    LayoutsManager,
-    LayoutsViewer,
+    LayoutsManagerComponent,
+    LayoutsViewerComponent,
     AboutComponent,
     HomeComponent,
     NoContentComponent,

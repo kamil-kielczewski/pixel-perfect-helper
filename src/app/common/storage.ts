@@ -3,35 +3,33 @@
  */
 export class Storage {
 
-    static set(key:string, value:any) {
+    public static set(key: string, value: any) {
         window.localStorage.setItem(key, JSON.stringify(value));
     }
 
-    static get(key:string) {
-        if(Storage.has(key)) return JSON.parse(window.localStorage[key]);
+    public static get(key: string) {
+        if (Storage.has(key)) { return JSON.parse(window.localStorage[key]); }
         return null;
     }
 
-    static has(key:string) {
-        if(window.localStorage[key]) return true;
-        return false;
+    public static has(key: string) {
+        return !!window.localStorage[ key ];
     }
 
-    static remove(key:string) {
-        Storage.set(key,JSON.stringify(null)); // only for IE11 (problems with sessionStorage.removeItem)
+    public static remove(key: string) {
+        // only for IE11 (problems with sessionStorage.removeItem)
+        Storage.set(key, JSON.stringify(null));
         window.localStorage.removeItem(key);
     }
 
-
-    static getKeys(prefix = null) {
+    public static getKeys(prefix = null) {
         let result = [];
-        for (let key:string in window.localStorage){
+        for (let key in window.localStorage) {
 
-            if(prefix === null || key.lastIndexOf(prefix,0) === 0) {
+            if (prefix === null || key.lastIndexOf(prefix, 0) === 0) {
                 result.push(key);
             }
 
-            console.log(key);
         }
         return result;
     }

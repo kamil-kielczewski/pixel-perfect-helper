@@ -1,2 +1,2 @@
-export * from './storage.ts';
-export * from './url.ts';
+export { Storage } from './storage.ts';
+export { Url } from './url.ts';

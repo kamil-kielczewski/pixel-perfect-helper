@@ -2,6 +2,7 @@
      [style.height]='meta.windowHeight + "px"'
      (window:resize)="resizeWindow($event)"
      (wheel)="handleMouseScrollEvents($event)"
+     (mousemove)="updateMousePosition($event)"
      class="container"
 >
 
@@ -11,11 +12,35 @@
          class="item"
     />
 
+    <svg [style.top]="0"
+         [style.left]="0"
+         [style.width]="this.meta.windowWidth + 'px'"
+         [style.height]="this.meta.windowHeight + 'px'"
+         class="svgCanvas"
+         (mousedown)="boxDrawStart($event)"
+         (mousemove)="boxDraw($event)"
+         (mouseup)="boxDrawStop($event)"
+    >
+        <rect
+                [attr.x]="this.meta.box.x"
+                [attr.y]="this.meta.box.y"
+                [attr.width]="this.meta.box.width"
+                [attr.height]="this.meta.box.height"
+                stroke="rgba(0,0,0,0.4)"
+                stroke-width="1"
+                style="shape-rendering:crispEdges; cursor: move;"
+                [style.fill]="'hsla(111,75%,40%,0.4)'"
+                (mousedown)="moveBoxStart($event)"
+                (mousemove)="moveBox($event)"
+                (mouseup)="moveBoxStop($event)"
+        ></rect>
+
+    </svg>
+
     <div *ngIf="meta.hint.show"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
          [style.width]='meta.hint.width  + "px"'
-         [style.height]='meta.hint.height  + "px"'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
@@ -29,6 +54,11 @@
         Image Width x Height: {{ imgItem.width }} x {{ imgItem.height }}<br />
         Screen Width x Height: {{ this.meta.windowWidth }} x {{ this.meta.windowHeight }}<br />
         Left x Top: {{ meta.left }} x {{ meta.top }} <br />
+        Mouse X x Y: {{ meta.mouseX }} x {{ meta.mouseY }} <br />
+        <br/>
+        Box Left x Top: {{ meta.box.x }} x {{ meta.box.y }}  <br />
+        Box Right x Bottom: {{ meta.box.x + meta.box.width }} x {{ meta.box.y + meta.box.height }} <br />
+        Box Width x Height: {{ meta.box.width }} x {{ meta.box.height }}
     </div>
 
 </div>
@@ -58,5 +88,9 @@
         float: right;
         color: black;
         cursor: pointer;
+    }
+
+    .svgCanvas {
+        position:absolute;
     }
 </style>
