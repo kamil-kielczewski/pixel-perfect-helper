@@ -23,7 +23,7 @@
          (mousemove)="svgMouseMove($event)"
          (mouseup)="svgMouseMoveUp($event)"
     >
-        
+
         <polygon [attr.points]="boxVerticesSvg()"
                  [style.fill]="'hsla(111,75%,40%,0.3)'"
                  style="stroke-width:0; cursor:move"
@@ -45,16 +45,17 @@
 
     </svg>
 
-    <div *ngIf="meta.hint.show"
+    <div *ngIf="meta.hint.show && !meta.hint.compact"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
-         [style.width]='meta.hint.width  + "px"'
+         style='width:270px'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
          class="hint"
     >
-        <i (click)="closeHint()" class="fa fa-times closeButton" aria-hidden="true" ></i>
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
+        <i (click)="toggleCompactHint()" class="fa fa-window-minimize hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         Draw box using mouse!<br />
         <b>Double-click</b> = show/hide info/box<br />
         <b>Wheel</b> = vertical scroll<br />
@@ -70,6 +71,22 @@
         Box Left x Top: {{ meta.box.l }} x {{ meta.box.t }}  <br />
         Box Right x Bottom: {{ meta.box.r }} x {{ meta.box.b }} <br />
         Box Width x Height: {{ meta.box.width }} x {{ meta.box.height }}
+    </div>
+
+    <div *ngIf="meta.hint.show && meta.hint.compact"
+         [style.top]='meta.hint.top  + "px"'
+         [style.left]='meta.hint.left  + "px"'
+         style='width:320px'
+         (mousedown)="moveHintStart($event)"
+         (mousemove)="moveHint($event)"
+         (mouseup)="moveHintStop($event)"
+         class="hint"
+    >
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
+        <i (click)="toggleCompactHint()" class="fa fa-question hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
+        <b>screen</b> {{ this.meta.windowWidth }}x{{ this.meta.windowHeight }}, <b>mouse</b> {{ meta.mouseX }}x{{ meta.mouseY }} <br />
+        <b>box: lt</b> {{ meta.box.l }}x{{ meta.box.t }}, <b>rb</b> {{ meta.box.r }}x{{ meta.box.b }}, <b>size</b> {{ meta.box.width }}x{{ meta.box.height }}
     </div>
 
 </div>
@@ -95,7 +112,7 @@
         cursor: move;
     }
 
-    .closeButton {
+    .hintButton {
         float: right;
         color: black;
         cursor: pointer;

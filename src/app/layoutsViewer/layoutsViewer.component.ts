@@ -24,8 +24,7 @@ export class LayoutsViewerComponent implements OnInit {
         mouseY: 0,
 
         hint : {
-            width: 270,
-            height: 170,
+            compact: false,
             top: 0,
             left: 0,
             show: true,
@@ -64,10 +63,38 @@ export class LayoutsViewerComponent implements OnInit {
         this._route.params.subscribe( (params) => {
             let key = params['key'];
             this.imgItem = Storage.get(key);
-            console.log(this.imgItem);
+            this.loadHintSettings();
         });
 
         this.resizeWindow(null);
+    }
+
+    public loadHintSettings() {
+        let settings = Storage.get(this.keyHintSettings());
+        if (!settings) { return; }
+        this.meta.hint.compact = settings.compact;
+        this.meta.hint.top = settings.top;
+        this.meta.hint.left = settings.left;
+        this.resizeWindow(null);
+        if (this.meta.hint.left + 20 >= this.meta.windowWidth
+            || this.meta.hint.top + 20 >= this.meta.windowHeight) {
+
+            this.meta.hint.left = 0;
+            this.meta.hint.top = 0;
+        }
+    }
+
+    public keyHintSettings() {
+        return 'layoutsViewer.hint.settings';
+    }
+
+    public saveHintSettings() {
+        let settings = {
+            compact: this.meta.hint.compact,
+            top: this.meta.hint.top,
+            left: this.meta.hint.left,
+        };
+        Storage.set(this.keyHintSettings(), settings);
     }
 
     @HostListener('document:keydown', ['$event'])
@@ -147,6 +174,11 @@ export class LayoutsViewerComponent implements OnInit {
         }
     }
 
+    public toggleCompactHint() {
+        this.meta.hint.compact = !this.meta.hint.compact;
+        this.saveHintSettings();
+    }
+
     public closeHint() {
         this.meta.hint.show = false;
     }
@@ -179,6 +211,7 @@ export class LayoutsViewerComponent implements OnInit {
 
     public moveHintStop(event) {
         this.meta.hint.move = false;
+        this.saveHintSettings();
     }
 
     public moveHint(event) {
