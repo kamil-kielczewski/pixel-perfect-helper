@@ -37,11 +37,21 @@
                     [attr.y1]="boxLineVertices()[i].y1"
                     [attr.x2]="boxLineVertices()[i].x2"
                     [attr.y2]="boxLineVertices()[i].y2"
+                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,1.0);stroke-width:1"></line>
+
+            <!--invisile line only for better mouse selection -->
+            <line
+                    [attr.x1]="boxLineVertices()[i].x1"
+                    [attr.y1]="boxLineVertices()[i].y1"
+                    [attr.x2]="boxLineVertices()[i].x2"
+                    [attr.y2]="boxLineVertices()[i].y2"
                     (mousedown)="boxMoveLineStart(i, $event)"
                     (mouseup)="boxMoveLineStop(i, $event)"
                     [style.cursor]="i%2 ? 'ew-resize' : 'ns-resize'"
-                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,1.0);stroke-width:1"></line>
+                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:4"></line>
         </g>
+
+
 
     </svg>
 
@@ -68,8 +78,8 @@
         Image Left x Top: {{ meta.left }} x {{ meta.top }} <br />
         Mouse X x Y: {{ meta.mouseX }} x {{ meta.mouseY }} <br />
         <br/>
-        Box Left x Top: {{ meta.box.l }} x {{ meta.box.t }}  <br />
-        Box Right x Bottom: {{ meta.box.r }} x {{ meta.box.b }} <br />
+        Box Left x Top: {{ meta.box.left }} x {{ meta.box.top }}  <br />
+        Box Right x Bottom: {{ meta.box.right }} x {{ meta.box.bottom }} <br />
         Box Width x Height: {{ meta.box.width }} x {{ meta.box.height }}
     </div>
 
@@ -86,7 +96,7 @@
         <i (click)="toggleCompactHint()" class="fa fa-question hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
         <b>screen</b> {{ this.meta.windowWidth }}x{{ this.meta.windowHeight }}, <b>mouse</b> {{ meta.mouseX }}x{{ meta.mouseY }} <br />
-        <b>box: lt</b> {{ meta.box.l }}x{{ meta.box.t }}, <b>rb</b> {{ meta.box.r }}x{{ meta.box.b }}, <b>size</b> {{ meta.box.width }}x{{ meta.box.height }}
+        <b>box: lt</b> {{ meta.box.left }}x{{ meta.box.top }}, <b>rb</b> {{ meta.box.right }}x{{ meta.box.bottom }}, <b>size</b> {{ meta.box.width }}x{{ meta.box.height }}
     </div>
 
 </div>

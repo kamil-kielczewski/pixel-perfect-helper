@@ -42,13 +42,19 @@ export class LayoutsViewerComponent implements OnInit {
             t: 0,
             r: 0,
             b: 0,
-            width: 0,
-            height: 0,
+
             moveStartMouseX: 0,
             moveStartMouseY: 0,
             lastAction: null,
             isVisible: false,
 
+            // values to show in info box
+            left:0,
+            right:0,
+            top: 0,
+            bottom: 0,
+            width: 0,
+            height: 0,
         }
     };
 
@@ -224,6 +230,22 @@ export class LayoutsViewerComponent implements OnInit {
     public refreshBoxData() {
         this.meta.box.width = Math.abs(this.meta.box.l - this.meta.box.r);
         this.meta.box.height = Math.abs(this.meta.box.t - this.meta.box.b);
+
+        if (this.meta.box.l < this.meta.box.r) {
+            this.meta.box.left = this.meta.box.l;
+            this.meta.box.right = this.meta.box.r;
+        } else {
+            this.meta.box.left = this.meta.box.r;
+            this.meta.box.right = this.meta.box.l;
+        }
+
+        if (this.meta.box.t < this.meta.box.b) {
+            this.meta.box.bottom = this.meta.box.b;
+            this.meta.box.top = this.meta.box.t;
+        } else {
+            this.meta.box.bottom = this.meta.box.t;
+            this.meta.box.top = this.meta.box.b;
+        }
     }
 
     public boxVertices() {
@@ -335,14 +357,26 @@ export class LayoutsViewerComponent implements OnInit {
     public boxLineVertices() {
         let result = [];
         let tmp = 0;
-        let l = this.meta.box.l + 1;
+        let l = this.meta.box.l;
         let r = this.meta.box.r;
-        let t = this.meta.box.t + 1;
+        let t = this.meta.box.t;
         let b = this.meta.box.b;
 
-        result.push({ x1: l - 1, y1: t, x2: r, y2: t, });
+        if(l<r) {
+            l+=1;
+        } else {
+            r+=1;
+        }
+
+        if(t<b) {
+            t+=1;
+        } else {
+            b+=1;
+        }
+
+        result.push({ x1: l<r ? l-1:l, y1: t, x2: l<r ? r:r-1, y2: t, });
         result.push({ x1: r, y1: t, x2: r, y2: b, });
-        result.push({ x1: r, y1: b, x2: l, y2: b, });
+        result.push({ x1: l<r ? r:r-1, y1: b, x2: l<r ? l-1:l, y2: b, });
         result.push({ x1: l, y1: b, x2: l, y2: t, });
 
         return result;
