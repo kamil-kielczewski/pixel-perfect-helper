@@ -11,7 +11,7 @@ export class Url {
      */
     public static to(routingName: string, values?: any) {
         if (routingName === 'layoutsViewer') {
-            return 'view/' + values['key'];
+            return 'view/' + values['id'];
         }
         throw 'Unknow route';
     }

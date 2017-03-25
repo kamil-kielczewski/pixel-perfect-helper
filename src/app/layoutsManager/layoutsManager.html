@@ -2,20 +2,70 @@
     <h1 x-large class="sample-content">Wyświetlarka obrazków (localstorage)</h1>
 
     <div>
-        <input type="file" (change)="onImport($event)"  #file/>
+        <div><input type="file" (change)="onImport($event)"  #file/></div>
+        <div>
+            <input type="text" [(ngModel)]="meta.pictureUrl"  placeholder="Paste URL to image"/>
+            <button (click)="downloadFile(meta.pictureUrl)">GET (max 2MB)</button>
+        </div>
     </div>
 
     <div style="height:220px; margin-top:20px;">
         <img *ngIf="meta.selectedImage" src="{{ meta.selectedImage.image }}" style="max-height:200px;"/>
+        <!--<img  src="https://static.pexels.com/photos/87293/pexels-photo-87293.jpeg" style="max-height:200px;"/>-->
+        <!--<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />-->
     </div>
 
     <div>
         <ul>
-            <li *ngFor="let item of meta.list" (click)="select(item)">
-                <i (click)='show(item)' class="fa fa-eye" aria-hidden="true"></i>
-                {{ item.name }}
-                <i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>
-            </li>
+            <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
+            <table>
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Name</td>
+                        <td>Actions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of meta.list">
+                        <td>{{ item.id }}</td>
+                        <td>
+                            <div *ngIf="!meta.editItem || meta.editItem.id != item.id ">
+                                <a (click)="show(item)" class="itemView">{{ item.name }}</a>
+                            </div>
+                            <div *ngIf="meta.editItem && meta.editItem.id == item.id ">
+                                <input type="text" [(ngModel)]="meta.editItem.name" style="width:100%"/>
+                            </div>
+                        </td>
+                        <td>
+                            <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
+                                <button (click)="editItem(item)"><i (click)='select(item)' class="fa fa-pencil" aria-hidden="true"> Edit name</i></button>
+                                <button><i (click)='select(item)' class="fa fa-eye" aria-hidden="true"> Preview</i></button>
+                                <button><i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"> Delete</i></button>
+                            </span>
+                            <span *ngIf="meta.editItem && meta.editItem.id == item.id ">
+                                <button (click)="saveItem(item)">Save</button>
+                                <button (click)="cancelSaveItem(item)">Cancel</button>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            <!--<li *ngFor="let item of meta.list" (click)="select(item)">-->
+                <!--<i (click)='show(item)' class="fa fa-eye" aria-hidden="true"></i>-->
+                <!--#{{ item.id }}-->
+
+                <!--<i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>-->
+            <!--</li>-->
+            </table>
         </ul>
     </div>
 </div>
+<style>
+    .itemView {
+        cursor:pointer
+    }
+
+    .itemView:hover {
+        text-decoration: underline;
+    }
+</style>

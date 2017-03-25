@@ -11,6 +11,7 @@
          [style.top]='meta.top  + "px"'
          [style.left]='meta.left  + "px"'
          class="item"
+         id="layoutImage"
     />
 
     <svg *ngIf="meta.hint.show"
@@ -25,7 +26,7 @@
     >
 
         <polygon [attr.points]="boxVerticesSvg()"
-                 [style.fill]="'hsla(111,75%,40%,0.3)'"
+                 [style.fill]="'hsla(171,75%,40%,0.3)'"
                  style="stroke-width:0; cursor:move"
                  (mousedown)="moveBoxStart($event)"
                  (mouseup)="moveBoxStop($event)"
@@ -48,7 +49,7 @@
                     (mousedown)="boxMoveLineStart(i, $event)"
                     (mouseup)="boxMoveLineStop(i, $event)"
                     [style.cursor]="i%2 ? 'ew-resize' : 'ns-resize'"
-                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:4"></line>
+                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:5"></line>
         </g>
 
 
@@ -58,45 +59,110 @@
     <div *ngIf="meta.hint.show && !meta.hint.compact"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
-         style='width:270px'
+         style='width:270px; font-size: 12px;'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
          class="hint"
     >
         <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
-        <i (click)="toggleCompactHint()" class="fa fa-window-minimize hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
-        Draw box using mouse!<br />
-        <b>Double-click</b> = show/hide info/box<br />
-        <b>Wheel</b> = vertical scroll<br />
-        +<b>Shift</b> = horizontal <br />
-        +<b>Alt</b> = per-pixel<br />
-        <b>Arrows</b> = move box/edge per-pixel<br />
+        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()">
+            <i *ngIf="meta.box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        </a>
+        <div>
+            Image name: <b>{{ imgItem.name }}</b><br />
+            <br />
+            <div style="color: #ffffff">
+                Draw box using mouse!<br />
+                <b>Double-click</b> = show/hide info/box<br />
+                <b>Wheel</b> = vertical scroll<br />
+                +<b>Shift</b> = horizontal <br />
+                +<b>Alt</b> = per-pixel<br />
+                <b>Arrows</b> = move box/edge per-pixel<br />
+                <b>S</b> = crop to box and save image<br />
+                <br/>
+            </div>
+        Image Width x Height: <b>{{ imgItem.width }} x {{ imgItem.height }}</b><br />
+        Screen Width x Height: <b>{{ this.meta.windowWidth }} x {{ this.meta.windowHeight }}</b><br />
+        Image Left x Top: <b>{{ meta.left }} x {{ meta.top }}</b> <br />
+        Mouse X x Y: <b>{{ meta.mouseX }} x {{ meta.mouseY }}</b> <br />
         <br/>
-        Image Width x Height: {{ imgItem.width }} x {{ imgItem.height }}<br />
-        Screen Width x Height: {{ this.meta.windowWidth }} x {{ this.meta.windowHeight }}<br />
-        Image Left x Top: {{ meta.left }} x {{ meta.top }} <br />
-        Mouse X x Y: {{ meta.mouseX }} x {{ meta.mouseY }} <br />
-        <br/>
-        Box Left x Top: {{ meta.box.left }} x {{ meta.box.top }}  <br />
-        Box Right x Bottom: {{ meta.box.right }} x {{ meta.box.bottom }} <br />
-        Box Width x Height: {{ meta.box.width }} x {{ meta.box.height }}
+        Box Left x Top: <b>{{ meta.box.left }} x {{ meta.box.top }}</b>  <br />
+        Box Right x Bottom: <b>{{ meta.box.right }} x {{ meta.box.bottom }}</b> <br />
+        Box Width x Height: <b>{{ meta.box.width }} x {{ meta.box.height }}</b> <br />
+        </div>
+        <br />
+        <div (mousedown)="ignoreHintClick($event)" (mouseup)="stopIgnoreHintClick($event)">
+            <div style="float: left; width: 80px; height: 80px;">
+                <img src="{{ meta.zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
+                     [style.width]="((meta.zoom.srcPixelRadius*2 + 1)* meta.zoom.factor)+'px'"
+                />
+                <i class="fa fa-circle-thin colorCrosshairLarge" aria-hidden="true" ></i>
+            </div>
+
+            <div style="float: left">
+                <div style="width:30px; height:30px; border: solid 1px white;"
+                     [style.backgroundColor]="'rgba('+meta.zoom.colorSelected[0] + ',' +meta.zoom.colorSelected[1] + ',' + meta.zoom.colorSelected[2] + ',' + meta.zoom.colorSelected[3] + ')'"
+                ></div>
+
+                <div style="width:30px; height:30px; border: solid 1px white; margin-top:8px;"
+                     [style.backgroundColor]="'rgba('+meta.zoom.colorCenterPixel[0] + ',' +meta.zoom.colorCenterPixel[1] + ',' + meta.zoom.colorCenterPixel[2] + ',' + meta.zoom.colorCenterPixel[3] + ')'"
+                ></div>
+
+            </div>
+
+            <div style="font-size:12px; cursor: text">
+                <span style="margin-left:10px">{{ meta.zoom.colorSelectedHex }}</span><br/>
+                <span style="margin-left:10px">{{ meta.zoom.colorSelectedRgba }}</span><br/>
+                <span style="margin-left:10px">{{ meta.zoom.colorSelectedHsla }}</span>
+            </div>
+        </div>
     </div>
 
     <div *ngIf="meta.hint.show && meta.hint.compact"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
-         style='width:320px'
+         style='width:200px; font-size:10px;'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
          class="hint"
     >
         <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
-        <i (click)="toggleCompactHint()" class="fa fa-question hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()">
+            <i *ngIf="meta.box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        </a>
         <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
         <b>screen</b> {{ this.meta.windowWidth }}x{{ this.meta.windowHeight }}, <b>mouse</b> {{ meta.mouseX }}x{{ meta.mouseY }} <br />
         <b>box: lt</b> {{ meta.box.left }}x{{ meta.box.top }}, <b>rb</b> {{ meta.box.right }}x{{ meta.box.bottom }}, <b>size</b> {{ meta.box.width }}x{{ meta.box.height }}
+
+        <div (mousedown)="ignoreHintClick($event)" (mouseup)="stopIgnoreHintClick($event)" style="margin-top:3px;">
+            <div style="float: left; width: 40px; height: 40px;">
+                <img src="{{ meta.zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
+                     [style.width]="((meta.zoom.srcPixelRadius*2 + 1)* meta.zoom.factor/2)+'px'"
+                />
+                <i class="fa fa-circle-thin colorCrosshairSmall" aria-hidden="true" ></i>
+            </div>
+
+            <div style="float: left">
+                <div style="width:15px; height:15px; border: solid 1px white;"
+                     [style.backgroundColor]="'rgba('+meta.zoom.colorSelected[0] + ',' +meta.zoom.colorSelected[1] + ',' + meta.zoom.colorSelected[2] + ',' + meta.zoom.colorSelected[3] + ')'"
+                ></div>
+
+                <div style="width:15px; height:15px; border: solid 1px white; margin-top:3px;"
+                     [style.backgroundColor]="'rgba('+meta.zoom.colorCenterPixel[0] + ',' +meta.zoom.colorCenterPixel[1] + ',' + meta.zoom.colorCenterPixel[2] + ',' + meta.zoom.colorCenterPixel[3] + ')'"
+                ></div>
+
+            </div>
+
+            <div style="font-size:10px; cursor: text">
+                <span style="margin-left:5px">{{ meta.zoom.colorSelectedHex }}</span><br/>
+                <span style="margin-left:5px">{{ meta.zoom.colorSelectedRgba }}</span><br/>
+                <span style="margin-left:5px">{{ meta.zoom.colorSelectedHsla }}</span>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -117,7 +183,8 @@
 
     .hint {
         position: absolute;
-        background: hsla(20,50%,50%,0.75);
+        background: hsla(73,50%,50%,0.75);
+        /*background: hsla(20,50%,50%,0.75);*/
         padding: 10px;
         cursor: move;
     }
@@ -130,5 +197,25 @@
 
     .svgCanvas {
         position:absolute;
+    }
+
+    .colorCrosshairLarge {
+        position: relative;
+        left: 30.5px;
+        top: -46.0px;
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 9px;
+        border: solid 1px white;
+    }
+
+    .colorCrosshairSmall {
+        position: relative;
+        left: 15.25px;
+        top: -28.0px;
+        font-size: 5px;
+        font-weight: bold;
+        line-height: 5px;
+        border: solid 1px white;
     }
 </style>

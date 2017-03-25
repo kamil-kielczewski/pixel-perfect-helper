@@ -9,7 +9,7 @@ import { Url } from './common';
 
 export const ROUTES: Routes = [
   { path: '',      component: LayoutsManagerComponent },
-  { path: Url.to('layoutsViewer', {key: ':key'}), component: LayoutsViewerComponent },
+  { path: Url.to('layoutsViewer', {id: ':id'}), component: LayoutsViewerComponent },
   // { path: 'home',  component: LayoutsManagerComponent },
   // { path: 'home',  component: HomeComponent },
   // { path: 'about', component: AboutComponent },
