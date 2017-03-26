@@ -1,0 +1,76 @@
+<div>
+    <div *ngIf="!small" (mousedown)="ignoreHintClick(true)" (mouseup)="ignoreHintClick(false)">
+        <div style="float: left; width: 80px; height: 80px;">
+            <img src="{{ zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
+                 [style.width]="((zoom.srcPixelRadius*2 + 1)* zoom.factor)+'px'"
+            />
+            <i class="fa fa-circle-thin colorCrosshairLarge" aria-hidden="true" ></i>
+        </div>
+
+        <div style="float: left">
+            <div style="width:30px; height:30px; border: solid 1px white;"
+                 [style.backgroundColor]="'rgba('+zoom.colorSelected[0] + ',' +zoom.colorSelected[1] + ',' + zoom.colorSelected[2] + ',' + zoom.colorSelected[3] + ')'"
+            ></div>
+
+            <div style="width:30px; height:30px; border: solid 1px white; margin-top:8px;"
+                 [style.backgroundColor]="'rgba('+zoom.colorCenterPixel[0] + ',' +zoom.colorCenterPixel[1] + ',' + zoom.colorCenterPixel[2] + ',' + zoom.colorCenterPixel[3] + ')'"
+            ></div>
+
+        </div>
+
+        <div style="font-size:12px; cursor: text">
+            <span style="margin-left:10px">{{ zoom.colorSelectedHex }}</span><br/>
+            <span style="margin-left:10px">{{ zoom.colorSelectedRgba }}</span><br/>
+            <span style="margin-left:10px; font-size: 10px;">{{ zoom.colorSelectedHsla }}</span>
+        </div>
+    </div>
+
+    <div *ngIf="small" (mousedown)="ignoreHintClick(true)" (mouseup)="ignoreHintClick(false)" style="margin-top:3px;">
+        <div style="float: left; width: 40px; height: 40px;">
+            <img src="{{ zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
+                 [style.width]="((zoom.srcPixelRadius*2 + 1)* zoom.factor/2)+'px'"
+            />
+            <i class="fa fa-circle-thin colorCrosshairSmall" aria-hidden="true" ></i>
+        </div>
+
+        <div style="float: left">
+            <div style="width:15px; height:15px; border: solid 1px white;"
+                 [style.backgroundColor]="'rgba('+zoom.colorSelected[0] + ',' +zoom.colorSelected[1] + ',' + zoom.colorSelected[2] + ',' + zoom.colorSelected[3] + ')'"
+            ></div>
+
+            <div style="width:15px; height:15px; border: solid 1px white; margin-top:3px;"
+                 [style.backgroundColor]="'rgba('+zoom.colorCenterPixel[0] + ',' +zoom.colorCenterPixel[1] + ',' + zoom.colorCenterPixel[2] + ',' + zoom.colorCenterPixel[3] + ')'"
+            ></div>
+
+        </div>
+
+        <div style="font-size:10px; cursor: text">
+            <span style="margin-left:5px">{{ zoom.colorSelectedHex }}</span><br/>
+            <span style="margin-left:5px">{{ zoom.colorSelectedRgba }}</span><br/>
+            <span style="margin-left:5px">{{ zoom.colorSelectedHsla }}</span>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .colorCrosshairLarge {
+        position: relative;
+        left: 30.5px;
+        top: -46.0px;
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 9px;
+        border: solid 1px white;
+    }
+
+    .colorCrosshairSmall {
+        position: relative;
+        left: 15.25px;
+        top: -28.0px;
+        font-size: 5px;
+        font-weight: bold;
+        line-height: 5px;
+        border: solid 1px white;
+    }
+</style>

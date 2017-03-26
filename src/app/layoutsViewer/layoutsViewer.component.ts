@@ -14,6 +14,8 @@ export class LayoutsViewerComponent implements OnInit {
 
     public meta = {
         boxEditor: null,
+        colorPicker: null,
+        colorPickerSmall: null,
 
         top: 0,
         left: 0,
@@ -37,40 +39,30 @@ export class LayoutsViewerComponent implements OnInit {
             moveStartMouseTop: 0,
             moveStartMouseLeft: 0,
         },
-
-        zoom: {
-            srcPixelRadius: 3,
-            zoomPixelSize: 8, // center pixel max size (in pixels)
-            colorCenterPixel: [0,0,0,255],
-            colorSelected: [0,0,0,255],
-            colorSelectedHex: '#000000ff',
-            colorSelectedRgba: 'rgba(0,0,0,1)',
-            colorSelectedHsla: 'hsl(0,0,0,1)',
-            factor: 10,
-            canvas: null,
-            zoomedCanvas: null,
-            zoomeDataUrl: '',
-            selectedPixel: {
-                x:0,
-                y:0,
-            }
-        },
     };
 
     constructor(private _route: ActivatedRoute) {}
 
     bindBox(boxEditor) { this.meta.boxEditor = boxEditor }
+    bindColorPicker(colorPicker) { this.meta.colorPicker = colorPicker }
+    bindColorPickerSmall(colorPicker) { this.meta.colorPickerSmall = colorPicker }
+
+    ignoreHintClick(event) {
+        console.log({event});
+        this.meta.hint.ignoreInfoMove = event;
+
+    }
 
     cutBoxAndDownload() {
-        if(!this.meta.box.isVisible) return;
+        if(!this.meta.boxEditor.getBox().isVisible) return;
 
         let canvas: any = document.createElement('canvas');
-        let sizeX = this.meta.box.right - this.meta.box.left;
-        let sizeY = this.meta.box.bottom - this.meta.box.top;
+        let sizeX = this.meta.boxEditor.getBox().right - this.meta.boxEditor.getBox().left;
+        let sizeY = this.meta.boxEditor.getBox().bottom - this.meta.boxEditor.getBox().top;
         canvas.width = sizeX;
         canvas.height = sizeY;
 
-        let pixelData = this.meta.canvas.getContext('2d').getImageData(this.meta.box.left - this.meta.left, this.meta.box.top - this.meta.top, sizeX,sizeY); //.data;
+        let pixelData = this.meta.canvas.getContext('2d').getImageData(this.meta.boxEditor.getBox().left - this.meta.left, this.meta.boxEditor.getBox().top - this.meta.top, sizeX,sizeY); //.data;
         canvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
         let name = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
         let link: any = document.getElementById("downloadBoxSelection");
@@ -98,8 +90,19 @@ export class LayoutsViewerComponent implements OnInit {
 
         this.resizeWindow(null);
         setTimeout( () => {
-            this.initCanvasAndZoom()
+            this.initCanvas()
         },1);
+    }
+
+    public initCanvas() {
+        let img: any = document.getElementById('layoutImage');
+        let canvas:any = document.createElement('canvas');
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+        this.meta.canvas = canvas;
     }
 
 
@@ -107,10 +110,12 @@ export class LayoutsViewerComponent implements OnInit {
 
         this.meta.mouseX = event.pageX;
         this.meta.mouseY = event.pageY;
+        this.zoomPixel(event.pageX, event.pageY);
+    }
 
-        this.meta.zoom.selectedPixel.x = event.pageX - this.meta.left;
-        this.meta.zoom.selectedPixel.y = event.pageY - this.meta.top;
-        this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius)
+    public zoomPixel(x,y) {
+        this.meta.colorPicker.zoomPixel(x - this.meta.left, y - this.meta.top);
+        this.meta.colorPickerSmall.zoomPixel(x - this.meta.left, y - this.meta.top);
     }
 
 
@@ -190,6 +195,12 @@ export class LayoutsViewerComponent implements OnInit {
         }
 
 
+    }
+
+    public selectColor() {
+        console.log('TODO: implement selectColor') // TODO implement
+        this.meta.colorPicker.selectColor();
+        this.meta.colorPickerSmall.selectColor();
     }
 
     public handleMouseScrollEvents(event: WheelEvent) {
@@ -276,113 +287,12 @@ export class LayoutsViewerComponent implements OnInit {
     // ---------- box -----------------
 
     public arrowsManipulate(x, y) {
-
         this.meta.boxEditor.arrowsManipulate(x,y);
-
         this.arrowsColorMove(x,y);
-        this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius);
     }
 
     public arrowsColorMove(shiftX, shiftY) {
-        this.meta.zoom.selectedPixel.x += shiftX;
-        this.meta.zoom.selectedPixel.y += shiftY;
-        //this.refreshBoxData();
+        this.meta.colorPicker.zoomPixelShift(shiftX, shiftY);
+        this.meta.colorPickerSmall.zoomPixelShift(shiftX, shiftY);
     }
-
-    // ----- Color picker and zooom -----
-
-    ignoreHintClick(event) {
-        this.meta.hint.ignoreInfoMove = true;
-    }
-
-    stopIgnoreHintClick(event) {
-        this.meta.hint.ignoreInfoMove = false;
-    }
-
-    selectColor() {
-        this.meta.zoom.colorSelected = this.meta.zoom.colorCenterPixel;
-        let [r,g,b,a] = this.meta.zoom.colorSelected;
-        this.meta.zoom.colorSelectedHex = this.meta.zoom.colorCenterPixel;
-        this.meta.zoom.colorSelectedRgba = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a/255) + ')';
-        this.meta.zoom.colorSelectedHex = this.rgbaToHex(r,g,b,a);
-        this.meta.zoom.colorSelectedHsla = this.rgbToHsl(r,g,b,a);
-    }
-
-    componentToHex(c) {
-        let hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    rgbaToHex(r, g, b, a) {
-        return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b) + this.componentToHex(a);
-    }
-
-    rgbToHsl(r, g, b, a) {
-        r /= 255, g /= 255, b /= 255, a /= 255;
-
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2;
-
-        if (max == min) {
-            h = s = 0; // achromatic
-        } else {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-
-            h /= 6;
-        }
-
-        s= Math.round(s * 100 * 100)/100;
-        l= Math.round(l * 100 * 100)/100;
-        h= Math.round(h * 360);
-        a= Math.round(a*10000)/10000;
-
-        return 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + a + ')';
-    }
-
-    initCanvasAndZoom() {
-        let img: any = document.getElementById('layoutImage');
-        let canvas:any = document.createElement('canvas');
-        let zoomedCanvas:any = document.createElement('canvas');
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        let size = this.meta.zoom.srcPixelRadius*2+1;
-        zoomedCanvas.width = size;
-        zoomedCanvas.height = size;
-
-        zoomedCanvas.getContext('2d').fillStyle = 'green';
-        zoomedCanvas.getContext('2d').fillRect(0, 0, size, size);
-
-        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
-        this.meta.canvas = canvas;
-        this.meta.zoom.zoomedCanvas = zoomedCanvas;
-
-
-    }
-
-    zoomReadPixels(x,y, zoomPixelRadius) {
-        if(!this.meta.canvas) return;
-        let pixelData = this.meta.canvas.getContext('2d').getImageData(x -zoomPixelRadius-1, y - zoomPixelRadius*2, zoomPixelRadius*2 + 1, zoomPixelRadius*2 + 1); //.data;
-        this.meta.zoom.colorCenterPixel = this.zoomReadXYFromPixels(zoomPixelRadius,zoomPixelRadius,zoomPixelRadius,pixelData.data);
-        this.meta.zoom.zoomedCanvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
-        this.meta.zoom.zoomeDataUrl = this.meta.zoom.zoomedCanvas.toDataURL('image/png');
-    }
-
-    zoomReadXYFromPixels(x,y,zoomPixelRadius, pixelData) {
-        let size = zoomPixelRadius*2+1;
-        let index  = 4* (x+ y*size);
-        return [pixelData[index],pixelData[index+1], pixelData[index+2], pixelData[index+3]];
-    }
-
 }
-
-
-

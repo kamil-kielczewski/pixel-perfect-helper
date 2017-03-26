@@ -45,7 +45,7 @@
                     <b>Wheel</b> : vertical scroll<br />
                     +<b>Shift</b> : horizontal <br />
                     +<b>Alt</b> : per-pixel<br />
-                    <b>Arrows</b> : move per-pixel box-edge-veryex,color <br />
+                    <b>Arrows</b> : move per-pixel box-edge-vertex,color <br />
                     <b>S</b> : crop to selection box and save image<br />
                     <br/>
                 </div>
@@ -60,31 +60,7 @@
             Width x Height: <b>{{ meta.boxEditor.getBox().width }} x {{ meta.boxEditor.getBox().height }}</b> <br />
             </div>
             <br />
-            <div (mousedown)="ignoreHintClick($event)" (mouseup)="stopIgnoreHintClick($event)">
-                <div style="float: left; width: 80px; height: 80px;">
-                    <img src="{{ meta.zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
-                         [style.width]="((meta.zoom.srcPixelRadius*2 + 1)* meta.zoom.factor)+'px'"
-                    />
-                    <i class="fa fa-circle-thin colorCrosshairLarge" aria-hidden="true" ></i>
-                </div>
-
-                <div style="float: left">
-                    <div style="width:30px; height:30px; border: solid 1px white;"
-                         [style.backgroundColor]="'rgba('+meta.zoom.colorSelected[0] + ',' +meta.zoom.colorSelected[1] + ',' + meta.zoom.colorSelected[2] + ',' + meta.zoom.colorSelected[3] + ')'"
-                    ></div>
-
-                    <div style="width:30px; height:30px; border: solid 1px white; margin-top:8px;"
-                         [style.backgroundColor]="'rgba('+meta.zoom.colorCenterPixel[0] + ',' +meta.zoom.colorCenterPixel[1] + ',' + meta.zoom.colorCenterPixel[2] + ',' + meta.zoom.colorCenterPixel[3] + ')'"
-                    ></div>
-
-                </div>
-
-                <div style="font-size:12px; cursor: text">
-                    <span style="margin-left:10px">{{ meta.zoom.colorSelectedHex }}</span><br/>
-                    <span style="margin-left:10px">{{ meta.zoom.colorSelectedRgba }}</span><br/>
-                    <span style="margin-left:10px; font-size: 10px;">{{ meta.zoom.colorSelectedHsla }}</span>
-                </div>
-            </div>
+            <color-picker #colorPicker [canvas]="meta.canvas" [small]="false" (ignoreMove)="ignoreHintClick($event)">{{ bindColorPicker(colorPicker) }}</color-picker>
         </div>
 
         <!--COMPACT-->
@@ -107,31 +83,7 @@
             <b>screen</b> {{ this.meta.windowWidth }}x{{ this.meta.windowHeight }}, <b>mouse</b> {{ meta.mouseX }}x{{ meta.mouseY }} <br />
             <b>box: lt</b> {{ meta.boxEditor.getBox().left }}x{{ meta.boxEditor.getBox().top }}, <b>rb</b> {{ meta.boxEditor.getBox().right }}x{{ meta.boxEditor.getBox().bottom }}, <b>size</b> {{ meta.boxEditor.getBox().width }}x{{ meta.boxEditor.getBox().height }}
 
-            <div (mousedown)="ignoreHintClick($event)" (mouseup)="stopIgnoreHintClick($event)" style="margin-top:3px;">
-                <div style="float: left; width: 40px; height: 40px;">
-                    <img src="{{ meta.zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
-                         [style.width]="((meta.zoom.srcPixelRadius*2 + 1)* meta.zoom.factor/2)+'px'"
-                    />
-                    <i class="fa fa-circle-thin colorCrosshairSmall" aria-hidden="true" ></i>
-                </div>
-
-                <div style="float: left">
-                    <div style="width:15px; height:15px; border: solid 1px white;"
-                         [style.backgroundColor]="'rgba('+meta.zoom.colorSelected[0] + ',' +meta.zoom.colorSelected[1] + ',' + meta.zoom.colorSelected[2] + ',' + meta.zoom.colorSelected[3] + ')'"
-                    ></div>
-
-                    <div style="width:15px; height:15px; border: solid 1px white; margin-top:3px;"
-                         [style.backgroundColor]="'rgba('+meta.zoom.colorCenterPixel[0] + ',' +meta.zoom.colorCenterPixel[1] + ',' + meta.zoom.colorCenterPixel[2] + ',' + meta.zoom.colorCenterPixel[3] + ')'"
-                    ></div>
-
-                </div>
-
-                <div style="font-size:10px; cursor: text">
-                    <span style="margin-left:5px">{{ meta.zoom.colorSelectedHex }}</span><br/>
-                    <span style="margin-left:5px">{{ meta.zoom.colorSelectedRgba }}</span><br/>
-                    <span style="margin-left:5px">{{ meta.zoom.colorSelectedHsla }}</span>
-                </div>
-            </div>
+            <color-picker #colorPickerSmall  [canvas]="meta.canvas" [small]="true" (ignoreMove)="ignoreHintClick($event)"> {{ bindColorPickerSmall(colorPickerSmall) }}</color-picker>
         </div>
     </div>
 
@@ -165,27 +117,4 @@
         cursor: pointer;
     }
 
-    .svgCanvas {
-        position:absolute;
-    }
-
-    .colorCrosshairLarge {
-        position: relative;
-        left: 30.5px;
-        top: -46.0px;
-        font-size: 10px;
-        font-weight: bold;
-        line-height: 9px;
-        border: solid 1px white;
-    }
-
-    .colorCrosshairSmall {
-        position: relative;
-        left: 15.25px;
-        top: -28.0px;
-        font-size: 5px;
-        font-weight: bold;
-        line-height: 5px;
-        border: solid 1px white;
-    }
 </style>
