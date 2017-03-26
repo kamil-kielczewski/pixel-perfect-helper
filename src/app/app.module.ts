@@ -33,6 +33,7 @@ import '../styles/styles.scss';
 import '../styles/headings.css';
 import { LayoutsManagerComponent } from './layoutsManager/layoutsManager.component';
 import { LayoutsViewerComponent } from './layoutsViewer/layoutsViewer.component';
+import { SelectionBoxComponent } from "./layoutsViewer/selectionBox/selectionBox.component";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -55,6 +56,7 @@ type StoreType = {
     AppComponent,
     LayoutsManagerComponent,
     LayoutsViewerComponent,
+    SelectionBoxComponent,
     AboutComponent,
     HomeComponent,
     NoContentComponent,

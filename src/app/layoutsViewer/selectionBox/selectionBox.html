@@ -1,0 +1,58 @@
+<svg
+     [style.top]="0"
+     [style.left]="0"
+     [style.width]="width + 'px'"
+     [style.height]="height + 'px'"
+     class="svgCanvas"
+     (mousedown)="boxDrawStart($event)"
+     (mousemove)="svgMouseMove($event)"
+     (mouseup)="svgMouseMoveUp($event)"
+>
+
+    <polygon [attr.points]="boxVerticesSvg()"
+             [style.fill]="'hsla(171,75%,40%,0.3)'"
+             style="stroke-width:0; cursor:move"
+             (mousedown)="moveBoxStart($event)"
+             (mouseup)="moveBoxStop($event)"
+    ></polygon>
+
+    <g *ngFor="let i of [0,1,2,3]" >
+        <line
+                [attr.x1]="boxLineVertices()[i].x1"
+                [attr.y1]="boxLineVertices()[i].y1"
+                [attr.x2]="boxLineVertices()[i].x2"
+                [attr.y2]="boxLineVertices()[i].y2"
+                style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0.5); stroke-dasharray: 4,6; stroke-width:1"></line>
+
+        <!--invisile line only for better mouse selection -->
+        <line
+                [attr.x1]="boxLineVertices()[i].x1"
+                [attr.y1]="boxLineVertices()[i].y1"
+                [attr.x2]="boxLineVertices()[i].x2"
+                [attr.y2]="boxLineVertices()[i].y2"
+                (mousedown)="boxMoveLineStart(i, $event)"
+                (mouseup)="boxMoveLineStop(i, $event)"
+                [style.cursor]="i%2 ? 'ew-resize' : 'ns-resize'"
+                style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:5"></line>
+    </g>
+
+    <g *ngFor="let i of [0,1,2,3]" >
+        <circle r="5"
+                style="stroke-width:0; fill:rgba(0,0,0,0)"
+                [attr.cx]="boxLineVertices()[i].x1"
+                [attr.cy]="boxLineVertices()[i].y1"
+                (mousedown)="boxMoveVertexStart(i, $event)"
+                (mouseup)="boxMoveVertexStop(i, $event)"
+                [style.cursor]="i%2 ? 'nesw-resize' : 'nwse-resize'"
+        >
+        </circle>
+    </g>
+
+</svg>
+
+
+<style>
+    .svgCanvas {
+        position:absolute;
+    }
+</style>

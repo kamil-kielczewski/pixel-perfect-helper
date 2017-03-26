@@ -13,6 +13,8 @@ export class LayoutsViewerComponent implements OnInit {
     public imgItem = null;
 
     public meta = {
+        boxEditor: null,
+
         top: 0,
         left: 0,
         windowHeight: 0,
@@ -36,33 +38,6 @@ export class LayoutsViewerComponent implements OnInit {
             moveStartMouseLeft: 0,
         },
 
-        box: {
-            move: false,
-            draw: false,
-            moveLine: false,
-            moveVertex: false,
-            selectedLine: 0,
-            selectedVertex: 0,
-            l: -1,
-            t: -1,
-            r: -1,
-            b: -1,
-
-            moveStartMouseX: 0,
-            moveStartMouseY: 0,
-
-            isVisible: false,
-            ignoreInfoMove: false,
-
-            // values to show in info box
-            left:0,
-            right:0,
-            top: 0,
-            bottom: 0,
-            width: 0,
-            height: 0,
-        },
-
         zoom: {
             srcPixelRadius: 3,
             zoomPixelSize: 8, // center pixel max size (in pixels)
@@ -83,6 +58,8 @@ export class LayoutsViewerComponent implements OnInit {
     };
 
     constructor(private _route: ActivatedRoute) {}
+
+    bindBox(boxEditor) { this.meta.boxEditor = boxEditor }
 
     cutBoxAndDownload() {
         if(!this.meta.box.isVisible) return;
@@ -206,7 +183,7 @@ export class LayoutsViewerComponent implements OnInit {
             }
 
             if (event.key === 's') {
-                if(!this.meta.box.isVisible) return;
+                if(!this.meta.boxEditor.getBox().isVisible) return;
                 document.getElementById("downloadBoxSelection").click(); // simulate click on download file link
                 event.preventDefault();
             }
@@ -269,29 +246,7 @@ export class LayoutsViewerComponent implements OnInit {
 
     public showHintOrHideBox() {
 
-        if (this.meta.hint.show) {
-
-            this.meta.box.isVisible = false;
-            this.meta.box.l = -1;
-            this.meta.box.r = -1;
-            this.meta.box.t = -1;
-            this.meta.box.b = -1;
-        }
-
         this.meta.hint.show = true;
-    }
-
-    public hideBox() {
-
-        if (this.meta.hint.show && this.meta.box.isVisible) {
-
-            this.meta.box.isVisible = false;
-            this.meta.box.l = -1;
-            this.meta.box.r = -1;
-            this.meta.box.t = -1;
-            this.meta.box.b = -1;
-
-        }
     }
 
     public sign(x) {
@@ -319,310 +274,19 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     // ---------- box -----------------
-    public refreshBoxData() {
-        this.meta.box.width = Math.abs(this.meta.box.l - this.meta.box.r);
-        this.meta.box.height = Math.abs(this.meta.box.t - this.meta.box.b);
-
-        if (this.meta.box.l < this.meta.box.r) {
-            this.meta.box.left = this.meta.box.l;
-            this.meta.box.right = this.meta.box.r;
-        } else {
-            this.meta.box.left = this.meta.box.r;
-            this.meta.box.right = this.meta.box.l;
-        }
-
-        if (this.meta.box.t < this.meta.box.b) {
-            this.meta.box.bottom = this.meta.box.b;
-            this.meta.box.top = this.meta.box.t;
-        } else {
-            this.meta.box.bottom = this.meta.box.t;
-            this.meta.box.top = this.meta.box.b;
-        }
-    }
-
-    public boxVertices() {
-        let l = this.meta.box.l;
-        let r = this.meta.box.r;
-        let t = this.meta.box.t;
-        let b = this.meta.box.b;
-
-        return [
-            {x: l, y: t}, {x: r, y: t}, {x: r, y: b}, {x: l, y: b}
-        ];
-    }
-
-    public boxVerticesSvg() {
-        let s = '';
-        for (let v of this.boxVertices()) {
-            s += v.x + ',' + v.y + ' ';
-        }
-        return s;
-    }
-
-    public svgMouseMove(event: any) {
-
-        if (this.meta.box.move) { this.moveBox(event); }
-        if (this.meta.box.draw) { this.boxDraw(event); }
-        if (this.meta.box.moveLine) { this.boxMoveLine(event); }
-        if (this.meta.box.moveVertex) { this.boxMoveVertex(event); }
-    }
-
-    public svgMouseMoveUp(event: any) {
-        if (this.meta.box.draw) { this.boxDrawStop(event); }
-        if (this.meta.box.moveLine) { this.boxMoveLineStop(event); }
-    }
 
     public arrowsManipulate(x, y) {
 
-        if (this.meta.lastAction === 'moveBox') {
-
-            this.arrowsBoxMove(x, y);
-        }
-
-        if (this.meta.lastAction === 'moveLine') {
-
-            this.arrowsBoxEdgeMove(x, y);
-        }
-
-        if (this.meta.lastAction === 'moveVertex') {
-
-            this.arrowsBoxVertexMove(x, y);
-        }
+        this.meta.boxEditor.arrowsManipulate(x,y);
 
         this.arrowsColorMove(x,y);
         this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius);
     }
 
-    // ------- Box draw -------
-
-    public boxDrawStart(event: any) {
-
-        this.meta.box.isVisible = true;
-        this.meta.box.draw = true;
-        this.meta.box.l = event.pageX;
-        this.meta.box.t = event.pageY;
-        this.meta.box.r = event.pageX;
-        this.meta.box.b = event.pageY;
-
-        event.stopPropagation();
-        this.selectColor();
-    }
-
-    public boxDraw(event) {
-        this.meta.box.b = event.pageY;
-        this.meta.box.r = event.pageX;
-        this.refreshBoxData();
-    }
-
-    public boxDrawStop(event) {
-        this.meta.box.draw = false;
-
-
-        if(this.meta.box.l == this.meta.box.r || this.meta.box.t == this.meta.box.b) {
-            this.meta.box.l = -1;
-            this.meta.box.r = -1;
-            this.meta.box.t = -1;
-            this.meta.box.b = -1;
-            this.meta.box.isVisible = false;
-        }
-
-        this.refreshBoxData();
-        this.selectColor();
-    }
-
-    // --------- Box Move -----------
-
-    public moveBoxStart(event) {
-        this.meta.box.move = true;
-        this.meta.box.moveStartMouseX = event.pageX - this.meta.box.l;
-        this.meta.box.moveStartMouseY = event.pageY - this.meta.box.t;
-        event.stopPropagation();
-        this.selectColor();
-    }
-
-    public moveBoxStop(event) {
-        this.meta.box.move = false;
-    }
-
-    public moveBox(event) {
-        if (this.meta.box.move ) {
-
-            this.meta.lastAction = 'moveBox';
-            let oldL = this.meta.box.l;
-            let oldT = this.meta.box.t;
-            this.meta.box.l = event.pageX - this.meta.box.moveStartMouseX;
-            this.meta.box.t = event.pageY - this.meta.box.moveStartMouseY;
-            this.meta.box.r += this.meta.box.l - oldL;
-            this.meta.box.b += this.meta.box.t - oldT;
-            this.refreshBoxData();
-        }
-    }
-
-    public arrowsBoxMove(shiftX, shiftY) {
-        this.meta.box.l += shiftX;
-        this.meta.box.t += shiftY;
-        this.meta.box.r += shiftX;
-        this.meta.box.b += shiftY;
-        this.refreshBoxData();
-    }
-
     public arrowsColorMove(shiftX, shiftY) {
         this.meta.zoom.selectedPixel.x += shiftX;
         this.meta.zoom.selectedPixel.y += shiftY;
-        this.refreshBoxData();
-    }
-
-    public boxLineVertices() {
-        let result = [];
-        let tmp = 0;
-        let l = this.meta.box.l;
-        let r = this.meta.box.r;
-        let t = this.meta.box.t;
-        let b = this.meta.box.b;
-
-        if(l<r) {
-            l+=1;
-        } else {
-            r+=1;
-        }
-
-        if(t<b) {
-            t+=1;
-        } else {
-            b+=1;
-        }
-
-        result.push({ x1: l<r ? l-1:l, y1: t, x2: l<r ? r:r-1, y2: t, });
-        result.push({ x1: r, y1: t, x2: r, y2: b, });
-        result.push({ x1: l<r ? r:r-1, y1: b, x2: l<r ? l-1:l, y2: b, });
-        result.push({ x1: l, y1: b, x2: l, y2: t, });
-
-        return result;
-    }
-
-    // -------- move line --------
-
-    public boxMoveLineStart(i, event) {
-        this.meta.box.selectedLine = i;
-        this.meta.box.moveLine = true;
-        event.stopPropagation();
-    }
-
-    public boxMoveLine(event) {
-        let i = this.meta.box.selectedLine;
-        if (this.meta.box.moveLine) {
-
-            this.meta.lastAction = 'moveLine';
-
-            if (i === 0) { // top line
-                this.meta.box.t = event.pageY;
-            }
-
-            if (i === 1) { // right line
-                this.meta.box.r = event.pageX;
-            }
-
-            if (i === 2) { // bottom line
-                this.meta.box.b = event.pageY;
-            }
-
-            if (i === 3) { // left line
-                this.meta.box.l = event.pageX;
-            }
-
-            this.refreshBoxData();
-        }
-        event.stopPropagation();
-    }
-
-    public boxMoveLineStop(event) {
-        this.meta.box.moveLine = false;
-    }
-
-    public arrowsBoxEdgeMove(shiftX, shiftY) {
-        let i = this.meta.box.selectedLine;
-        if (i === 0) { // top line
-            this.meta.box.t += shiftY;
-        }
-
-        if (i === 1) { // right line
-            this.meta.box.r += shiftX;
-        }
-
-        if (i === 2) { // bottom line
-            this.meta.box.b += shiftY;
-        }
-
-        if (i === 3) { // left line
-            this.meta.box.l += shiftX;
-        }
-        this.refreshBoxData();
-    }
-
-    // ------ move box vertex ------
-    public boxMoveVertexStart(i,event) {
-        this.meta.box.selectedVertex = i;
-        this.meta.box.moveVertex = true;
-        event.stopPropagation();
-    }
-
-    public boxMoveVertex(event) {
-        let i = this.meta.box.selectedVertex;
-        if (this.meta.box.moveVertex) {
-
-            this.meta.lastAction = 'moveVertex';
-
-            if (i === 0) { // top line
-                this.meta.box.t = event.pageY;
-                this.meta.box.l = event.pageX;
-            }
-
-            if (i === 1) { // right line
-                this.meta.box.r = event.pageX;
-                this.meta.box.t = event.pageY;
-            }
-
-            if (i === 2) { // bottom line
-                this.meta.box.b = event.pageY;
-                this.meta.box.r = event.pageX;
-            }
-
-            if (i === 3) { // left line
-                this.meta.box.l = event.pageX;
-                this.meta.box.b = event.pageY;
-            }
-
-            this.refreshBoxData();
-        }
-        event.stopPropagation();
-    }
-
-    public boxMoveVertexStop(i,event) {
-        this.meta.box.moveVertex = false;
-    }
-
-    public arrowsBoxVertexMove(shiftX, shiftY) {
-        let i = this.meta.box.selectedVertex;
-        if (i === 0) { // top line
-            this.meta.box.t += shiftY;
-            this.meta.box.l += shiftX;
-        }
-
-        if (i === 1) { // right line
-            this.meta.box.r += shiftX;
-            this.meta.box.t += shiftY;
-        }
-
-        if (i === 2) { // bottom line
-            this.meta.box.b += shiftY;
-            this.meta.box.r += shiftX;
-        }
-
-        if (i === 3) { // left line
-            this.meta.box.l += shiftX;
-            this.meta.box.b += shiftY;
-        }
-        this.refreshBoxData();
+        //this.refreshBoxData();
     }
 
     // ----- Color picker and zooom -----
