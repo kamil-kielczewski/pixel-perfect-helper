@@ -4,6 +4,7 @@
      (wheel)="handleMouseScrollEvents($event)"
      (mousemove)="updateMousePosition($event)"
      (dblclick)="showHintOrHideBox()"
+
      class="container"
 >
 
@@ -38,7 +39,7 @@
                     [attr.y1]="boxLineVertices()[i].y1"
                     [attr.x2]="boxLineVertices()[i].x2"
                     [attr.y2]="boxLineVertices()[i].y2"
-                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,1.0);stroke-width:1"></line>
+                    style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0.5); stroke-dasharray: 4,6; stroke-width:1"></line>
 
             <!--invisile line only for better mouse selection -->
             <line
@@ -50,6 +51,18 @@
                     (mouseup)="boxMoveLineStop(i, $event)"
                     [style.cursor]="i%2 ? 'ew-resize' : 'ns-resize'"
                     style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:5"></line>
+        </g>
+
+        <g *ngFor="let i of [0,1,2,3]" >
+            <circle r="5"
+                    style="stroke-width:0; fill:rgba(0,0,0,0)"
+                    [attr.cx]="boxLineVertices()[i].x1"
+                    [attr.cy]="boxLineVertices()[i].y1"
+                    (mousedown)="boxMoveVertexStart(i, $event)"
+                    (mouseup)="boxMoveVertexStop(i, $event)"
+                    [style.cursor]="i%2 ? 'nesw-resize' : 'nwse-resize'"
+            >
+            </circle>
         </g>
 
 
@@ -79,7 +92,7 @@
                 <b>Wheel</b> = vertical scroll<br />
                 +<b>Shift</b> = horizontal <br />
                 +<b>Alt</b> = per-pixel<br />
-                <b>Arrows</b> = move box/edge per-pixel<br />
+                <b>Arrows</b> = move box/edge/color per-pixel<br />
                 <b>S</b> = crop to box and save image<br />
                 <br/>
             </div>

@@ -24,6 +24,8 @@ export class LayoutsViewerComponent implements OnInit {
         mouseY: 0,
         canvas: null,
 
+        lastAction: null,
+
         hint : {
             compact: false,
             top: 0,
@@ -38,7 +40,9 @@ export class LayoutsViewerComponent implements OnInit {
             move: false,
             draw: false,
             moveLine: false,
+            moveVertex: false,
             selectedLine: 0,
+            selectedVertex: 0,
             l: -1,
             t: -1,
             r: -1,
@@ -46,7 +50,7 @@ export class LayoutsViewerComponent implements OnInit {
 
             moveStartMouseX: 0,
             moveStartMouseY: 0,
-            lastAction: null,
+
             isVisible: false,
             ignoreInfoMove: false,
 
@@ -58,17 +62,6 @@ export class LayoutsViewerComponent implements OnInit {
             width: 0,
             height: 0,
         },
-
-        // zoom: {
-        //     srcPixelRadius: 3,
-        //     zoomMaxPixelSize: 8, // center pixel max size (in pixels)
-        //     zoomPixGrowthFactor: 2, // how much pixel growth in zoom
-        //     zoomPixelSizes: [], // map with pixle sizes - calculated on init
-        //     zoomSize: 0, // total number of zoom pixel height/width -calculated on init
-        //     canvas: null,
-        //     zoomedCanvas: null,
-        //     zoomeDataUrl: '',
-        // }
 
         zoom: {
             srcPixelRadius: 3,
@@ -82,14 +75,17 @@ export class LayoutsViewerComponent implements OnInit {
             canvas: null,
             zoomedCanvas: null,
             zoomeDataUrl: '',
+            selectedPixel: {
+                x:0,
+                y:0,
+            }
         },
     };
 
     constructor(private _route: ActivatedRoute) {}
 
     cutBoxAndDownload() {
-        console.log('cut');
-
+        if(!this.meta.box.isVisible) return;
 
         let canvas: any = document.createElement('canvas');
         let sizeX = this.meta.box.right - this.meta.box.left;
@@ -134,7 +130,10 @@ export class LayoutsViewerComponent implements OnInit {
         //console.log(event.pageX,event.pageY);
         this.meta.mouseX = event.pageX;
         this.meta.mouseY = event.pageY;
-        this.zoomReadPixels(event.pageX-this.meta.left,event.pageY-this.meta.top,this.meta.zoom.srcPixelRadius)
+
+        this.meta.zoom.selectedPixel.x = event.pageX - this.meta.left;
+        this.meta.zoom.selectedPixel.y = event.pageY - this.meta.top;
+        this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius)
     }
 
 
@@ -182,26 +181,27 @@ export class LayoutsViewerComponent implements OnInit {
 
         if (event.type === 'keyup') {
             if (event.key === 'ArrowRight') {
-                this.boxArrowsManipulate(1, 0);
+                this.arrowsManipulate(1, 0);
                 event.preventDefault();
             }
 
             if (event.key === 'ArrowLeft') {
-                this.boxArrowsManipulate(-1, 0);
+                this.arrowsManipulate(-1, 0);
                 event.preventDefault();
             }
 
             if (event.key === 'ArrowUp') {
-                this.boxArrowsManipulate(0, -1);
+                this.arrowsManipulate(0, -1);
                 event.preventDefault();
             }
 
             if (event.key === 'ArrowDown') {
-                this.boxArrowsManipulate(0, 1);
+                this.arrowsManipulate(0, 1);
                 event.preventDefault();
             }
 
             if (event.key === 's') {
+                if(!this.meta.box.isVisible) return;
                 document.getElementById("downloadBoxSelection").click(); // simulate click on download file link
                 event.preventDefault();
             }
@@ -276,6 +276,19 @@ export class LayoutsViewerComponent implements OnInit {
         this.meta.hint.show = true;
     }
 
+    public hideBox() {
+        console.log('hideBox');
+        if (this.meta.hint.show && this.meta.box.isVisible) {
+
+            this.meta.box.isVisible = false;
+            this.meta.box.l = -1;
+            this.meta.box.r = -1;
+            this.meta.box.t = -1;
+            this.meta.box.b = -1;
+
+        }
+    }
+
     public sign(x) {
         return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : x === x ? 0 : NaN : NaN;
     }
@@ -346,6 +359,7 @@ export class LayoutsViewerComponent implements OnInit {
         if (this.meta.box.move) { this.moveBox(event); }
         if (this.meta.box.draw) { this.boxDraw(event); }
         if (this.meta.box.moveLine) { this.boxMoveLine(event); }
+        if (this.meta.box.moveVertex) { this.boxMoveVertex(event); }
     }
 
     public svgMouseMoveUp(event: any) {
@@ -353,24 +367,34 @@ export class LayoutsViewerComponent implements OnInit {
         if (this.meta.box.moveLine) { this.boxMoveLineStop(event); }
     }
 
-    public boxArrowsManipulate(x, y) {
+    public arrowsManipulate(x, y) {
 
-        if (this.meta.box.lastAction === 'moveBox') {
+        if (this.meta.lastAction === 'moveBox') {
 
             this.arrowsBoxMove(x, y);
         }
 
-        if (this.meta.box.lastAction === 'moveLine') {
+        if (this.meta.lastAction === 'moveLine') {
 
             this.arrowsBoxEdgeMove(x, y);
         }
+
+        if (this.meta.lastAction === 'moveVertex') {
+
+            this.arrowsBoxVertexMove(x, y);
+        }
+
+
+
+        this.arrowsColorMove(x,y);
+        this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius);
     }
 
     // ------- Box draw -------
 
     public boxDrawStart(event: any) {
 
-        if (!this.meta.box.isVisible) {
+        //f (!this.meta.box.isVisible) {
 
             this.meta.box.isVisible = true;
             this.meta.box.draw = true;
@@ -378,11 +402,12 @@ export class LayoutsViewerComponent implements OnInit {
             this.meta.box.t = event.pageY;
             this.meta.box.r = event.pageX;
             this.meta.box.b = event.pageY;
-
+            console.log('startDraw');
             event.stopPropagation();
-        } else {
+        // } else {
+        //     this.hideBox();
             this.selectColor();
-        }
+        //}
     }
 
     public boxDraw(event) {
@@ -394,14 +419,18 @@ export class LayoutsViewerComponent implements OnInit {
     public boxDrawStop(event) {
         this.meta.box.draw = false;
 
+
         if(this.meta.box.l == this.meta.box.r || this.meta.box.t == this.meta.box.b) {
             this.meta.box.l = -1;
             this.meta.box.r = -1;
             this.meta.box.t = -1;
             this.meta.box.b = -1;
             this.meta.box.isVisible = false;
-            this.selectColor();
         }
+
+        this.refreshBoxData();
+        this.selectColor();
+        console.log('stopDraw',this.meta.box);
     }
 
     // --------- Box Move -----------
@@ -421,7 +450,7 @@ export class LayoutsViewerComponent implements OnInit {
     public moveBox(event) {
         if (this.meta.box.move ) {
 
-            this.meta.box.lastAction = 'moveBox';
+            this.meta.lastAction = 'moveBox';
             let oldL = this.meta.box.l;
             let oldT = this.meta.box.t;
             this.meta.box.l = event.pageX - this.meta.box.moveStartMouseX;
@@ -437,6 +466,12 @@ export class LayoutsViewerComponent implements OnInit {
         this.meta.box.t += shiftY;
         this.meta.box.r += shiftX;
         this.meta.box.b += shiftY;
+        this.refreshBoxData();
+    }
+
+    public arrowsColorMove(shiftX, shiftY) {
+        this.meta.zoom.selectedPixel.x += shiftX;
+        this.meta.zoom.selectedPixel.y += shiftY;
         this.refreshBoxData();
     }
 
@@ -468,6 +503,8 @@ export class LayoutsViewerComponent implements OnInit {
         return result;
     }
 
+    // -------- move line --------
+
     public boxMoveLineStart(i, event) {
         this.meta.box.selectedLine = i;
         this.meta.box.moveLine = true;
@@ -478,7 +515,7 @@ export class LayoutsViewerComponent implements OnInit {
         let i = this.meta.box.selectedLine;
         if (this.meta.box.moveLine) {
 
-            this.meta.box.lastAction = 'moveLine';
+            this.meta.lastAction = 'moveLine';
 
             if (i === 0) { // top line
                 this.meta.box.t = event.pageY;
@@ -521,6 +558,72 @@ export class LayoutsViewerComponent implements OnInit {
 
         if (i === 3) { // left line
             this.meta.box.l += shiftX;
+        }
+        this.refreshBoxData();
+    }
+
+    // ------ move box vertex ------
+    public boxMoveVertexStart(i,event) {
+        this.meta.box.selectedVertex = i;
+        this.meta.box.moveVertex = true;
+        event.stopPropagation();
+    }
+
+    public boxMoveVertex(event) {
+        let i = this.meta.box.selectedVertex;
+        if (this.meta.box.moveVertex) {
+
+            this.meta.lastAction = 'moveVertex';
+
+            if (i === 0) { // top line
+                this.meta.box.t = event.pageY;
+                this.meta.box.l = event.pageX;
+            }
+
+            if (i === 1) { // right line
+                this.meta.box.r = event.pageX;
+                this.meta.box.t = event.pageY;
+            }
+
+            if (i === 2) { // bottom line
+                this.meta.box.b = event.pageY;
+                this.meta.box.r = event.pageX;
+            }
+
+            if (i === 3) { // left line
+                this.meta.box.l = event.pageX;
+                this.meta.box.b = event.pageY;
+            }
+
+            this.refreshBoxData();
+        }
+        event.stopPropagation();
+    }
+
+    public boxMoveVertexStop(i,event) {
+        this.meta.box.moveVertex = false;
+    }
+
+    public arrowsBoxVertexMove(shiftX, shiftY) {
+        let i = this.meta.box.selectedVertex;
+        if (i === 0) { // top line
+            this.meta.box.t += shiftY;
+            this.meta.box.l += shiftX;
+        }
+
+        if (i === 1) { // right line
+            this.meta.box.r += shiftX;
+            this.meta.box.t += shiftY;
+        }
+
+        if (i === 2) { // bottom line
+            this.meta.box.b += shiftY;
+            this.meta.box.r += shiftX;
+        }
+
+        if (i === 3) { // left line
+            this.meta.box.l += shiftX;
+            this.meta.box.b += shiftY;
         }
         this.refreshBoxData();
     }
@@ -604,17 +707,11 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     zoomReadPixels(x,y, zoomPixelRadius) {
-
         if(!this.meta.canvas) return;
-
-        //let pixelData = this.meta.zoom.canvas.getContext('2d').getImageData(x - zoomPixelRadius, y - zoomPixelRadius, zoomPixelRadius*2 + 1, zoomPixelRadius*2 + 1); //.data;
         let pixelData = this.meta.canvas.getContext('2d').getImageData(x -zoomPixelRadius-1, y - zoomPixelRadius*2, zoomPixelRadius*2 + 1, zoomPixelRadius*2 + 1); //.data;
         this.meta.zoom.colorCenterPixel = this.zoomReadXYFromPixels(zoomPixelRadius,zoomPixelRadius,zoomPixelRadius,pixelData.data);
         this.meta.zoom.zoomedCanvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
-        //this.meta.zoom.zoomedCanvas.getContext('2d').putImageData(this.zoomCopyFromOrg(pixelData),0,0);
         this.meta.zoom.zoomeDataUrl = this.meta.zoom.zoomedCanvas.toDataURL('image/png');
-        // let pix = this.zoomReadXYFromPixels(2,2,pixelData);
-        //this.zoomCopyFromOrg(pixelData);
     }
 
     zoomReadXYFromPixels(x,y,zoomPixelRadius, pixelData) {
@@ -622,127 +719,6 @@ export class LayoutsViewerComponent implements OnInit {
         let index  = 4* (x+ y*size);
         return [pixelData[index],pixelData[index+1], pixelData[index+2], pixelData[index+3]];
     }
-
-    // ---- end zooom ----
-
-    // // ----- zooom -----
-    //
-    // zoomInit() {
-    //     let img: any = document.getElementById('layoutImage');
-    //     let canvas:any = document.createElement('canvas');
-    //     let zoomedCanvas:any = document.createElement('canvas');
-    //
-    //     canvas.width = img.width;
-    //     canvas.height = img.height;
-    //
-    //     let size = this.zoomCalcSize();
-    //     zoomedCanvas.width = size;
-    //     zoomedCanvas.height = size;
-    //     this.meta.zoom.zoomSize = size;
-    //     zoomedCanvas.getContext('2d').fillStyle = 'green';
-    //     zoomedCanvas.getContext('2d').fillRect(0, 0, size, size);
-    //
-    //     canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
-    //     this.meta.zoom.canvas = canvas;
-    //     this.meta.zoom.zoomedCanvas = zoomedCanvas;
-    //
-    //
-    // }
-    //
-    // zoomCalcSize() {
-    //     let sum = this.meta.zoom.zoomMaxPixelSize;
-    //     let size = this.meta.zoom.zoomMaxPixelSize;
-    //     let zoomPixelSizes=[];
-    //     for(let i=0; i< this.meta.zoom.srcPixelRadius; i++) {
-    //
-    //         size = size/this.meta.zoom.zoomPixGrowthFactor;
-    //         //console.log(size,i);
-    //         sum +=2*size;
-    //         zoomPixelSizes.push(size);
-    //     }
-    //
-    //     let ps1 = zoomPixelSizes.slice().reverse();
-    //     let ps2 = zoomPixelSizes;
-    //     ps1.push(this.meta.zoom.zoomMaxPixelSize);
-    //     this.meta.zoom.zoomPixelSizes = ps1.concat(ps2); // egzaplme result [1,2,4,2,1] <- pixel siezes in zoom
-    //
-    //     return sum;
-    // }
-    //
-    // zoomReadPixels(x,y, zoomPixelRadius) {
-    //
-    //     // TODO uncoment below
-    //     if(!this.meta.zoom.canvas) return;
-    //
-    //
-    //     let pixelData = this.meta.zoom.canvas.getContext('2d').getImageData(x - zoomPixelRadius, y - zoomPixelRadius, zoomPixelRadius*2 + 1, zoomPixelRadius*2 + 1); //.data;
-    //     //this.meta.zoom.zoomedCanvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
-    //     this.meta.zoom.zoomedCanvas.getContext('2d').putImageData(this.zoomCopyFromOrg(pixelData),0,0);
-    //     this.meta.zoom.zoomeDataUrl = this.meta.zoom.zoomedCanvas.toDataURL('image/png');
-    //     // let pix = this.zoomReadXYFromPixels(2,2,pixelData);
-    //     //this.zoomCopyFromOrg(pixelData);
-    // }
-    //
-    // zoomCopyFromOrg(pixelData) {
-    //     let srcSize = this.meta.zoom.srcPixelRadius*2 + 1;
-    //     let zoomSize = this.meta.zoom.zoomSize;
-    //     let zoomPixelData = new ImageData(zoomSize,zoomSize);
-    //
-    //     let pData = pixelData.data;
-    //     for(let i=0; i<srcSize; i++) {
-    //         for(let j=0; j<srcSize; j++) {
-    //             let srcPixel = this.zoomReadXYFromPixels(i,j,pData);
-    //             this.zoomPutXYZoomPixel(i,j,srcPixel, zoomSize, zoomPixelData.data)
-    //         }
-    //     }
-    //
-    //     return zoomPixelData;
-    //     //for(let i=0; i<)
-    // }
-    //
-    // zoomPutXYZoomPixel(x,y,pixel,zoomSize,zoomPixelData) {
-    //
-    //     let sx = 0; //pixel start
-    //     let sy = 0; // pixel end
-    //     let pxSize = this.meta.zoom.zoomPixelSizes[x];
-    //     let pySize = this.meta.zoom.zoomPixelSizes[y];
-    //
-    //     for(let i=0; i<x; i++) {
-    //         sx += this.meta.zoom.zoomPixelSizes[i];
-    //     }
-    //
-    //     for(let i=0; i<y; i++) {
-    //         sy += this.meta.zoom.zoomPixelSizes[i];
-    //     }
-    //
-    //     let startIndex = (sy*zoomSize + sx)*4;
-    //
-    //     for(let j=0; j<pySize; j++) {
-    //         for(let i=0; i<pxSize; i++) {
-    //             let index = startIndex + (j*zoomSize + i)*4;
-    //             zoomPixelData[index] = pixel[0];
-    //             zoomPixelData[index+1] = pixel[1];
-    //             zoomPixelData[index+2] = pixel[2];
-    //             zoomPixelData[index+3] = pixel[3];
-    //         }
-    //     }
-    //
-    //     // for(let i=0; i< zoomPixelData.length; i++) {
-    //     //     let index = i*4;
-    //     //     zoomPixelData[index] = 255;
-    //     //     zoomPixelData[index+1] = 0;
-    //     //     zoomPixelData[index+2] = 0;
-    //     //     zoomPixelData[index+3] = 255;
-    //     // }
-    //     console.log(sx,sy,pxSize,pySize, zoomSize,startIndex, zoomPixelData.length, pixel);
-    // }
-    //
-    // zoomReadXYFromPixels(x,y, pixelData) {
-    //     let size = this.meta.zoom.srcPixelRadius*2 + 1;
-    //     let index  = 4* (x+ y*size);
-    //     return [pixelData[index],pixelData[index+1], pixelData[index+2], pixelData[index+3]];
-    // }
-
 
 }
 
