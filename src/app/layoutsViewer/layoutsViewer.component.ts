@@ -200,6 +200,11 @@ export class LayoutsViewerComponent implements OnInit {
                 event.preventDefault();
             }
 
+            if (event.key === ' ') { // space
+                this.selectColor();
+                event.preventDefault();
+            }
+
             if (event.key === 's') {
                 if(!this.meta.box.isVisible) return;
                 document.getElementById("downloadBoxSelection").click(); // simulate click on download file link
@@ -673,7 +678,7 @@ export class LayoutsViewerComponent implements OnInit {
         l= Math.round(l * 100 * 100)/100;
         h= Math.round(h * 360);
         a= Math.round(a*10000)/10000;
-        
+
         return 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + a + ')';
     }
 
