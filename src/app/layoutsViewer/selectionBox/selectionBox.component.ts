@@ -9,7 +9,8 @@ export class SelectionBoxComponent implements OnInit {
 
     @Input() width: string;
     @Input() height: string;
-    @Output() mousedown: EventEmitter<any> = new EventEmitter();
+    @Output() pointerdown: EventEmitter<any> = new EventEmitter();
+    @Output() pointermove: EventEmitter<any> = new EventEmitter();
 
     public box = {
         move: false,
@@ -112,6 +113,7 @@ export class SelectionBoxComponent implements OnInit {
         if (this.box.draw) { this.boxDraw(event); }
         if (this.box.moveLine) { this.boxMoveLine(event); }
         if (this.box.moveVertex) { this.boxMoveVertex(event); }
+        this.pointermove.emit(event);
     }
 
     public svgMouseMoveUp(event: any) {
@@ -148,7 +150,7 @@ export class SelectionBoxComponent implements OnInit {
         this.box.r = event.pageX;
         this.box.b = event.pageY;
 
-        this.mousedown.emit(event);
+        this.pointerdown.emit(event);
     }
 
     public boxDraw(event) {
@@ -178,7 +180,7 @@ export class SelectionBoxComponent implements OnInit {
         this.box.move = true;
         this.box.moveStartMouseX = event.pageX - this.box.l;
         this.box.moveStartMouseY = event.pageY - this.box.t;
-        this.mousedown.emit(event);
+        this.pointerdown.emit(event);
         event.stopPropagation();
     }
 

@@ -4,16 +4,16 @@
      [style.width]="width + 'px'"
      [style.height]="height + 'px'"
      class="svgCanvas"
-     (mousedown)="boxDrawStart($event)"
-     (mousemove)="svgMouseMove($event)"
-     (mouseup)="svgMouseMoveUp($event)"
+     (pointerdown)="boxDrawStart($event)"
+     (pointermove)="svgMouseMove($event)"
+     (pointerup)="svgMouseMoveUp($event)"
 >
 
     <polygon [attr.points]="boxVerticesSvg()"
              [style.fill]="'hsla(171,75%,40%,0.3)'"
              style="stroke-width:0; cursor:move"
-             (mousedown)="moveBoxStart($event)"
-             (mouseup)="moveBoxStop($event)"
+             (pointerdown)="moveBoxStart($event)"
+             (pointerup)="moveBoxStop($event)"
     ></polygon>
 
     <g *ngFor="let i of [0,1,2,3]" >
@@ -30,8 +30,8 @@
                 [attr.y1]="boxLineVertices()[i].y1"
                 [attr.x2]="boxLineVertices()[i].x2"
                 [attr.y2]="boxLineVertices()[i].y2"
-                (mousedown)="boxMoveLineStart(i, $event)"
-                (mouseup)="boxMoveLineStop(i, $event)"
+                (pointerdown)="boxMoveLineStart(i, $event)"
+                (pointerup)="boxMoveLineStop(i, $event)"
                 [style.cursor]="i%2 ? 'ew-resize' : 'ns-resize'"
                 style="shape-rendering:crispEdges; stroke:rgba(0,0,0,0);stroke-width:5"></line>
     </g>
@@ -41,8 +41,8 @@
                 style="stroke-width:0; fill:rgba(0,0,0,0)"
                 [attr.cx]="boxLineVertices()[i].x1"
                 [attr.cy]="boxLineVertices()[i].y1"
-                (mousedown)="boxMoveVertexStart(i, $event)"
-                (mouseup)="boxMoveVertexStop(i, $event)"
+                (pointerdown)="boxMoveVertexStart(i, $event)"
+                (pointerup)="boxMoveVertexStop(i, $event)"
                 [style.cursor]="i%2 ? 'nesw-resize' : 'nwse-resize'"
         >
         </circle>
@@ -54,5 +54,6 @@
 <style>
     .svgCanvas {
         position:absolute;
+        touch-action: none;
     }
 </style>

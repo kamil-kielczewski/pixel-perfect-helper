@@ -15,7 +15,7 @@
          id="layoutImage"
     />
 
-    <selection-box #boxEditor [width]="meta.windowWidth " [height]="meta.windowHeight" (mousedown)="selectColor()" > {{ bindBox(boxEditor) }}</selection-box>
+    <selection-box #boxEditor [width]="meta.windowWidth " [height]="meta.windowHeight" (pointerdown)="selectColor()" (pointermove)="moveHint($event)" > {{ bindBox(boxEditor) }}</selection-box>
 
     <div *ngIf="meta.boxEditor">
 
@@ -26,7 +26,7 @@
              [style.left]='meta.hint.left  + "px"'
              style='width:280px; font-size: 12px;'
              (mousedown)="moveHintStart($event)"
-             (mousemove)="moveHint($event)"
+             (pointermove)="moveHint($event)"
              (mouseup)="moveHintStop($event)"
              class="hint"
         >
@@ -94,7 +94,7 @@
              [style.left]='meta.hint.left  + "px"'
              style='width:220px; font-size:10px;'
              (mousedown)="moveHintStart($event)"
-             (mousemove)="moveHint($event)"
+             (pointermove)="moveHint($event)"
              (mouseup)="moveHintStop($event)"
              class="hint"
         >
