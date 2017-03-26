@@ -127,7 +127,7 @@ export class LayoutsViewerComponent implements OnInit {
 
 
     public updateMousePosition(event) {
-        //console.log(event.pageX,event.pageY);
+
         this.meta.mouseX = event.pageX;
         this.meta.mouseY = event.pageY;
 
@@ -277,7 +277,7 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public hideBox() {
-        console.log('hideBox');
+
         if (this.meta.hint.show && this.meta.box.isVisible) {
 
             this.meta.box.isVisible = false;
@@ -384,8 +384,6 @@ export class LayoutsViewerComponent implements OnInit {
             this.arrowsBoxVertexMove(x, y);
         }
 
-
-
         this.arrowsColorMove(x,y);
         this.zoomReadPixels(this.meta.zoom.selectedPixel.x, this.meta.zoom.selectedPixel.y, this.meta.zoom.srcPixelRadius);
     }
@@ -394,20 +392,15 @@ export class LayoutsViewerComponent implements OnInit {
 
     public boxDrawStart(event: any) {
 
-        //f (!this.meta.box.isVisible) {
+        this.meta.box.isVisible = true;
+        this.meta.box.draw = true;
+        this.meta.box.l = event.pageX;
+        this.meta.box.t = event.pageY;
+        this.meta.box.r = event.pageX;
+        this.meta.box.b = event.pageY;
 
-            this.meta.box.isVisible = true;
-            this.meta.box.draw = true;
-            this.meta.box.l = event.pageX;
-            this.meta.box.t = event.pageY;
-            this.meta.box.r = event.pageX;
-            this.meta.box.b = event.pageY;
-            console.log('startDraw');
-            event.stopPropagation();
-        // } else {
-        //     this.hideBox();
-            this.selectColor();
-        //}
+        event.stopPropagation();
+        this.selectColor();
     }
 
     public boxDraw(event) {
@@ -430,7 +423,6 @@ export class LayoutsViewerComponent implements OnInit {
 
         this.refreshBoxData();
         this.selectColor();
-        console.log('stopDraw',this.meta.box);
     }
 
     // --------- Box Move -----------
@@ -680,7 +672,8 @@ export class LayoutsViewerComponent implements OnInit {
         s= Math.round(s * 100 * 100)/100;
         l= Math.round(l * 100 * 100)/100;
         h= Math.round(h * 360);
-
+        a= Math.round(a*10000)/10000;
+        
         return 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + a + ')';
     }
 

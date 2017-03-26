@@ -15,7 +15,7 @@
          id="layoutImage"
     />
 
-    <svg *ngIf="meta.hint.show"
+    <svg
          [style.top]="0"
          [style.left]="0"
          [style.width]="this.meta.windowWidth + 'px'"
@@ -69,18 +69,18 @@
 
     </svg>
 
-    <div *ngIf="meta.hint.show && !meta.hint.compact"
+    <div [hidden]="!(meta.hint.show && !meta.hint.compact)"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
-         style='width:270px; font-size: 12px;'
+         style='width:280px; font-size: 12px;'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
          class="hint"
     >
-        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
-        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
-        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()">
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="Compact mode"></i>
+        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()" title="Cut image to selection box and save it">
             <i *ngIf="meta.box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
         <div>
@@ -88,12 +88,13 @@
             <br />
             <div style="color: #ffffff">
                 Draw box using mouse!<br />
-                <b>Double-click</b> = show/hide info/box<br />
-                <b>Wheel</b> = vertical scroll<br />
-                +<b>Shift</b> = horizontal <br />
-                +<b>Alt</b> = per-pixel<br />
-                <b>Arrows</b> = move box/edge/color per-pixel<br />
-                <b>S</b> = crop to box and save image<br />
+                <b>Click</b> : select color<br />
+                <b>Double-click</b> : show info<br />
+                <b>Wheel</b> : vertical scroll<br />
+                +<b>Shift</b> : horizontal <br />
+                +<b>Alt</b> : per-pixel<br />
+                <b>Arrows</b> : move per-pixel box-edge-veryex,color <br />
+                <b>S</b> : crop to selection box and save image<br />
                 <br/>
             </div>
         Image Width x Height: <b>{{ imgItem.width }} x {{ imgItem.height }}</b><br />
@@ -101,9 +102,10 @@
         Image Left x Top: <b>{{ meta.left }} x {{ meta.top }}</b> <br />
         Mouse X x Y: <b>{{ meta.mouseX }} x {{ meta.mouseY }}</b> <br />
         <br/>
-        Box Left x Top: <b>{{ meta.box.left }} x {{ meta.box.top }}</b>  <br />
-        Box Right x Bottom: <b>{{ meta.box.right }} x {{ meta.box.bottom }}</b> <br />
-        Box Width x Height: <b>{{ meta.box.width }} x {{ meta.box.height }}</b> <br />
+        Selection Box: <br />
+        Left x Top: <b>{{ meta.box.left }} x {{ meta.box.top }}</b>  <br />
+        Right x Bottom: <b>{{ meta.box.right }} x {{ meta.box.bottom }}</b> <br />
+        Width x Height: <b>{{ meta.box.width }} x {{ meta.box.height }}</b> <br />
         </div>
         <br />
         <div (mousedown)="ignoreHintClick($event)" (mouseup)="stopIgnoreHintClick($event)">
@@ -128,23 +130,23 @@
             <div style="font-size:12px; cursor: text">
                 <span style="margin-left:10px">{{ meta.zoom.colorSelectedHex }}</span><br/>
                 <span style="margin-left:10px">{{ meta.zoom.colorSelectedRgba }}</span><br/>
-                <span style="margin-left:10px">{{ meta.zoom.colorSelectedHsla }}</span>
+                <span style="margin-left:10px; font-size: 10px;">{{ meta.zoom.colorSelectedHsla }}</span>
             </div>
         </div>
     </div>
 
-    <div *ngIf="meta.hint.show && meta.hint.compact"
+    <div [hidden]="!(meta.hint.show && meta.hint.compact)"
          [style.top]='meta.hint.top  + "px"'
          [style.left]='meta.hint.left  + "px"'
-         style='width:200px; font-size:10px;'
+         style='width:220px; font-size:10px;'
          (mousedown)="moveHintStart($event)"
          (mousemove)="moveHint($event)"
          (mouseup)="moveHintStop($event)"
          class="hint"
     >
-        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" ></i>
-        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
-        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()">
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="Show more help information"></i>
+        <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()" title="Cut image to selection box and save it">
             <i *ngIf="meta.box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
         <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
