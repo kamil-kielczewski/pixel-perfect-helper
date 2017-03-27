@@ -63,6 +63,10 @@ export class HintBoxComponent implements OnInit {
         this.hint.show = false;
     }
 
+    public toggleOpen() {
+        this.hint.show = !this.hint.show;
+    }
+
     saveCutImgClick() {
         this.saveCutImg.emit();
     }
@@ -83,15 +87,6 @@ export class HintBoxComponent implements OnInit {
         this.saveHintSettings();
     }
 
-    public closeHint() {
-        this.hint.show = false;
-    }
-
-    public showHintOrHideBox() {
-
-        this.hint.show = true;
-    }
-
     // ----- save hint setting ------
     public loadHintSettings() {
         let settings = Storage.get(this.keyHintSettings());
@@ -99,9 +94,10 @@ export class HintBoxComponent implements OnInit {
         this.hint.compact = settings.compact;
         this.hint.top = settings.top;
         this.hint.left = settings.left;
-        if (this.hint.left + 20 >= this.screenWidth
-            || this.hint.top + 20 >= this.screenHeight) {
-
+        if (this.hint.left + 220 >= this.screenWidth
+            || this.hint.top + 20 >= this.screenHeight
+            || this.hint.left < 0 || this.hint.top < 0
+        ) {
             this.hint.left = 0;
             this.hint.top = 0;
         }

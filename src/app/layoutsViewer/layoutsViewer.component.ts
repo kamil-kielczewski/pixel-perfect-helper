@@ -70,6 +70,10 @@ export class LayoutsViewerComponent implements OnInit {
         return counter;
     }
 
+    showHintBox() {
+        this.meta.hintBox.open();
+    }
+
 
     public ngOnInit() {
         this._route.params.subscribe( (params) => {
@@ -179,20 +183,23 @@ export class LayoutsViewerComponent implements OnInit {
                 event.preventDefault();
             }
 
-            if (event.key === 's') {
+            if (event.key === 's' || event.key === 'S') {
                 if(!this.meta.boxEditor.getBox().isVisible) return;
                 this.meta.hintBox.saveImg();
                 event.preventDefault();
+            }
+
+            if (event.key === 'i' || event.key === 'I') {
+                this.meta.hintBox.toggleOpen();
             }
         }
 
 
     }
 
-    public selectColor() {
+    public selectColor(event = null) {
+        if(event) this.updateMousePosition(event);
         this.meta.hintBox.selectColor();
-        //this.meta.colorPicker.selectColor();
-        //this.meta.colorPickerSmall.selectColor();
     }
 
     public handleMouseScrollEvents(event: WheelEvent) {
@@ -236,10 +243,6 @@ export class LayoutsViewerComponent implements OnInit {
         if (this.meta.pristineVertical) {
             this.centerPicture();
         }
-    }
-
-    public moveHint($event) {
-
     }
 
     public sign(x) {

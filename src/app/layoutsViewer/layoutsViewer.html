@@ -2,8 +2,8 @@
      [style.height]='meta.windowHeight + "px"'
      (window:resize)="resizeWindow($event)"
      (wheel)="handleMouseScrollEvents($event)"
-     (mousemove)="updateMousePosition($event)"
-     (dblclick)="showHintOrHideBox()"
+     (pointermove)="updateMousePosition($event)"
+     (dblclick)="showHintBox()"
 
      class="container"
 >
@@ -18,8 +18,7 @@
     <selection-box #boxEditor
                    [width]="meta.windowWidth "
                    [height]="meta.windowHeight"
-                   (pointerdown)="selectColor()"
-                   (pointermove)="moveHint($event)"
+                   (pointerdown)="selectColor($event)"
     >
         {{ bindBox(boxEditor) }}
     </selection-box>
@@ -46,6 +45,7 @@
         position: absolute;
         width: 100%;
         overflow: hidden;
+        touch-action: none;
     }
 
     .item {
