@@ -8,10 +8,11 @@ import { Router } from '@angular/router';
 })
 export class LayoutsManagerComponent implements OnInit {
     public meta = {
+        editItemNameMode: null,
         selectedImage: null,
         pictureUrl : null,
         editItem: null,
-        list: []
+        list: [],
     };
 
     constructor(private _router: Router) {}
@@ -32,26 +33,25 @@ export class LayoutsManagerComponent implements OnInit {
         this.loadImgAsBase64(url);
     }
 
-    loadImgAsBase64(url)
-    {
+    public loadImgAsBase64(url) {
+
         let canvas: any = document.createElement('CANVAS');
         let img = document.createElement('img');
         img.setAttribute('crossorigin', 'anonymous');
-        img.src = 'https://crossorigin.me/'+url;
+        img.src = 'https://crossorigin.me/' + url;
 
-        img.onload = () =>
-        {
-            setTimeout(()=>{
+        img.onload = () => {
+            setTimeout( () => {
                 canvas.height = img.height;
                 canvas.width = img.width;
                 let context = canvas.getContext('2d');
-                context.drawImage(img,0,0);
+                context.drawImage(img, 0, 0);
 
-                var dataURL = canvas.toDataURL('image/png');
+                let dataURL = canvas.toDataURL('image/png');
                 console.log({img});
                 canvas = null;
-                this.savePicToStorage('url',dataURL, img.width, img.height)
-            },2000);
+                this.savePicToStorage('url', dataURL, img.width, img.height);
+            }, 2000);
         };
     }
 
@@ -72,10 +72,10 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public savePicToStorage(name, image, width, height) {
-        //let image = e.target.result;
+        // let image = e.target.result;
         let index =  this.meta.list.length;
         let counter = Storage.get('layoutsManager.imageCounter');
-        let counter = (counter ? counter : 0) + 1;
+        counter = (counter ? counter : 0) + 1;
         console.log(counter);
         Storage.set('layoutsManager.imageCounter', counter);
         let key = 'layoutsManager.image.' + counter;
@@ -86,7 +86,7 @@ export class LayoutsManagerComponent implements OnInit {
             image,
             width,
             height,
-            name: name,
+            name,
         });
         this.dataReload();
     }
@@ -119,7 +119,4 @@ export class LayoutsManagerComponent implements OnInit {
     public cancelSaveItem(item) {
         this.meta.editItem = null;
     }
-
-
 }
-

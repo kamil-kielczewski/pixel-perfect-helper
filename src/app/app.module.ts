@@ -33,9 +33,9 @@ import '../styles/styles.scss';
 import '../styles/headings.css';
 import { LayoutsManagerComponent } from './layoutsManager/layoutsManager.component';
 import { LayoutsViewerComponent } from './layoutsViewer/layoutsViewer.component';
-import { SelectionBoxComponent } from "./layoutsViewer/selectionBox/selectionBox.component";
-import { ColorPickerComponent } from "./layoutsViewer/colorPicker/colorPicker.component";
-import { HintBoxComponent } from "./layoutsViewer/hintBox/hintBox.component";
+import { SelectionBoxComponent } from './layoutsViewer/selectionBox/selectionBox.component';
+import { ColorPickerComponent } from './layoutsViewer/colorPicker/colorPicker.component';
+import { HintBoxComponent } from './layoutsViewer/hintBox/hintBox.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -77,26 +77,19 @@ type StoreType = {
         APP_PROVIDERS
     ]
 })
-export class AppModule
-{
+export class AppModule {
 
-    constructor(public appRef: ApplicationRef,
-                public appState: AppState)
-    {
-    }
+    constructor(public appRef: ApplicationRef, public appState: AppState) {}
 
-    public hmrOnInit(store: StoreType)
-    {
-        if (!store || !store.state)
-        {
+    public hmrOnInit(store: StoreType) {
+        if (!store || !store.state) {
             return;
         }
         console.log('HMR store', JSON.stringify(store, null, 2));
         // set state
         this.appState._state = store.state;
         // set input values
-        if ('restoreInputValues' in store)
-        {
+        if ('restoreInputValues' in store) {
             let restoreInputValues = store.restoreInputValues;
             setTimeout(restoreInputValues);
         }
@@ -106,8 +99,7 @@ export class AppModule
         delete store.restoreInputValues;
     }
 
-    public hmrOnDestroy(store: StoreType)
-    {
+    public hmrOnDestroy(store: StoreType) {
         const cmpLocation = this.appRef.components.map((cmp) => cmp.location.nativeElement);
         // save state
         const state = this.appState._state;
@@ -120,8 +112,7 @@ export class AppModule
         removeNgStyles();
     }
 
-    public hmrAfterDestroy(store: StoreType)
-    {
+    public hmrAfterDestroy(store: StoreType) {
         // display new elements
         store.disposeOldHosts();
         delete store.disposeOldHosts;

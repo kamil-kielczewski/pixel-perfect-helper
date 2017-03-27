@@ -30,12 +30,12 @@ export class LayoutsViewerComponent implements OnInit {
 
     constructor(private _route: ActivatedRoute) {}
 
-    bindBox(boxEditor) { this.meta.boxEditor = boxEditor }
-    bindHintBox(hintBox) { this.meta.hintBox = hintBox }
+    public bindBox(boxEditor) { this.meta.boxEditor = boxEditor; }
+    public bindHintBox(hintBox) { this.meta.hintBox = hintBox; }
 
-    cutBoxAndDownload() {
+    public cutBoxAndDownload() {
 
-        if(!this.meta.boxEditor.getBox().isVisible) return;
+        if (!this.meta.boxEditor.getBox().isVisible) { return; }
 
         let canvas: any = document.createElement('canvas');
         let sizeX = this.meta.boxEditor.getBox().right - this.meta.boxEditor.getBox().left;
@@ -43,28 +43,41 @@ export class LayoutsViewerComponent implements OnInit {
         canvas.width = sizeX;
         canvas.height = sizeY;
 
-        let pixelData = this.meta.canvas.getContext('2d').getImageData(this.meta.boxEditor.getBox().left - this.meta.left, this.meta.boxEditor.getBox().top - this.meta.top, sizeX,sizeY); //.data;
-        canvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
+        let pixelData = this.meta.canvas.getContext('2d').getImageData(
+            this.meta.boxEditor.getBox().left - this.meta.left,
+            this.meta.boxEditor.getBox().top - this.meta.top,
+            sizeX,
+            sizeY
+        );
+
+        // copy 1:1 pixels under mouse to canvas
+        canvas.getContext('2d').putImageData(pixelData, 0, 0);
 
         let filename = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
-        let imgDataUrl = canvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+        let imgDataUrl = canvas.toDataURL('image/png').replace(/^data:image\/[^;]/,
+            'data:application/octet-stream'
+        );
 
         this.meta.hintBox.saveImg(filename, imgDataUrl);
     }
 
     public getFileCounterNext() {
+
         let counterKey = 'layoutsViewer.crop_file_counter.' + this.imgItem.key ;
         let counter = Storage.get(counterKey);
-        if(!counter) counter = 0;
+
+        if (!counter) { counter = 0; }
+
         counter++;
+
         Storage.set(counterKey, counter);
+
         return counter;
     }
 
-    showHintBox() {
+    public showHintBox() {
         this.meta.hintBox.open();
     }
-
 
     public ngOnInit() {
         this._route.params.subscribe( (params) => {
@@ -75,12 +88,12 @@ export class LayoutsViewerComponent implements OnInit {
         this.resizeWindow(null);
         setTimeout( () => {
             this.initCanvas();
-        },1);
+        }, 1);
     }
 
     public initCanvas() {
         let img: any = document.getElementById('layoutImage');
-        let canvas:any = document.createElement('canvas');
+        let canvas: any = document.createElement('canvas');
 
         canvas.width = img.width;
         canvas.height = img.height;
@@ -89,7 +102,6 @@ export class LayoutsViewerComponent implements OnInit {
         this.meta.canvas = canvas;
     }
 
-
     public updateMousePosition(event) {
         this.meta.mouseX = event.pageX;
         this.meta.mouseY = event.pageY;
@@ -97,10 +109,9 @@ export class LayoutsViewerComponent implements OnInit {
         this.meta.hintBox.moveHint(event);
     }
 
-    public zoomPixel(x,y) {
-        this.meta.hintBox.zoomPixel(x,y);
+    public zoomPixel(x, y) {
+        this.meta.hintBox.zoomPixel(x, y);
     }
-
 
     @HostListener('document:keydown', ['$event'])
     @HostListener('document:keyup', ['$event'])
@@ -143,7 +154,7 @@ export class LayoutsViewerComponent implements OnInit {
             }
 
             if (event.key === 's' || event.key === 'S') {
-                if(!this.meta.boxEditor.getBox().isVisible) return;
+                if (!this.meta.boxEditor.getBox().isVisible) { return; }
                 this.meta.hintBox.saveImg();
                 event.preventDefault();
             }
@@ -152,12 +163,10 @@ export class LayoutsViewerComponent implements OnInit {
                 this.meta.hintBox.toggleOpen();
             }
         }
-
-
     }
 
     public selectColor(event = null) {
-        if(event) this.updateMousePosition(event);
+        if (event) { this.updateMousePosition(event); }
         this.meta.hintBox.selectColor();
     }
 
@@ -209,9 +218,7 @@ export class LayoutsViewerComponent implements OnInit {
     // ---------- box -----------------
 
     public arrowsManipulate(x, y) {
-        this.meta.boxEditor.arrowsManipulate(x,y);
-        this.meta.hintBox.arrowsColorMove(x,y);
+        this.meta.boxEditor.arrowsManipulate(x, y);
+        this.meta.hintBox.arrowsColorMove(x, y);
     }
-
-
 }

@@ -8,19 +8,19 @@ import { Storage } from '../../common';
 })
 export class HintBoxComponent implements OnInit {
 
-    @Input() canvas: any;
-    @Input() box: any;      // look: selectionBox component
-    @Input() imgItem: any;
-    @Input() imgLeft: any;
-    @Input() imgTop: any;
-    @Input() screenWidth: any;
-    @Input() screenHeight: any;
-    @Input() mouseX: any;
-    @Input() mouseY: any;
+    @Input() public canvas: any;
+    @Input() public box: any;      // look: selectionBox component
+    @Input() public imgItem: any;
+    @Input() public imgLeft: any;
+    @Input() public imgTop: any;
+    @Input() public screenWidth: any;
+    @Input() public screenHeight: any;
+    @Input() public mouseX: any;
+    @Input() public mouseY: any;
 
-    @Output() saveCutImg: EventEmitter<any> = new EventEmitter();
+    @Output() public saveCutImg: EventEmitter<any> = new EventEmitter();
 
-    hint = {
+    public hint = {
         compact: false,
         top: 0,
         left: 0,
@@ -47,8 +47,8 @@ export class HintBoxComponent implements OnInit {
         this.loadHintSettings();
     }
 
-    bindColorPicker(colorPicker) { this.meta.colorPicker = colorPicker }
-    bindColorPickerSmall(colorPicker) { this.meta.colorPickerSmall = colorPicker }
+    public bindColorPicker(colorPicker) { this.meta.colorPicker = colorPicker; }
+    public bindColorPickerSmall(colorPicker) { this.meta.colorPickerSmall = colorPicker; }
 
     public getHint() {
         return this.hint;
@@ -66,17 +66,19 @@ export class HintBoxComponent implements OnInit {
         this.hint.show = !this.hint.show;
     }
 
-    saveCutImgClick() {
+    public saveCutImgClick() {
         this.saveCutImg.emit();
     }
 
     public saveImg(filename, imgDataUrl) {
 
-        let link: any = document.getElementById( this.hint.compact ? this.hint.linkSmall : this.hint.link );
+        let link: any = document.getElementById(
+            this.hint.compact ? this.hint.linkSmall : this.hint.link
+        );
 
         // if no parameters invoke click on link event (we do it in this way
         // because browser technical reasons related by save file by click on <a>)
-        if(!filename) {
+        if (!filename) {
             link.click();
             return;
         }
@@ -117,7 +119,7 @@ export class HintBoxComponent implements OnInit {
         return 'layoutsViewer.hint.settings';
     }
 
-    ignoreMove(event) {
+    public ignoreMove(event) {
 
         this.hint.ignoreMove = event;
     }
@@ -171,7 +173,7 @@ export class HintBoxComponent implements OnInit {
         this.meta.colorPickerSmall.selectColor();
     }
 
-    public zoomPixel(x,y) {
+    public zoomPixel(x, y) {
 
         this.meta.colorPicker.zoomPixel(x - this.imgLeft, y - this.imgTop);
         this.meta.colorPickerSmall.zoomPixel(x - this.imgLeft, y - this.imgTop);

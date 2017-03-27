@@ -1,16 +1,16 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'selection-box',
     templateUrl: './selectionBox.html',
 })
-export class SelectionBoxComponent implements OnInit {
+export class SelectionBoxComponent {
 
-    @Input() width: string;
-    @Input() height: string;
-    @Output() pointerdown: EventEmitter<any> = new EventEmitter();
-    @Output() pointermove: EventEmitter<any> = new EventEmitter();
+    @Input() public width: string;
+    @Input() public height: string;
+    @Output() public pointerdown: EventEmitter<any> = new EventEmitter();
+    @Output() public pointermove: EventEmitter<any> = new EventEmitter();
 
     public box = {
 
@@ -34,8 +34,8 @@ export class SelectionBoxComponent implements OnInit {
         ignoreInfoMove: false,
 
         // values to show in info box
-        left:0,
-        right:0,
+        left: 0,
+        right: 0,
         top: 0,
         bottom: 0,
         width: 0,
@@ -49,8 +49,6 @@ export class SelectionBoxComponent implements OnInit {
 
     constructor(private _route: ActivatedRoute) {}
 
-    public ngOnInit() {}
-
     public getBox() {
         return this.box;
     }
@@ -62,6 +60,7 @@ export class SelectionBoxComponent implements OnInit {
         this.box.height = Math.abs(this.box.t - this.box.b);
 
         this.box.inverse = 0;
+
         if (this.box.l < this.box.r) {
 
             this.box.left = this.box.l;
@@ -88,7 +87,7 @@ export class SelectionBoxComponent implements OnInit {
         }
 
         // case when box is invisible
-        if(this.box.l<0 && this.box.r<0 && this.box.t <0 && this.box.b<0) {
+        if (this.box.l < 0 && this.box.r < 0 && this.box.t < 0 && this.box.b < 0) {
 
             this.box.left = 0;
             this.box.right = 0;
@@ -177,8 +176,7 @@ export class SelectionBoxComponent implements OnInit {
 
         this.box.draw = false;
 
-
-        if(this.box.l == this.box.r || this.box.t == this.box.b) {
+        if (this.box.l === this.box.r || this.box.t === this.box.b) {
             this.box.l = -1;
             this.box.r = -1;
             this.box.t = -1;
@@ -240,21 +238,21 @@ export class SelectionBoxComponent implements OnInit {
         let t = this.box.t;
         let b = this.box.b;
 
-        if(l<r) {
-            l+=1;
+        if (l < r) {
+            l += 1;
         } else {
-            r+=1;
+            r += 1;
         }
 
-        if(t<b) {
-            t+=1;
+        if (t < b) {
+            t += 1;
         } else {
-            b+=1;
+            b += 1;
         }
 
-        result.push({ x1: l<r ? l-1:l, y1: t, x2: l<r ? r:r-1, y2: t, });
+        result.push({ x1: l < r ? l - 1 : l, y1: t, x2: l < r ? r : r - 1, y2: t, });
         result.push({ x1: r, y1: t, x2: r, y2: b, });
-        result.push({ x1: l<r ? r:r-1, y1: b, x2: l<r ? l-1:l, y2: b, });
+        result.push({ x1: l < r ? r : r - 1, y1: b, x2: l < r ? l - 1 : l, y2: b, });
         result.push({ x1: l, y1: b, x2: l, y2: t, });
 
         return result;
@@ -327,7 +325,7 @@ export class SelectionBoxComponent implements OnInit {
 
     // ------ move box vertex ------
 
-    public boxMoveVertexStart(i,event) {
+    public boxMoveVertexStart(i, event) {
         this.box.selectedVertex = i;
         this.box.moveVertex = true;
         event.stopPropagation();
@@ -367,7 +365,7 @@ export class SelectionBoxComponent implements OnInit {
         event.stopPropagation();
     }
 
-    public boxMoveVertexStop(i,event) {
+    public boxMoveVertexStop(i, event) {
 
         this.box.moveVertex = false;
     }
