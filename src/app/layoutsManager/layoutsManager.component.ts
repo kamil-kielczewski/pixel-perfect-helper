@@ -19,7 +19,6 @@ export class LayoutsManagerComponent implements OnInit {
 
     public ngOnInit() {
         this.dataReload();
-        console.log(this.meta.list);
     }
 
     public dataReload() {
