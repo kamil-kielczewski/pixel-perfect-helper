@@ -43,7 +43,7 @@
                 [attr.cy]="boxLineVertices()[i].y1"
                 (pointerdown)="boxMoveVertexStart(i, $event)"
                 (pointerup)="boxMoveVertexStop(i, $event)"
-                [style.cursor]="i%2 ? 'nesw-resize' : 'nwse-resize'"
+                [style.cursor]="(i+box.inverse)%2 ? 'nesw-resize' : 'nwse-resize'"
         >
         </circle>
     </g>

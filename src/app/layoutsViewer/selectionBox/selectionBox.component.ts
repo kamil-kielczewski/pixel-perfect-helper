@@ -24,6 +24,8 @@ export class SelectionBoxComponent implements OnInit {
         r: -1,
         b: -1,
 
+        inverse: 0,
+
         moveStartMouseX: 0,
         moveStartMouseY: 0,
 
@@ -71,10 +73,12 @@ export class SelectionBoxComponent implements OnInit {
         this.box.width = Math.abs(this.box.l - this.box.r);
         this.box.height = Math.abs(this.box.t - this.box.b);
 
+        this.box.inverse = 0;
         if (this.box.l < this.box.r) {
             this.box.left = this.box.l;
             this.box.right = this.box.r;
         } else {
+            this.box.inverse++;
             this.box.left = this.box.r;
             this.box.right = this.box.l;
         }
@@ -83,6 +87,7 @@ export class SelectionBoxComponent implements OnInit {
             this.box.bottom = this.box.b;
             this.box.top = this.box.t;
         } else {
+            this.box.inverse++;
             this.box.bottom = this.box.t;
             this.box.top = this.box.b;
         }

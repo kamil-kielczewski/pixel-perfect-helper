@@ -53,7 +53,8 @@ export class LayoutsViewerComponent implements OnInit {
 
     }
 
-    cutBoxAndDownload() {
+    cutBoxAndDownload(small) {
+        console.log('xx');
         if(!this.meta.boxEditor.getBox().isVisible) return;
 
         let canvas: any = document.createElement('canvas');
@@ -61,11 +62,11 @@ export class LayoutsViewerComponent implements OnInit {
         let sizeY = this.meta.boxEditor.getBox().bottom - this.meta.boxEditor.getBox().top;
         canvas.width = sizeX;
         canvas.height = sizeY;
-
+        console.log('yy', sizeX, sizeY);
         let pixelData = this.meta.canvas.getContext('2d').getImageData(this.meta.boxEditor.getBox().left - this.meta.left, this.meta.boxEditor.getBox().top - this.meta.top, sizeX,sizeY); //.data;
         canvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
         let name = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
-        let link: any = document.getElementById("downloadBoxSelection");
+        let link: any = document.getElementById( small ? "downloadBoxSelectionSmall" : "downloadBoxSelection" );
         link.download = name;
         link.href = canvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
         canvas=null;
@@ -198,7 +199,6 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public selectColor() {
-        console.log('TODO: implement selectColor') // TODO implement
         this.meta.colorPicker.selectColor();
         this.meta.colorPickerSmall.selectColor();
     }

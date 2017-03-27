@@ -32,7 +32,7 @@
         >
             <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
             <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="Compact mode"></i>
-            <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()" title="Cut image to selection box and save it">
+            <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload(false)" title="Cut image to selection box and save it">
                 <i *ngIf="meta.boxEditor.getBox().isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
             </a>
             <div>
@@ -60,6 +60,7 @@
             Width x Height: <b>{{ meta.boxEditor.getBox().width }} x {{ meta.boxEditor.getBox().height }}</b> <br />
             </div>
             <br />
+            
             <color-picker #colorPicker [canvas]="meta.canvas" [small]="false" (ignoreMove)="ignoreHintClick($event)">{{ bindColorPicker(colorPicker) }}</color-picker>
         </div>
 
@@ -76,7 +77,7 @@
         >
             <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
             <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="Show more help information"></i>
-            <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload()" title="Cut image to selection box and save it">
+            <a id="downloadBoxSelectionSmall" download="image.png" (click)="cutBoxAndDownload(true)" title="Cut image to selection box and save it">
                 <i *ngIf="meta.boxEditor.getBox().isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
             </a>
             <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
