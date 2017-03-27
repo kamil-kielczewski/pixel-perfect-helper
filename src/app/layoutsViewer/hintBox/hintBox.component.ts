@@ -9,7 +9,7 @@ import { Storage } from '../../common';
 export class HintBoxComponent implements OnInit {
 
     @Input() canvas: any;
-    @Input() box: any; // look: selectionBox component
+    @Input() box: any;      // look: selectionBox component
     @Input() imgItem: any;
     @Input() imgLeft: any;
     @Input() imgTop: any;
@@ -19,7 +19,6 @@ export class HintBoxComponent implements OnInit {
     @Input() mouseY: any;
 
     @Output() saveCutImg: EventEmitter<any> = new EventEmitter();
-    //@Output() settingsChange: EventEmitter<any> = new EventEmitter();
 
     hint = {
         compact: false,
@@ -72,28 +71,38 @@ export class HintBoxComponent implements OnInit {
     }
 
     public saveImg(filename, imgDataUrl) {
+
         let link: any = document.getElementById( this.hint.compact ? this.hint.linkSmall : this.hint.link );
-        if(!filename) { // if no parameters invoke click on link event (we do it in this way because browser technical reasons related by save file by click on <a>)
+
+        // if no parameters invoke click on link event (we do it in this way
+        // because browser technical reasons related by save file by click on <a>)
+        if(!filename) {
             link.click();
             return;
         }
+
         link.download = filename;
         link.href = imgDataUrl;
     }
 
     public toggleCompactHint() {
+
         this.hint.compact = !this.hint.compact;
-        //this.settingsChange.emit(this.hint);
         this.saveHintSettings();
     }
 
-    // ----- save hint setting ------
+    // ----- hint setting ------
+
     public loadHintSettings() {
+
         let settings = Storage.get(this.keyHintSettings());
+
         if (!settings) { return; }
+
         this.hint.compact = settings.compact;
         this.hint.top = settings.top;
         this.hint.left = settings.left;
+
         if (this.hint.left + 220 >= this.screenWidth
             || this.hint.top + 20 >= this.screenHeight
             || this.hint.left < 0 || this.hint.top < 0
@@ -104,61 +113,66 @@ export class HintBoxComponent implements OnInit {
     }
 
     public keyHintSettings() {
+
         return 'layoutsViewer.hint.settings';
     }
 
     ignoreMove(event) {
+
         this.hint.ignoreMove = event;
-        //console.log({event});
-
-        //event.preventDefault();
-        //event.stopPropagation();
-        //this.meta.hint.ignoreInfoMove = event;
-
     }
 
     public saveHintSettings() {
+
         let settings = {
             compact: this.hint.compact,
             top: this.hint.top,
             left: this.hint.left,
         };
+
         Storage.set(this.keyHintSettings(), settings);
     }
 
     // ---------- move hint -----------------
+
     public moveHintStart(event: any) {
-        //if(this.hint.ignoreInfoMove) return;
+
         this.hint.move = true;
         this.hint.moveStartMouseTop = event.screenY - this.hint.top;
         this.hint.moveStartMouseLeft = event.screenX - this.hint.left;
     }
 
     public moveHintStop(event) {
+
         this.hint.move = false;
+
         this.ignoreMove(false);
-        //this.settingsChange.emit(this.hint);
         this.saveHintSettings();
     }
 
     public moveHint(event) {
+
         if (this.hint.move && !this.hint.ignoreMove) {
+
             this.hint.top = event.screenY - this.hint.moveStartMouseTop;
             this.hint.left = event.screenX - this.hint.moveStartMouseLeft;
         }
     }
 
     public arrowsColorMove(shiftX, shiftY) {
+
         this.meta.colorPicker.zoomPixelShift(shiftX, shiftY);
         this.meta.colorPickerSmall.zoomPixelShift(shiftX, shiftY);
     }
 
     public selectColor() {
+
         this.meta.colorPicker.selectColor();
         this.meta.colorPickerSmall.selectColor();
     }
 
     public zoomPixel(x,y) {
+
         this.meta.colorPicker.zoomPixel(x - this.imgLeft, y - this.imgTop);
         this.meta.colorPickerSmall.zoomPixel(x - this.imgLeft, y - this.imgTop);
     }

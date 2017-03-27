@@ -11,60 +11,64 @@ export class ColorPickerComponent implements OnInit {
     @Input() height: string;
     @Input() canvas: any;
     @Input() small: boolean;
-    @Output() pointerdown: EventEmitter<any> = new EventEmitter();
-    @Output() pointermove: EventEmitter<any> = new EventEmitter();
+
     @Output() ignoreMove: EventEmitter<any> = new EventEmitter();
 
     public zoom = {
-        ignoreParentMove: false, // used to text selection by mouse of color hex,rgb,hsl
+
+        ignoreParentMove: false,    // used to text selection by mouse of color hex,rgb,hsl
         srcPixelRadius: 3,
-        zoomPixelSize: 8, // center pixel max size (in pixels)
+        zoomPixelSize: 8,           // center pixel max size (in pixels)
+
         colorCenterPixel: [0,0,0,255],
         colorSelected: [0,0,0,255],
         colorSelectedHex: '#000000ff',
         colorSelectedRgba: 'rgba(0, 0, 0, 1)',
         colorSelectedHsla: 'hsl(0, 0%, 0%, 1)',
+
         factor: 10,
         canvas: null,
         zoomedCanvas: null,
         zoomeDataUrl: '',
+
         selectedPixel: {
             x:0,
             y:0,
         }
     };
 
-    public meta = {
-        lastAction: null,
-
-    };
-
     constructor(private _route: ActivatedRoute) {}
 
     public ngOnInit() {
+
         this.initCanvasAndZoom();
         this.zoomPixel(0,0);
     }
 
     ignoreHintClick(event) {
+
         this.ignoreMove.emit(event);
     }
 
     public zoomPixel(x,y) {
+
         this.zoom.selectedPixel.x = x;
         this.zoom.selectedPixel.y = y;
         this.zoomReadPixels(x, y, this.zoom.srcPixelRadius)
     }
 
     public zoomPixelShift(shiftX,shiftY) {
+
         this.zoom.selectedPixel.x += shiftX;
         this.zoom.selectedPixel.y += shiftY;
         this.zoomPixel(this.zoom.selectedPixel.x, this.zoom.selectedPixel.y)
     }
 
     selectColor() {
-        this.zoom.colorSelected = this.zoom.colorCenterPixel;
+
         let [r,g,b,a] = this.zoom.colorSelected;
+
+        this.zoom.colorSelected = this.zoom.colorCenterPixel;
         this.zoom.colorSelectedHex = this.zoom.colorCenterPixel;
         this.zoom.colorSelectedRgba = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a/255) + ')';
         this.zoom.colorSelectedHex = this.rgbaToHex(r,g,b,a);
@@ -72,15 +76,19 @@ export class ColorPickerComponent implements OnInit {
     }
 
     componentToHex(c) {
+
         let hex = c.toString(16);
+
         return hex.length == 1 ? "0" + hex : hex;
     }
 
     rgbaToHex(r, g, b, a) {
+
         return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b) + this.componentToHex(a);
     }
 
     rgbToHsl(r, g, b, a) {
+
         r /= 255, g /= 255, b /= 255, a /= 255;
 
         var max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -110,8 +118,10 @@ export class ColorPickerComponent implements OnInit {
     }
 
     initCanvasAndZoom() {
+
         let zoomedCanvas:any = document.createElement('canvas');
         let size = this.zoom.srcPixelRadius*2+1;
+
         zoomedCanvas.width = size;
         zoomedCanvas.height = size;
 
@@ -122,19 +132,22 @@ export class ColorPickerComponent implements OnInit {
     }
 
     zoomReadPixels(x,y, zoomPixelRadius) {
+
         if(!this.canvas) return;
+
         let pixelData = this.canvas.getContext('2d').getImageData(x -zoomPixelRadius-1, y - zoomPixelRadius*2, zoomPixelRadius*2 + 1, zoomPixelRadius*2 + 1); //.data;
+
         this.zoom.colorCenterPixel = this.zoomReadXYFromPixels(zoomPixelRadius,zoomPixelRadius,zoomPixelRadius,pixelData.data);
         this.zoom.zoomedCanvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
         this.zoom.zoomeDataUrl = this.zoom.zoomedCanvas.toDataURL('image/png');
     }
 
     zoomReadXYFromPixels(x,y,zoomPixelRadius, pixelData) {
+
         let size = zoomPixelRadius*2+1;
         let index  = 4* (x+ y*size);
+
         return [pixelData[index],pixelData[index+1], pixelData[index+2], pixelData[index+3]];
     }
-
-
 
 }

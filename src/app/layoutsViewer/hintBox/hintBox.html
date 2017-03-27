@@ -1,5 +1,5 @@
 <!--<div *ngIf="meta.boxEditor">-->
-<div *ngIf="hint.show && box">
+<div *ngIf="box" [hidden]="!hint.show">
 
     <!--LARGE-->
 
@@ -17,6 +17,7 @@
         <a [attr.id]="hint.link" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
             <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
+
         <div>
             Image name: <b>{{ imgItem.name }}</b><br />
             <br />
@@ -32,19 +33,20 @@
                 <b>I</b> <span class="explanation">: show/hide info box</span> <br />
                 <br/>
             </div>
-            Image Width x Height: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ imgItem.width }} x {{ imgItem.height }}</b></span> <br />
-            Screen Width x Height: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ screenWidth }} x {{ screenHeight }}</b></span> <br />
-            Image Left x Top: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ imgLeft }} x {{ imgTop }}</b></span> <br />
-            Mouse X x Y: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ mouseX }} x {{ mouseY }}</b></span> <br />
+            Image Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }} x {{ imgItem.height }}</b></span> <br />
+            Screen Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }} x {{ screenHeight }}</b></span> <br />
+            Image Left x Top: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgLeft }} x {{ imgTop }}</b></span> <br />
+            Mouse X x Y: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ mouseX }} x {{ mouseY }}</b></span> <br />
             <br/>
             Selection Box: <br />
-            Left x Top: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ box.left }} x {{ box.top }}</b></span>  <br />
-            Right x Bottom: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ box.right }} x {{ box.bottom }}</b></span> <br />
-            Width x Height: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ box.width }} x {{ box.height }}</b></span> <br />
+            Left x Top: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }} x {{ box.top }}</b></span>  <br />
+            Right x Bottom: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.right }} x {{ box.bottom }}</b></span> <br />
+            Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.width }} x {{ box.height }}</b></span> <br />
         </div>
         <br />
 
         <color-picker #colorPicker [canvas]="canvas" [small]="false" (ignoreMove)="ignoreMove($event)">{{ bindColorPicker(colorPicker) }}</color-picker>
+
     </div>
 
     <!--COMPACT-->
@@ -63,11 +65,13 @@
         <a [attr.id]="hint.linkSmall" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
             <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
-        img: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ imgItem.width }}x{{ imgItem.height }}</b>, (lt: <b>{{ imgLeft }}x{{ imgTop }}</b>)</span> <br />
-        screen: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ screenWidth }}x{{ screenHeight}}</b>, mouse: <b>{{ mouseX }}x{{ mouseY }}</b></span> <br />
-        box lt: <span (pointerdown)="ignoreMove(true)" class="t"><b>{{ box.left }}x{{ box.top }}</b>, rb: <b>{{ box.right }}x{{ box.bottom }}</b>,size: <b>{{ box.width }}x{{ box.height }}</b></span>
+
+        img: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }}x{{ imgItem.height }}</b>, (lt: <b>{{ imgLeft }}x{{ imgTop }}</b>)</span> <br />
+        screen: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }}x{{ screenHeight}}</b>, mouse: <b>{{ mouseX }}x{{ mouseY }}</b></span> <br />
+        box lt: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }}x{{ box.top }}</b>, rb: <b>{{ box.right }}x{{ box.bottom }}</b>,size: <b>{{ box.width }}x{{ box.height }}</b></span>
 
         <color-picker #colorPickerSmall  [canvas]="canvas" [small]="true" (ignoreMove)="ignoreMove($event)"> {{ bindColorPickerSmall(colorPickerSmall) }}</color-picker>
+
     </div>
 </div>
 
@@ -76,7 +80,6 @@
     .hint {
         position: absolute;
         background: hsla(73,50%,50%,0.75);
-        /*background: hsla(20,50%,50%,0.75);*/
         padding: 10px;
         cursor: move;
     }
@@ -87,7 +90,7 @@
         cursor: pointer;
     }
 
-    .t {
+    .textCursor {
         cursor: text;
     }
 

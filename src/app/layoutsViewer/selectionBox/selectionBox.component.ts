@@ -13,6 +13,7 @@ export class SelectionBoxComponent implements OnInit {
     @Output() pointermove: EventEmitter<any> = new EventEmitter();
 
     public box = {
+
         move: false,
         draw: false,
         moveLine: false,
@@ -50,43 +51,37 @@ export class SelectionBoxComponent implements OnInit {
 
     public ngOnInit() {}
 
-    // public showBox() {
-    //     this.box.isVisible = true;
-    // }
-    //
-    // public hideBox() {
-    //
-    //     this.box.isVisible = false;
-    //     this.box.l = -1;
-    //     this.box.r = -1;
-    //     this.box.t = -1;
-    //     this.box.b = -1;
-    //
-    // }
-
     public getBox() {
         return this.box;
     }
 
     // ---------- box -----------------
     public refreshBoxData() {
+
         this.box.width = Math.abs(this.box.l - this.box.r);
         this.box.height = Math.abs(this.box.t - this.box.b);
 
         this.box.inverse = 0;
         if (this.box.l < this.box.r) {
+
             this.box.left = this.box.l;
             this.box.right = this.box.r;
+
         } else {
+
             this.box.inverse++;
             this.box.left = this.box.r;
             this.box.right = this.box.l;
+
         }
 
         if (this.box.t < this.box.b) {
+
             this.box.bottom = this.box.b;
             this.box.top = this.box.t;
+
         } else {
+
             this.box.inverse++;
             this.box.bottom = this.box.t;
             this.box.top = this.box.b;
@@ -94,6 +89,7 @@ export class SelectionBoxComponent implements OnInit {
 
         // case when box is invisible
         if(this.box.l<0 && this.box.r<0 && this.box.t <0 && this.box.b<0) {
+
             this.box.left = 0;
             this.box.right = 0;
             this.box.bottom = 0;
@@ -102,6 +98,7 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public boxVertices() {
+
         let l = this.box.l;
         let r = this.box.r;
         let t = this.box.t;
@@ -113,6 +110,7 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public boxVerticesSvg() {
+
         let s = '';
         for (let v of this.boxVertices()) {
             s += v.x + ',' + v.y + ' ';
@@ -126,10 +124,12 @@ export class SelectionBoxComponent implements OnInit {
         if (this.box.draw) { this.boxDraw(event); }
         if (this.box.moveLine) { this.boxMoveLine(event); }
         if (this.box.moveVertex) { this.boxMoveVertex(event); }
+
         this.pointermove.emit(event);
     }
 
     public svgMouseMoveUp(event: any) {
+
         if (this.box.draw) { this.boxDrawStop(event); }
         if (this.box.moveLine) { this.boxMoveLineStop(event); }
     }
@@ -167,12 +167,14 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public boxDraw(event) {
+
         this.box.b = event.pageY;
         this.box.r = event.pageX;
         this.refreshBoxData();
     }
 
     public boxDrawStop(event) {
+
         this.box.draw = false;
 
 
@@ -190,9 +192,11 @@ export class SelectionBoxComponent implements OnInit {
     // --------- Box Move -----------
 
     public moveBoxStart(event) {
+
         this.box.move = true;
         this.box.moveStartMouseX = event.pageX - this.box.l;
         this.box.moveStartMouseY = event.pageY - this.box.t;
+
         this.pointerdown.emit(event);
         event.stopPropagation();
     }
@@ -202,7 +206,9 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public moveBox(event) {
+
         if (this.box.move ) {
+
             this.meta.lastAction = 'moveBox';
             let oldL = this.box.l;
             let oldT = this.box.t;
@@ -210,21 +216,25 @@ export class SelectionBoxComponent implements OnInit {
             this.box.t = event.pageY - this.box.moveStartMouseY;
             this.box.r += this.box.l - oldL;
             this.box.b += this.box.t - oldT;
+
             this.refreshBoxData();
         }
     }
 
     public arrowsBoxMove(shiftX, shiftY) {
+
         this.box.l += shiftX;
         this.box.t += shiftY;
         this.box.r += shiftX;
         this.box.b += shiftY;
+
         this.refreshBoxData();
     }
 
     public boxLineVertices() {
+
         let result = [];
-        let tmp = 0;
+
         let l = this.box.l;
         let r = this.box.r;
         let t = this.box.t;
@@ -259,7 +269,9 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public boxMoveLine(event) {
+
         let i = this.box.selectedLine;
+
         if (this.box.moveLine) {
 
             this.meta.lastAction = 'moveLine';
@@ -282,6 +294,7 @@ export class SelectionBoxComponent implements OnInit {
 
             this.refreshBoxData();
         }
+
         event.stopPropagation();
     }
 
@@ -290,7 +303,9 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public arrowsBoxEdgeMove(shiftX, shiftY) {
+
         let i = this.box.selectedLine;
+
         if (i === 0) { // top line
             this.box.t += shiftY;
         }
@@ -306,10 +321,12 @@ export class SelectionBoxComponent implements OnInit {
         if (i === 3) { // left line
             this.box.l += shiftX;
         }
+
         this.refreshBoxData();
     }
 
     // ------ move box vertex ------
+
     public boxMoveVertexStart(i,event) {
         this.box.selectedVertex = i;
         this.box.moveVertex = true;
@@ -317,7 +334,9 @@ export class SelectionBoxComponent implements OnInit {
     }
 
     public boxMoveVertex(event) {
+
         let i = this.box.selectedVertex;
+
         if (this.box.moveVertex) {
 
             this.meta.lastAction = 'moveVertex';
@@ -344,34 +363,39 @@ export class SelectionBoxComponent implements OnInit {
 
             this.refreshBoxData();
         }
+
         event.stopPropagation();
     }
 
     public boxMoveVertexStop(i,event) {
+
         this.box.moveVertex = false;
     }
 
     public arrowsBoxVertexMove(shiftX, shiftY) {
+
         let i = this.box.selectedVertex;
-        if (i === 0) { // top line
+
+        if (i === 0) {
             this.box.t += shiftY;
             this.box.l += shiftX;
         }
 
-        if (i === 1) { // right line
+        if (i === 1) {
             this.box.r += shiftX;
             this.box.t += shiftY;
         }
 
-        if (i === 2) { // bottom line
+        if (i === 2) {
             this.box.b += shiftY;
             this.box.r += shiftX;
         }
 
-        if (i === 3) { // left line
+        if (i === 3) {
             this.box.l += shiftX;
             this.box.b += shiftY;
         }
+
         this.refreshBoxData();
     }
 

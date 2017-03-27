@@ -26,21 +26,12 @@ export class LayoutsViewerComponent implements OnInit {
         mouseX: 0,
         mouseY: 0,
         canvas: null,
-
-        lastAction: null,
-
     };
 
     constructor(private _route: ActivatedRoute) {}
 
     bindBox(boxEditor) { this.meta.boxEditor = boxEditor }
     bindHintBox(hintBox) { this.meta.hintBox = hintBox }
-
-    // ignoreHintClick(event) {
-    //     console.log({event});
-    //     //this.meta.hint.ignoreInfoMove = event;
-    //
-    // }
 
     cutBoxAndDownload() {
 
@@ -108,40 +99,8 @@ export class LayoutsViewerComponent implements OnInit {
 
     public zoomPixel(x,y) {
         this.meta.hintBox.zoomPixel(x,y);
-        //this.meta.colorPicker.zoomPixel(x - this.meta.left, y - this.meta.top);
-        //this.meta.colorPickerSmall.zoomPixel(x - this.meta.left, y - this.meta.top);
     }
 
-
-    // public loadHintSettings() {
-    //     // let hint = this.meta.hintBox.getHint();
-    //     // let settings = Storage.get(this.keyHintSettings());
-    //     // if (!settings) { return; }
-    //     // hint.compact = settings.compact;
-    //     // hint.top = settings.top;
-    //     // hint.left = settings.left;
-    //     // this.resizeWindow(null);
-    //     // if (hint.left + 20 >= this.meta.windowWidth
-    //     //     || hint.top + 20 >= this.meta.windowHeight) {
-    //     //
-    //     //     hint.left = 0;
-    //     //     hint.top = 0;
-    //     // }
-    // }
-    //
-    // public keyHintSettings() {
-    //     return 'layoutsViewer.hint.settings';
-    // }
-    //
-    // public saveHintSettings() {
-    //     // let hint = this.meta.hintBox.getHint();
-    //     // let settings = {
-    //     //     compact: hint.compact,
-    //     //     top: hint.top,
-    //     //     left: hint.left,
-    //     // };
-    //     // Storage.set(this.keyHintSettings(), settings);
-    // }
 
     @HostListener('document:keydown', ['$event'])
     @HostListener('document:keyup', ['$event'])
@@ -224,9 +183,7 @@ export class LayoutsViewerComponent implements OnInit {
                 if (this.meta.top < 0) { this.meta.top = 0; }
                 if (this.meta.top > -sub) { this.meta.top = -sub; }
             }
-
         }
-        // event.preventDefault();
     }
 
     public centerPicture() {
