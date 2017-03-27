@@ -83,7 +83,7 @@ export class LayoutsViewerComponent implements OnInit {
 
         this.resizeWindow(null);
         setTimeout( () => {
-            this.initCanvas()
+            this.initCanvas();
         },1);
     }
 

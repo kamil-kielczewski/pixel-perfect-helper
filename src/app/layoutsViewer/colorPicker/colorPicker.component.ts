@@ -43,6 +43,7 @@ export class ColorPickerComponent implements OnInit {
 
     public ngOnInit() {
         this.initCanvasAndZoom();
+        this.zoomPixel(0,0);
     }
 
     ignoreHintClick(event) {
