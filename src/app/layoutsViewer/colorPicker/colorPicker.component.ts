@@ -22,8 +22,8 @@ export class ColorPickerComponent implements OnInit {
         colorCenterPixel: [0,0,0,255],
         colorSelected: [0,0,0,255],
         colorSelectedHex: '#000000ff',
-        colorSelectedRgba: 'rgba(0,0,0,1)',
-        colorSelectedHsla: 'hsl(0,0,0,1)',
+        colorSelectedRgba: 'rgba(0, 0, 0, 1)',
+        colorSelectedHsla: 'hsl(0, 0%, 0%, 1)',
         factor: 10,
         canvas: null,
         zoomedCanvas: null,
@@ -47,7 +47,6 @@ export class ColorPickerComponent implements OnInit {
 
     ignoreHintClick(event) {
         this.ignoreMove.emit(event);
-       //this.zoom.ignoreMove = true;
     }
 
     public zoomPixel(x,y) {

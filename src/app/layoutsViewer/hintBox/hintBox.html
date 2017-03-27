@@ -1,0 +1,92 @@
+<!--<div *ngIf="meta.boxEditor">-->
+<div *ngIf="hint.show && box">
+
+    <!--LARGE-->
+
+    <div [hidden]="!(hint.show && !hint.compact)"
+         [style.top]='hint.top  + "px"'
+         [style.left]='hint.left  + "px"'
+         style='width:280px; font-size: 12px;'
+         (mousedown)="moveHintStart($event)"
+         (pointermove)="moveHint($event)"
+         (mouseup)="moveHintStop($event)"
+         class="hint"
+    >
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="Compact mode"></i>
+        <a [attr.id]="hint.link" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
+            <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        </a>
+        <div>
+            Image name: <b>{{ imgItem.name }}</b><br />
+            <br />
+            <div style="color: #ffffff">
+                Draw box using mouse!<br />
+                <b>Click/Space</b> : select color<br />
+                <b>Double-click</b> : show info<br />
+                <b>Wheel</b> : vertical scroll<br />
+                +<b>Shift</b> : horizontal <br />
+                +<b>Alt</b> : per-pixel<br />
+                <b>Arrows</b> : move per-pixel box-edge-vertex,color <br />
+                <b>S</b> : crop to selection box and save image<br />
+                <br/>
+            </div>
+            Image Width x Height: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ imgItem.width }} x {{ imgItem.height }}</b></span> <br />
+            Screen Width x Height: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ screenWidth }} x {{ screenHeight }}</b></span> <br />
+            Image Left x Top: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ imgLeft }} x {{ imgTop }}</b></span> <br />
+            Mouse X x Y: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ mouseX }} x {{ mouseY }}</b></span> <br />
+            <br/>
+            Selection Box: <br />
+            Left x Top: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ box.left }} x {{ box.top }}</b></span>  <br />
+            Right x Bottom: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ box.right }} x {{ box.bottom }}</b></span> <br />
+            Width x Height: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ box.width }} x {{ box.height }}</b></span> <br />
+        </div>
+        <br />
+
+        <color-picker #colorPicker [canvas]="canvas" [small]="false" (ignoreMove)="ignoreMove($event)">{{ bindColorPicker(colorPicker) }}</color-picker>
+    </div>
+
+    <!--COMPACT-->
+
+    <div [hidden]="!(hint.show && hint.compact)"
+         [style.top]='hint.top  + "px"'
+         [style.left]='hint.left  + "px"'
+         style='width:220px; font-size:10px;'
+         (mousedown)="moveHintStart($event)"
+         (pointermove)="moveHint($event)"
+         (mouseup)="moveHintStop($event)"
+         class="hint"
+    >
+        <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="Show more help information"></i>
+        <a [attr.id]="hint.linkSmall" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
+            <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
+        </a>
+        img: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ imgItem.width }}x{{ imgItem.height }}</b>, (lt: <b>{{ imgLeft }}x{{ imgTop }}</b>)</span> <br />
+        screen: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ screenWidth }}x{{ screenHeight}}</b>, mouse: <b>{{ mouseX }}x{{ mouseY }}</b></span> <br />
+        box lt: <span (mousedown)="ignoreMove(true)" class="t"><b>{{ box.left }}x{{ box.top }}</b>, rb: <b>{{ box.right }}x{{ box.bottom }}</b>,size: <b>{{ box.width }}x{{ box.height }}</b></span>
+
+        <color-picker #colorPickerSmall  [canvas]="canvas" [small]="true" (ignoreMove)="ignoreMove($event)"> {{ bindColorPickerSmall(colorPickerSmall) }}</color-picker>
+    </div>
+</div>
+
+
+<style>
+    .hint {
+        position: absolute;
+        background: hsla(73,50%,50%,0.75);
+        /*background: hsla(20,50%,50%,0.75);*/
+        padding: 10px;
+        cursor: move;
+    }
+
+    .hintButton {
+        float: right;
+        color: black;
+        cursor: pointer;
+    }
+
+    .t {
+        cursor: text;
+    }
+</style>

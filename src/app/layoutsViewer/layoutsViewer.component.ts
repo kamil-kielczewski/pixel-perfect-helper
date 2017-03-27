@@ -14,8 +14,7 @@ export class LayoutsViewerComponent implements OnInit {
 
     public meta = {
         boxEditor: null,
-        colorPicker: null,
-        colorPickerSmall: null,
+        hintBox: null,
 
         top: 0,
         left: 0,
@@ -30,31 +29,21 @@ export class LayoutsViewerComponent implements OnInit {
 
         lastAction: null,
 
-        hint : {
-            compact: false,
-            top: 0,
-            left: 0,
-            show: true,
-            move: false,
-            moveStartMouseTop: 0,
-            moveStartMouseLeft: 0,
-        },
     };
 
     constructor(private _route: ActivatedRoute) {}
 
     bindBox(boxEditor) { this.meta.boxEditor = boxEditor }
-    bindColorPicker(colorPicker) { this.meta.colorPicker = colorPicker }
-    bindColorPickerSmall(colorPicker) { this.meta.colorPickerSmall = colorPicker }
+    bindHintBox(hintBox) { this.meta.hintBox = hintBox }
 
-    ignoreHintClick(event) {
-        console.log({event});
-        this.meta.hint.ignoreInfoMove = event;
+    // ignoreHintClick(event) {
+    //     console.log({event});
+    //     //this.meta.hint.ignoreInfoMove = event;
+    //
+    // }
 
-    }
+    cutBoxAndDownload() {
 
-    cutBoxAndDownload(small) {
-        console.log('xx');
         if(!this.meta.boxEditor.getBox().isVisible) return;
 
         let canvas: any = document.createElement('canvas');
@@ -62,14 +51,14 @@ export class LayoutsViewerComponent implements OnInit {
         let sizeY = this.meta.boxEditor.getBox().bottom - this.meta.boxEditor.getBox().top;
         canvas.width = sizeX;
         canvas.height = sizeY;
-        console.log('yy', sizeX, sizeY);
+
         let pixelData = this.meta.canvas.getContext('2d').getImageData(this.meta.boxEditor.getBox().left - this.meta.left, this.meta.boxEditor.getBox().top - this.meta.top, sizeX,sizeY); //.data;
         canvas.getContext('2d').putImageData(pixelData,0,0); // copy 1:1 pixels under mouse to canvas
-        let name = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
-        let link: any = document.getElementById( small ? "downloadBoxSelectionSmall" : "downloadBoxSelection" );
-        link.download = name;
-        link.href = canvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-        canvas=null;
+
+        let filename = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
+        let imgDataUrl = canvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+
+        this.meta.hintBox.saveImg(filename, imgDataUrl);
     }
 
     public getFileCounterNext() {
@@ -86,7 +75,6 @@ export class LayoutsViewerComponent implements OnInit {
         this._route.params.subscribe( (params) => {
             let key = 'layoutsManager.image.' + params['id'];
             this.imgItem = Storage.get(key);
-            this.loadHintSettings();
         });
 
         this.resizeWindow(null);
@@ -108,45 +96,48 @@ export class LayoutsViewerComponent implements OnInit {
 
 
     public updateMousePosition(event) {
-
         this.meta.mouseX = event.pageX;
         this.meta.mouseY = event.pageY;
         this.zoomPixel(event.pageX, event.pageY);
+        this.meta.hintBox.moveHint(event);
     }
 
     public zoomPixel(x,y) {
-        this.meta.colorPicker.zoomPixel(x - this.meta.left, y - this.meta.top);
-        this.meta.colorPickerSmall.zoomPixel(x - this.meta.left, y - this.meta.top);
+        this.meta.hintBox.zoomPixel(x,y);
+        //this.meta.colorPicker.zoomPixel(x - this.meta.left, y - this.meta.top);
+        //this.meta.colorPickerSmall.zoomPixel(x - this.meta.left, y - this.meta.top);
     }
 
 
-    public loadHintSettings() {
-        let settings = Storage.get(this.keyHintSettings());
-        if (!settings) { return; }
-        this.meta.hint.compact = settings.compact;
-        this.meta.hint.top = settings.top;
-        this.meta.hint.left = settings.left;
-        this.resizeWindow(null);
-        if (this.meta.hint.left + 20 >= this.meta.windowWidth
-            || this.meta.hint.top + 20 >= this.meta.windowHeight) {
-
-            this.meta.hint.left = 0;
-            this.meta.hint.top = 0;
-        }
-    }
-
-    public keyHintSettings() {
-        return 'layoutsViewer.hint.settings';
-    }
-
-    public saveHintSettings() {
-        let settings = {
-            compact: this.meta.hint.compact,
-            top: this.meta.hint.top,
-            left: this.meta.hint.left,
-        };
-        Storage.set(this.keyHintSettings(), settings);
-    }
+    // public loadHintSettings() {
+    //     // let hint = this.meta.hintBox.getHint();
+    //     // let settings = Storage.get(this.keyHintSettings());
+    //     // if (!settings) { return; }
+    //     // hint.compact = settings.compact;
+    //     // hint.top = settings.top;
+    //     // hint.left = settings.left;
+    //     // this.resizeWindow(null);
+    //     // if (hint.left + 20 >= this.meta.windowWidth
+    //     //     || hint.top + 20 >= this.meta.windowHeight) {
+    //     //
+    //     //     hint.left = 0;
+    //     //     hint.top = 0;
+    //     // }
+    // }
+    //
+    // public keyHintSettings() {
+    //     return 'layoutsViewer.hint.settings';
+    // }
+    //
+    // public saveHintSettings() {
+    //     // let hint = this.meta.hintBox.getHint();
+    //     // let settings = {
+    //     //     compact: hint.compact,
+    //     //     top: hint.top,
+    //     //     left: hint.left,
+    //     // };
+    //     // Storage.set(this.keyHintSettings(), settings);
+    // }
 
     @HostListener('document:keydown', ['$event'])
     @HostListener('document:keyup', ['$event'])
@@ -190,7 +181,7 @@ export class LayoutsViewerComponent implements OnInit {
 
             if (event.key === 's') {
                 if(!this.meta.boxEditor.getBox().isVisible) return;
-                document.getElementById("downloadBoxSelection").click(); // simulate click on download file link
+                this.meta.hintBox.saveImg();
                 event.preventDefault();
             }
         }
@@ -199,8 +190,9 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public selectColor() {
-        this.meta.colorPicker.selectColor();
-        this.meta.colorPickerSmall.selectColor();
+        this.meta.hintBox.selectColor();
+        //this.meta.colorPicker.selectColor();
+        //this.meta.colorPickerSmall.selectColor();
     }
 
     public handleMouseScrollEvents(event: WheelEvent) {
@@ -246,53 +238,20 @@ export class LayoutsViewerComponent implements OnInit {
         }
     }
 
-    public toggleCompactHint() {
-        this.meta.hint.compact = !this.meta.hint.compact;
-        this.saveHintSettings();
-    }
+    public moveHint($event) {
 
-    public closeHint() {
-        this.meta.hint.show = false;
-    }
-
-    public showHintOrHideBox() {
-
-        this.meta.hint.show = true;
     }
 
     public sign(x) {
         return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : x === x ? 0 : NaN : NaN;
     }
 
-    // ---------- move hint -----------------
-    public moveHintStart(event: any) {
-        if(this.meta.hint.ignoreInfoMove) return;
-        this.meta.hint.move = true;
-        this.meta.hint.moveStartMouseTop = event.screenY - this.meta.hint.top;
-        this.meta.hint.moveStartMouseLeft = event.screenX - this.meta.hint.left;
-    }
-
-    public moveHintStop(event) {
-        this.meta.hint.move = false;
-        this.saveHintSettings();
-    }
-
-    public moveHint(event) {
-        if (this.meta.hint.move) {
-            this.meta.hint.top = event.screenY - this.meta.hint.moveStartMouseTop;
-            this.meta.hint.left = event.screenX - this.meta.hint.moveStartMouseLeft;
-        }
-    }
-
     // ---------- box -----------------
 
     public arrowsManipulate(x, y) {
         this.meta.boxEditor.arrowsManipulate(x,y);
-        this.arrowsColorMove(x,y);
+        this.meta.hintBox.arrowsColorMove(x,y);
     }
 
-    public arrowsColorMove(shiftX, shiftY) {
-        this.meta.colorPicker.zoomPixelShift(shiftX, shiftY);
-        this.meta.colorPickerSmall.zoomPixelShift(shiftX, shiftY);
-    }
+
 }

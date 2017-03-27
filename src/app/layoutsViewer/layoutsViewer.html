@@ -15,79 +15,30 @@
          id="layoutImage"
     />
 
-    <selection-box #boxEditor [width]="meta.windowWidth " [height]="meta.windowHeight" (pointerdown)="selectColor()" (pointermove)="moveHint($event)" > {{ bindBox(boxEditor) }}</selection-box>
+    <selection-box #boxEditor
+                   [width]="meta.windowWidth "
+                   [height]="meta.windowHeight"
+                   (pointerdown)="selectColor()"
+                   (pointermove)="moveHint($event)"
+    >
+        {{ bindBox(boxEditor) }}
+    </selection-box>
 
-    <div *ngIf="meta.boxEditor">
-
-        <!--LARGE-->
-
-        <div [hidden]="!(meta.hint.show && !meta.hint.compact)"
-             [style.top]='meta.hint.top  + "px"'
-             [style.left]='meta.hint.left  + "px"'
-             style='width:280px; font-size: 12px;'
-             (mousedown)="moveHintStart($event)"
-             (pointermove)="moveHint($event)"
-             (mouseup)="moveHintStop($event)"
-             class="hint"
-        >
-            <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
-            <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="Compact mode"></i>
-            <a id="downloadBoxSelection" download="image.png" (click)="cutBoxAndDownload(false)" title="Cut image to selection box and save it">
-                <i *ngIf="meta.boxEditor.getBox().isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
-            </a>
-            <div>
-                Image name: <b>{{ imgItem.name }}</b><br />
-                <br />
-                <div style="color: #ffffff">
-                    Draw box using mouse!<br />
-                    <b>Click/Space</b> : select color<br />
-                    <b>Double-click</b> : show info<br />
-                    <b>Wheel</b> : vertical scroll<br />
-                    +<b>Shift</b> : horizontal <br />
-                    +<b>Alt</b> : per-pixel<br />
-                    <b>Arrows</b> : move per-pixel box-edge-vertex,color <br />
-                    <b>S</b> : crop to selection box and save image<br />
-                    <br/>
-                </div>
-            Image Width x Height: <b>{{ imgItem.width }} x {{ imgItem.height }}</b><br />
-            Screen Width x Height: <b>{{ this.meta.windowWidth }} x {{ this.meta.windowHeight }}</b><br />
-            Image Left x Top: <b>{{ meta.left }} x {{ meta.top }}</b> <br />
-            Mouse X x Y: <b>{{ meta.mouseX }} x {{ meta.mouseY }}</b> <br />
-            <br/>
-            Selection Box: <br />
-            Left x Top: <b>{{ meta.boxEditor.getBox().left }} x {{ meta.boxEditor.getBox().top }}</b>  <br />
-            Right x Bottom: <b>{{ meta.boxEditor.getBox().right }} x {{ meta.boxEditor.getBox().bottom }}</b> <br />
-            Width x Height: <b>{{ meta.boxEditor.getBox().width }} x {{ meta.boxEditor.getBox().height }}</b> <br />
-            </div>
-            <br />
-            
-            <color-picker #colorPicker [canvas]="meta.canvas" [small]="false" (ignoreMove)="ignoreHintClick($event)">{{ bindColorPicker(colorPicker) }}</color-picker>
-        </div>
-
-        <!--COMPACT-->
-
-        <div [hidden]="!(meta.hint.show && meta.hint.compact)"
-             [style.top]='meta.hint.top  + "px"'
-             [style.left]='meta.hint.left  + "px"'
-             style='width:220px; font-size:10px;'
-             (mousedown)="moveHintStart($event)"
-             (pointermove)="moveHint($event)"
-             (mouseup)="moveHintStop($event)"
-             class="hint"
-        >
-            <i (click)="closeHint()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
-            <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="Show more help information"></i>
-            <a id="downloadBoxSelectionSmall" download="image.png" (click)="cutBoxAndDownload(true)" title="Cut image to selection box and save it">
-                <i *ngIf="meta.boxEditor.getBox().isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
-            </a>
-            <b>img</b> {{ imgItem.width }}x{{ imgItem.height }}, (<b>lt</b> {{ meta.left }}x{{ meta.top }}) <br />
-            <b>screen</b> {{ this.meta.windowWidth }}x{{ this.meta.windowHeight }}, <b>mouse</b> {{ meta.mouseX }}x{{ meta.mouseY }} <br />
-            <b>box: lt</b> {{ meta.boxEditor.getBox().left }}x{{ meta.boxEditor.getBox().top }}, <b>rb</b> {{ meta.boxEditor.getBox().right }}x{{ meta.boxEditor.getBox().bottom }}, <b>size</b> {{ meta.boxEditor.getBox().width }}x{{ meta.boxEditor.getBox().height }}
-
-            <color-picker #colorPickerSmall  [canvas]="meta.canvas" [small]="true" (ignoreMove)="ignoreHintClick($event)"> {{ bindColorPickerSmall(colorPickerSmall) }}</color-picker>
-        </div>
-    </div>
-
+    <hint-box #hintBox
+              *ngIf="meta.boxEditor"
+              [canvas]="meta.canvas"
+              [box]="meta.boxEditor.getBox()"
+              [imgItem]="imgItem"
+              [imgLeft]="meta.left"
+              [imgTop]="meta.top"
+              [mouseX]="meta.mouseX"
+              [mouseY]="meta.mouseY"
+              [screenWidth]="meta.windowWidth"
+              [screenHeight]="meta.windowHeight"
+              (saveCutImg)="cutBoxAndDownload()"
+    >
+        {{ bindHintBox(hintBox) }}
+    </hint-box>
 </div>
 
 <style>
@@ -102,20 +53,6 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .hint {
-        position: absolute;
-        background: hsla(73,50%,50%,0.75);
-        /*background: hsla(20,50%,50%,0.75);*/
-        padding: 10px;
-        cursor: move;
-    }
-
-    .hintButton {
-        float: right;
-        color: black;
-        cursor: pointer;
     }
 
 </style>

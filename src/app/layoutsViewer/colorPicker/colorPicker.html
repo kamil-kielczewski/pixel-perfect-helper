@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="!small" (mousedown)="ignoreHintClick(true)" (mouseup)="ignoreHintClick(false)">
+    <div *ngIf="!small" (mouseup)="ignoreHintClick(false)">
         <div style="float: left; width: 80px; height: 80px;">
             <img src="{{ zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
                  [style.width]="((zoom.srcPixelRadius*2 + 1)* zoom.factor)+'px'"
@@ -18,14 +18,14 @@
 
         </div>
 
-        <div style="font-size:12px; cursor: text">
-            <span style="margin-left:10px">{{ zoom.colorSelectedHex }}</span><br/>
-            <span style="margin-left:10px">{{ zoom.colorSelectedRgba }}</span><br/>
-            <span style="margin-left:10px; font-size: 10px;">{{ zoom.colorSelectedHsla }}</span>
+        <div style="font-size:12px;">
+            <span (mousedown)="ignoreHintClick(true)" class="colorVal" >{{ zoom.colorSelectedHex }}</span><br/>
+            <span (mousedown)="ignoreHintClick(true)" class="colorVal" >{{ zoom.colorSelectedRgba }}</span><br/>
+            <span (mousedown)="ignoreHintClick(true)" class="colorVal" style="font-size: 10px;">{{ zoom.colorSelectedHsla }}</span>
         </div>
     </div>
 
-    <div *ngIf="small" (mousedown)="ignoreHintClick(true)" (mouseup)="ignoreHintClick(false)" style="margin-top:3px;">
+    <div *ngIf="small" (mouseup)="ignoreHintClick(false)" style="margin-top:3px;">
         <div style="float: left; width: 40px; height: 40px;">
             <img src="{{ zoom.zoomeDataUrl }}" style="border: solid 1px #ffffff; background: white;  image-rendering: pixelated;"
                  [style.width]="((zoom.srcPixelRadius*2 + 1)* zoom.factor/2)+'px'"
@@ -44,10 +44,10 @@
 
         </div>
 
-        <div style="font-size:10px; cursor: text">
-            <span style="margin-left:5px">{{ zoom.colorSelectedHex }}</span><br/>
-            <span style="margin-left:5px">{{ zoom.colorSelectedRgba }}</span><br/>
-            <span style="margin-left:5px">{{ zoom.colorSelectedHsla }}</span>
+        <div style="font-size:10px;">
+            <span (mousedown)="ignoreHintClick(true)" class="colorValSmall">{{ zoom.colorSelectedHex }}</span><br/>
+            <span (mousedown)="ignoreHintClick(true)" class="colorValSmall">{{ zoom.colorSelectedRgba }}</span><br/>
+            <span (mousedown)="ignoreHintClick(true)" class="colorValSmall">{{ zoom.colorSelectedHsla }}</span>
         </div>
     </div>
 
@@ -72,5 +72,15 @@
         font-weight: bold;
         line-height: 5px;
         border: solid 1px white;
+    }
+
+    .colorVal {
+        cursor: text;
+        margin-left: 10px;
+    }
+
+    .colorValSmall {
+        cursor: text;
+        margin-left: 5px;
     }
 </style>

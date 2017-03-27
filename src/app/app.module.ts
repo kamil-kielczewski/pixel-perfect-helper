@@ -35,6 +35,7 @@ import { LayoutsManagerComponent } from './layoutsManager/layoutsManager.compone
 import { LayoutsViewerComponent } from './layoutsViewer/layoutsViewer.component';
 import { SelectionBoxComponent } from "./layoutsViewer/selectionBox/selectionBox.component";
 import { ColorPickerComponent } from "./layoutsViewer/colorPicker/colorPicker.component";
+import { HintBoxComponent } from "./layoutsViewer/hintBox/hintBox.component";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -59,6 +60,7 @@ type StoreType = {
         LayoutsViewerComponent,
         SelectionBoxComponent,
         ColorPickerComponent,
+        HintBoxComponent,
         AboutComponent,
         HomeComponent,
         NoContentComponent,

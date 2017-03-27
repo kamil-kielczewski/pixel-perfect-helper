@@ -24,7 +24,7 @@ export class SelectionBoxComponent implements OnInit {
         r: -1,
         b: -1,
 
-        inverse: 0,
+        inverse: 0, // for corner cursor arrows proper direction
 
         moveStartMouseX: 0,
         moveStartMouseY: 0,
@@ -90,6 +90,14 @@ export class SelectionBoxComponent implements OnInit {
             this.box.inverse++;
             this.box.bottom = this.box.t;
             this.box.top = this.box.b;
+        }
+
+        // case when box is invisible
+        if(this.box.l<0 && this.box.r<0 && this.box.t <0 && this.box.b<0) {
+            this.box.left = 0;
+            this.box.right = 0;
+            this.box.bottom = 0;
+            this.box.top = 0;
         }
     }
 
