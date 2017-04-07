@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '../common';
+import { LayoutService } from "../layoutsManager/layout.service";
 
 // TODO color picker http://stackoverflow.com/...
 //   .../questions/8751020/how-to-get-a-pixels-x-y-coordinate-color-from-an-image
@@ -8,6 +9,7 @@ import { Storage } from '../common';
 @Component({
     selector: 'layouts-viewer',
     templateUrl: './layoutsViewer.html',
+    providers: [ LayoutService ],
 })
 export class LayoutsViewerComponent implements OnInit {
     public imgItem = null;
@@ -28,7 +30,25 @@ export class LayoutsViewerComponent implements OnInit {
         canvas: null,
     };
 
-    constructor(private _route: ActivatedRoute) {}
+    constructor(private _route: ActivatedRoute, private _layoutService: LayoutService) {}
+
+    public ngOnInit() {
+        this._route.params.subscribe( (params) => {
+            this._layoutService.loadPicture(params['id']).subscribe( (imgItem) => {
+                this.imgItem = imgItem
+                this.resizeWindow(null);
+                setTimeout( () => {
+                    this.initCanvas();
+                }, 1);
+            } );
+
+
+            // let key = 'layoutsManager.image.' + params['id'];
+            // this.imgItem = Storage.get(key);
+        });
+
+
+    }
 
     public bindBox(boxEditor) { this.meta.boxEditor = boxEditor; }
     public bindHintBox(hintBox) { this.meta.hintBox = hintBox; }
@@ -53,42 +73,18 @@ export class LayoutsViewerComponent implements OnInit {
         // copy 1:1 pixels under mouse to canvas
         canvas.getContext('2d').putImageData(pixelData, 0, 0);
 
-        let filename = this.imgItem.name + '_' + this.getFileCounterNext() + '.png';
-        let imgDataUrl = canvas.toDataURL('image/png').replace(/^data:image\/[^;]/,
-            'data:application/octet-stream'
-        );
+        this._layoutService.getAndIncLayoutViewerCropFileCounter(this.imgItem.id).subscribe( (counter) => {
+            let filename = this.imgItem.name + '_' + counter + '.png';
+            let imgDataUrl = canvas.toDataURL('image/png').replace(/^data:image\/[^;]/,
+                'data:application/octet-stream'
+            );
 
-        this.meta.hintBox.saveImg(filename, imgDataUrl);
-    }
-
-    public getFileCounterNext() {
-
-        let counterKey = 'layoutsViewer.crop_file_counter.' + this.imgItem.key ;
-        let counter = Storage.get(counterKey);
-
-        if (!counter) { counter = 0; }
-
-        counter++;
-
-        Storage.set(counterKey, counter);
-
-        return counter;
+            this.meta.hintBox.saveImg(filename, imgDataUrl);
+        } );
     }
 
     public showHintBox() {
         this.meta.hintBox.open();
-    }
-
-    public ngOnInit() {
-        this._route.params.subscribe( (params) => {
-            let key = 'layoutsManager.image.' + params['id'];
-            this.imgItem = Storage.get(key);
-        });
-
-        this.resizeWindow(null);
-        setTimeout( () => {
-            this.initCanvas();
-        }, 1);
     }
 
     public initCanvas() {

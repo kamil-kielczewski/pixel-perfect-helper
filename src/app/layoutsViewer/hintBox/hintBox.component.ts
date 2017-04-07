@@ -1,10 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '../../common';
+import { LayoutService } from "../../layoutsManager/layout.service";
 
 @Component({
     selector: 'hint-box',
     templateUrl: './hintBox.html',
+    providers: [ LayoutService ],
 })
 export class HintBoxComponent implements OnInit {
 
@@ -41,7 +43,7 @@ export class HintBoxComponent implements OnInit {
 
     };
 
-    constructor(private _route: ActivatedRoute) {}
+    constructor(private _route: ActivatedRoute, private _layoutService: LayoutService) {}
 
     public ngOnInit() {
         this.loadHintSettings();
@@ -96,29 +98,23 @@ export class HintBoxComponent implements OnInit {
     // ----- hint setting ------
 
     public loadHintSettings() {
+        this._layoutService.loadLayoutViewerSettings().subscribe( settings => {
+            if (!settings) { return; }
 
-        let settings = Storage.get(this.keyHintSettings());
+            this.hint.compact = settings.compact;
+            this.hint.top = settings.top;
+            this.hint.left = settings.left;
 
-        if (!settings) { return; }
-
-        this.hint.compact = settings.compact;
-        this.hint.top = settings.top;
-        this.hint.left = settings.left;
-
-        if (this.hint.left + 220 >= this.screenWidth
-            || this.hint.top + 20 >= this.screenHeight
-            || this.hint.left < 0 || this.hint.top < 0
-        ) {
-            this.hint.left = 0;
-            this.hint.top = 0;
-        }
+            if (this.hint.left + 220 >= this.screenWidth
+                || this.hint.top + 20 >= this.screenHeight
+                || this.hint.left < 0 || this.hint.top < 0
+            ) {
+                this.hint.left = 0;
+                this.hint.top = 0;
+            }
+        });
     }
-
-    public keyHintSettings() {
-
-        return 'layoutsViewer.hint.settings';
-    }
-
+    
     public ignoreMove(event) {
 
         this.hint.ignoreMove = event;
@@ -132,7 +128,7 @@ export class HintBoxComponent implements OnInit {
             left: this.hint.left,
         };
 
-        Storage.set(this.keyHintSettings(), settings);
+        this._layoutService.saveLayoutViewerSettings(settings).subscribe(()=>{});
     }
 
     // ---------- move hint -----------------

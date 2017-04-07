@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage, Url } from '../common';
 import { Router } from '@angular/router';
+import { LayoutService } from "./layout.service";
 
 @Component({
     selector: 'layouts-manager',
-    templateUrl: './layoutsManager.html'
+    templateUrl: './layoutsManager.html',
+    providers: [ LayoutService ],
 })
 export class LayoutsManagerComponent implements OnInit {
     public meta = {
@@ -15,21 +17,26 @@ export class LayoutsManagerComponent implements OnInit {
         list: [],
     };
 
-    constructor(private _router: Router) {}
+    constructor(private _router: Router, private _layoutService: LayoutService) {}
 
     public ngOnInit() {
         this.dataReload();
+        this._layoutService.getTest(9,8).subscribe( (d) => { console.log('d:',d) });
+        this._layoutService.getTest(1,2).subscribe( (d) => { console.log('d:',d) });
     }
 
     public dataReload() {
-        this.meta.list = [];
-        for (let key of Storage.getKeys('layoutsManager.image.')) {
-            this.meta.list.push(Storage.get(key));
-        }
+        this._layoutService.getImagesIdList().subscribe( (ids) => {
+            this.meta.list = [];
+            this._layoutService.loadPictures(ids).subscribe( (data) => {
+                this.meta.list = data;
+            });
+        });
     }
 
     public downloadFile(url) {
-        this.loadImgAsBase64(url);
+        //this.loadImgAsBase64(url);
+
     }
 
     public loadImgAsBase64(url) {
@@ -37,7 +44,8 @@ export class LayoutsManagerComponent implements OnInit {
         let canvas: any = document.createElement('CANVAS');
         let img = document.createElement('img');
         img.setAttribute('crossorigin', 'anonymous');
-        img.src = 'https://crossorigin.me/' + url;
+        //img.src = 'https://crossorigin.me/' + url;
+        img.src = url;
 
         img.onload = () => {
             setTimeout( () => {
@@ -72,23 +80,31 @@ export class LayoutsManagerComponent implements OnInit {
 
     public savePicToStorage(name, image, width, height) {
         // let image = e.target.result;
-        let index =  this.meta.list.length;
-        let counter = Storage.get('layoutsManager.imageCounter');
-        counter = (counter ? counter : 0) + 1;
-        console.log(counter);
-        Storage.set('layoutsManager.imageCounter', counter);
-        let key = 'layoutsManager.image.' + counter;
-
-        Storage.set(key , {
-            id : counter,
-            key,
-            image,
-            width,
-            height,
-            name,
+        this._layoutService.savePictureFile(name, image, width, height).subscribe( () => {
+            this.dataReload();
         });
-        this.dataReload();
+
     }
+
+    // public savePicToStorage(name, image, width, height) {
+    //     // let image = e.target.result;
+    //     let index =  this.meta.list.length;
+    //     let counter = Storage.get('layoutsManager.imageCounter');
+    //     counter = (counter ? counter : 0) + 1;
+    //     console.log(counter);
+    //     Storage.set('layoutsManager.imageCounter', counter);
+    //     let key = 'layoutsManager.image.' + counter;
+    //
+    //     Storage.set(key , {
+    //         id : counter,
+    //         key,
+    //         image,
+    //         width,
+    //         height,
+    //         name,
+    //     });
+    //     this.dataReload();
+    // }
 
     public remove(item) {
         this.meta.selectedImage = null;
