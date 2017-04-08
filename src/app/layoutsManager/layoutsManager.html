@@ -1,6 +1,12 @@
 <div>
     <h1 x-large class="sample-content">Wyświetlarka obrazków (localstorage)</h1>
 
+    <div *ngIf="meta.notification.show" class="notification">
+        <div style="overflow-y: auto;">{{ meta.notification.msg }}</div>
+
+        <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok">OK</button></div>
+    </div>
+
     <div>
         <div><input type="file" (change)="onImport($event)"  #file/></div>
         <div>
@@ -10,18 +16,19 @@
     </div>
 
     <div style="height:220px; margin-top:20px;">
+        <i *ngIf="meta.loading" class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
         <img *ngIf="meta.selectedImage" src="{{ meta.selectedImage.imgDataURI }}" style="max-height:200px;"/>
         <!--<img  src="https://static.pexels.com/photos/87293/pexels-photo-87293.jpeg" style="max-height:200px;"/>-->
         <!--<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />-->
     </div>
 
     <div>
-        <ul>
+        <div>Free space: {{ formatedFreeSpace() }} (space is used only by items with no link)</div>
             <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
-            <table>
+            <table class="image-table">
                 <thead>
                     <tr>
-                        <td>Id</td>
+                        <td style="width: 40px;">Id</td>
                         <td>Name</td>
                         <td>Actions</td>
                     </tr>
@@ -31,14 +38,17 @@
                         <td>{{ item.id }}</td>
                         <td>
                             <div *ngIf="!meta.editItem || meta.editItem.id != item.id ">
-                                <a (click)="show(item)" class="itemView">{{ item.name }}</a>
+                                <div><a (click)="show(item)" class="itemView">{{ item.name }}</a></div>
+                                <div *ngIf="item.url" class="item-url">{{ item.url }}</div>
                             </div>
                             <div *ngIf="meta.editItem && meta.editItem.id == item.id ">
-                                <input type="text" [(ngModel)]="meta.editItem.name" style="width:100%"/>
+                                <input type="text" [(ngModel)]="meta.editItem.name" style="width:90%"/>
                             </div>
+
                         </td>
                         <td>
                             <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
+                                <button (click)="show(item)"><i (click)='select(item)' class="fa fa-scissors" aria-hidden="true"> Edit </i></button>
                                 <button (click)="editItem(item)"><i (click)='select(item)' class="fa fa-pencil" aria-hidden="true"> Edit name</i></button>
                                 <button><i (click)='select(item)' class="fa fa-eye" aria-hidden="true"> Preview</i></button>
                                 <button><i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"> Delete</i></button>
@@ -57,15 +67,57 @@
                 <!--<i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>-->
             <!--</li>-->
             </table>
-        </ul>
-    </div>
-</div>
-<style>
-    .itemView {
-        cursor:pointer
-    }
 
-    .itemView:hover {
-        text-decoration: underline;
-    }
-</style>
+    </div>
+
+    <style>
+        .itemView {
+            cursor:pointer
+        }
+
+        .item-url {
+            font-size:10px;
+            color: gray;
+        }
+
+        .itemView:hover {
+            text-decoration: underline;
+        }
+
+        .notification {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            width: 500px;
+
+            background: #fdffc4;
+            border: 1px solid gray;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .notification-button-ok {
+            right: 0;
+        }
+
+        table {
+            margin: 0 auto;
+            margin-top:20px;
+            border-spacing: 0;
+        }
+
+        thead > tr > td {
+            border-bottom: 1px solid gray;
+        }
+
+        tbody > tr > td {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+
+    </style>
+
+</div>

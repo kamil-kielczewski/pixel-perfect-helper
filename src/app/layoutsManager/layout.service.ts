@@ -15,54 +15,7 @@ export class LayoutService {
 
     private keyPrefix = 'Airavana.HtmlCuttingHelper.v1.';
 
-    savePicture(url) {
-        // TODO
-    }
-
-    savePictureFile(name, imgDataURI, width, height) {
-        return this.genObservable( [name, imgDataURI, width, height], (name, imgDataURI, width, height) => {
-            let keyCounter = this.imgCounterKey();
-            let counter = Storage.get(keyCounter);
-            counter = (counter ? counter : 0) + 1;
-
-            Storage.set(keyCounter, counter);
-            let key = this.imgKey() + counter;
-
-            Storage.set(key , {
-                id : counter,
-                key,
-                url: null,
-                imgDataURI,
-                width,
-                height,
-                name,
-            });
-        });
-    }
-
-    savePictureLink(name, url, width, height) {
-        return this.genObservable( [name, url, width, height], (name, url, width, height) => {
-            let keyCounter = this.imgCounterKey();
-            let counter = Storage.get(keyCounter);
-            counter = (counter ? counter : 0) + 1;
-
-            Storage.set(keyCounter, counter);
-            let key = this.imgKey() + counter;
-
-            Storage.set(key , {
-                id : counter,
-                key,
-                url: null,
-                imgDataURI: null,
-                width,
-                height,
-                name,
-            });
-        });
-    }
-
     loadPictures(ids) {
-        console.log({ids});
         return this.genObservable( [ids], (ids) => {
             if(!ids) return [];
             let key = this.imgKey();
@@ -71,6 +24,34 @@ export class LayoutService {
                 result.push(Storage.get(key + id));
             }
             return result;
+        });
+    }
+
+    getFreeSpace() {
+        return this.genObservable( [], () => {
+            return 1024*1024*5 - Storage.getSize();
+        });
+
+    }
+
+    updatePicture(picture) {
+        //if(pictrue)
+        return this.genObservable( [picture], (picture) => {
+            let tmp = picture.imgDataURI;
+
+            if(picture.urlOnly) { // case when we nat not save picture data
+                picture.imgDataURI = null;
+            }
+
+            Storage.set(picture.key, picture);
+
+            picture.imgDataURI = tmp;
+        });
+    }
+
+    delPicture(imgId) {
+        return this.genObservable( [imgId], (imgId) => {
+            Storage.remove(this.imgKey() + imgId);
         });
     }
 
@@ -91,10 +72,9 @@ export class LayoutService {
     getImagesIdList() {
         return this.genObservable( [], () => {
             let result = [];
-            let keyCounter = this.imgCounterKey();
+
             for (let key of Storage.getKeys(this.imgKey())) {
                 result.push(+/\.(\d+)/g.exec(key)[1]);
-                //Storage.get(key);
             }
 
             return result;
@@ -126,12 +106,101 @@ export class LayoutService {
         });
     }
 
+    public loadImgAsBase64(link) {
 
-    getTest(y, z) {
-        return this.genObservable( [y,z],(y,z) => {
-            return y*z;
+        return Observable.create((observer) => {
+            let canvas: any = document.createElement('CANVAS');
+            let img = document.createElement('img');
+            img.setAttribute('crossorigin', 'anonymous');
+            //img.src = 'https://crossorigin.me/' + url;
+            img.src = link;
+
+            img.onload = () => {
+                setTimeout( () => {
+                    let width = img.width;
+                    let height = img.height;
+                    canvas.height = height;
+                    canvas.width = width;
+                    let context = canvas.getContext('2d');
+                    context.drawImage(img, 0, 0);
+
+                    let imgDataURI = canvas.toDataURL('image/png');
+                    canvas = null;
+                    img = null;
+
+                    observer.next({ imgDataURI, width, height });
+                    observer.complete();
+                }, 1);
+            };
+
+            img.onerror = (err) => {
+                console.log('eeeeerrr',err)
+                observer.error(err);
+            };
+
+            return function () {  } // you can put coda that will execute after subscription
+        });
+
+    }
+
+    savePictureLink(name, url) {
+        return Observable.create((observer) => {
+            this.loadImgAsBase64(url).subscribe((image)=>{
+                let keyCounter = this.imgCounterKey();
+                let counter = Storage.get(keyCounter);
+                counter = (counter ? counter : 0) + 1;
+
+                Storage.set(keyCounter, counter);
+                let key = this.imgKey() + counter;
+
+                Storage.set(key , {
+                    id : counter,
+                    key,
+                    url,
+                    imgDataURI: null,
+                    width: image.width,
+                    height: image.height,
+                    name,
+                    urlOnly: true, // not save imgDataURI
+                });
+
+                observer.next();
+                observer.complete();
+            }, (err) => {
+                observer.error(err);
+            });
         });
     }
+
+    savePictureFile(name, imgDataURI, width, height) {
+        return Observable.create((observer) => {
+            let keyCounter = this.imgCounterKey();
+            let counter = Storage.get(keyCounter);
+            counter = (counter ? counter : 0) + 1;
+
+            try {
+                Storage.set(keyCounter, counter);
+                let key = this.imgKey() + counter;
+
+                Storage.set(key , {
+                    id : counter,
+                    key,
+                    url: null,
+                    imgDataURI,
+                    width,
+                    height,
+                    name,
+                    urlOnly: false, // not save imgDataURI
+                });
+            } catch (err) {
+                observer.error(err);
+            }
+        });
+        // return this.genObservable( [name, imgDataURI, width, height], (name, imgDataURI, width, height) => {
+        //
+        // });
+    }
+
 
     genObservable(params, func) {
         return Observable.create((observer) => {
@@ -140,13 +209,5 @@ export class LayoutService {
             return function () {  } // you can put coda that will execute after subscription
         });
     }
-
-    // getEmployeesPresentNumber() {
-    //     return this.http.get(Url.api('employees/presentNumber'))
-    //         .map(res => res.json())
-    //         .map(data => {
-    //             return new PresentNumber(data['number'], data.date);
-    //         });
-    // }
 
 }

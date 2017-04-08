@@ -12,6 +12,11 @@ export class Storage {
         return null;
     }
 
+    public static getSize() {
+        return unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
+        //return key.length*16 + window.localStorage[key].length*16;
+    }
+
     public static has(key: string) {
         return !!window.localStorage[ key ];
     }

@@ -10,56 +10,70 @@ import { LayoutService } from "./layout.service";
 })
 export class LayoutsManagerComponent implements OnInit {
     public meta = {
+        loading: false,
         editItemNameMode: null,
         selectedImage: null,
         pictureUrl : null,
         editItem: null,
         list: [],
+        freeSpace: 0,
+
+        notification: {
+            show: false,
+            msg: '',
+        }
     };
 
     constructor(private _router: Router, private _layoutService: LayoutService) {}
 
     public ngOnInit() {
         this.dataReload();
-        this._layoutService.getTest(9,8).subscribe( (d) => { console.log('d:',d) });
-        this._layoutService.getTest(1,2).subscribe( (d) => { console.log('d:',d) });
+    }
+
+    formatedFreeSpace() {
+        return Math.ceil(this.meta.freeSpace/1024) + ' KB'
     }
 
     public dataReload() {
         this._layoutService.getImagesIdList().subscribe( (ids) => {
             this.meta.list = [];
             this._layoutService.loadPictures(ids).subscribe( (data) => {
-                this.meta.list = data;
+                this.meta.list = data.sort( (a,b) => { return b.id - a.id });
             });
+
+            this._layoutService.getFreeSpace().subscribe( (amout) => { this.meta.freeSpace = amout} );
         });
     }
 
     public downloadFile(url) {
+        let name = url;
+        try
+        {
+            name = /.*\/([^?]+)/.exec(url)[ 1 ]; // extract filename rom url (last part without parameters)
+        } catch (e) {}
+
+        this._layoutService.savePictureLink(name, url).subscribe( () => { this.dataReload() }, (err) => {
+            console.log(err);
+            this.meta.notification.show = true;
+            this.meta.notification.msg = 'The image url is broken or the server don\'t give access to cors origin reference. ' +
+                'Try download image and upload it here from local file. You can also provide alternative link to this image ' +
+                'by upload image to different server which allow cors origin e.g http://imgur.com/. You can also use some proxy which allow cors ' +
+                'origin - e.g. try this link: ' + 'https://cors-anywhere.herokuapp.com/' + url ;
+        });
         //this.loadImgAsBase64(url);
 
     }
 
-    public loadImgAsBase64(url) {
+    closeNotofication() {
+        this.meta.notification.show = false;
+    }
 
-        let canvas: any = document.createElement('CANVAS');
-        let img = document.createElement('img');
-        img.setAttribute('crossorigin', 'anonymous');
-        //img.src = 'https://crossorigin.me/' + url;
-        img.src = url;
-
-        img.onload = () => {
-            setTimeout( () => {
-                canvas.height = img.height;
-                canvas.width = img.width;
-                let context = canvas.getContext('2d');
-                context.drawImage(img, 0, 0);
-
-                let dataURL = canvas.toDataURL('image/png');
-                console.log({img});
-                canvas = null;
-                this.savePicToStorage('url', dataURL, img.width, img.height);
-            }, 2000);
-        };
+    public loadImgAsBase64(item) {
+        this.meta.loading = true;
+        this._layoutService.loadImgAsBase64(item.url).subscribe( (image) => {
+            item.imgDataURI = image.imgDataURI;
+            this.meta.loading = false;
+        });
     }
 
     public onImport(event) {
@@ -82,34 +96,20 @@ export class LayoutsManagerComponent implements OnInit {
         // let image = e.target.result;
         this._layoutService.savePictureFile(name, image, width, height).subscribe( () => {
             this.dataReload();
+        }, (err) => {
+            console.log({err})
+            this.meta.notification.show = true;
+            this.meta.notification.msg = 'Problem with upload file: you have not free space in your browser local storage! ' +
+                'Remove some old images (without link) to get more space (max 5MB).' ;
         });
 
     }
 
-    // public savePicToStorage(name, image, width, height) {
-    //     // let image = e.target.result;
-    //     let index =  this.meta.list.length;
-    //     let counter = Storage.get('layoutsManager.imageCounter');
-    //     counter = (counter ? counter : 0) + 1;
-    //     console.log(counter);
-    //     Storage.set('layoutsManager.imageCounter', counter);
-    //     let key = 'layoutsManager.image.' + counter;
-    //
-    //     Storage.set(key , {
-    //         id : counter,
-    //         key,
-    //         image,
-    //         width,
-    //         height,
-    //         name,
-    //     });
-    //     this.dataReload();
-    // }
-
     public remove(item) {
         this.meta.selectedImage = null;
-        Storage.remove(item.key);
-        this.dataReload();
+        this._layoutService.delPicture(item.id).subscribe( () => {
+            this.dataReload();
+        });
     }
 
     public show(item) {
@@ -117,6 +117,9 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public select(item) {
+        if(!item.imgDataURI) {
+            this.loadImgAsBase64(item);
+        }
         this.meta.selectedImage = item;
     }
 
@@ -127,8 +130,8 @@ export class LayoutsManagerComponent implements OnInit {
 
     public saveItem(item) {
         this.meta.editItem = null;
-        Storage.set(item.key, item);
-        this.dataReload();
+        //Storage.set(item.key, item); // TODO - przerzuic to do servisu + warunke if(item.url==null) then item.imageDataUri = null
+        this._layoutService.updatePicture(item).subscribe( () => { this.dataReload(); });
     }
 
     public cancelSaveItem(item) {

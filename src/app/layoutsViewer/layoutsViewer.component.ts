@@ -35,11 +35,17 @@ export class LayoutsViewerComponent implements OnInit {
     public ngOnInit() {
         this._route.params.subscribe( (params) => {
             this._layoutService.loadPicture(params['id']).subscribe( (imgItem) => {
-                this.imgItem = imgItem
-                this.resizeWindow(null);
-                setTimeout( () => {
-                    this.initCanvas();
-                }, 1);
+                this.imgItem = imgItem;
+                if(!this.imgItem.imgDataURI) {
+                    this._layoutService.loadImgAsBase64(this.imgItem.url).subscribe( (image) => {
+                        this.imgItem.imgDataURI = image.imgDataURI;
+                        this.resizeWindow(null);
+                        setTimeout( () => { this.initCanvas(); }, 1);
+                    });
+                } else {
+                    this.resizeWindow(null);
+                    setTimeout( () => { this.initCanvas(); }, 1);
+                }
             } );
 
 
