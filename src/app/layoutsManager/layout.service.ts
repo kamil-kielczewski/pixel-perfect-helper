@@ -3,43 +3,42 @@
  */
 import { Injectable } from '@angular/core';
 import { Storage, Url } from '../common';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
-
-//declare var moment: any;
+// declare var moment: any;
 
 @Injectable()
 export class LayoutService {
 
-    constructor() {}
-
     private keyPrefix = 'Airavana.HtmlCuttingHelper.v1.';
 
-    loadPictures(ids) {
-        return this.genObservable( [ids], (ids) => {
-            if(!ids) return [];
+    constructor() { ; }
+
+    public loadPictures(ids) {
+        return this.genObservable( () => {
+            if (!ids) { return []; }
             let key = this.imgKey();
             let result = [];
-            for(let id of ids) {
+            for (let id of ids) {
                 result.push(Storage.get(key + id));
             }
             return result;
         });
     }
 
-    getFreeSpace() {
-        return this.genObservable( [], () => {
-            return 1024*1024*5 - Storage.getSize();
+    public getFreeSpace() {
+        return this.genObservable( () => {
+            return 1024 * 1024 * 5 - Storage.getSize();
         });
 
     }
 
-    updatePicture(picture) {
-        //if(pictrue)
-        return this.genObservable( [picture], (picture) => {
+    public updatePicture(picture) {
+
+        return this.genObservable( () => {
             let tmp = picture.imgDataURI;
 
-            if(picture.urlOnly) { // case when we nat not save picture data
+            if (picture.urlOnly) { // case when we nat not save picture data
                 picture.imgDataURI = null;
             }
 
@@ -49,28 +48,28 @@ export class LayoutService {
         });
     }
 
-    delPicture(imgId) {
-        return this.genObservable( [imgId], (imgId) => {
+    public delPicture(imgId) {
+        return this.genObservable( () => {
             Storage.remove(this.imgKey() + imgId);
         });
     }
 
-    imgKey() {
+    public imgKey() {
         return this.keyPrefix + 'layoutsManager.image.';
     }
 
-    imgCounterKey() {
+    public imgCounterKey() {
         return this.keyPrefix + 'layoutsManager.imageCounter';
     }
 
-    loadPicture(imgId) {
-        return this.genObservable( [imgId], (imgId) => {
+    public loadPicture(imgId) {
+        return this.genObservable( () => {
             return Storage.get(this.imgKey() + imgId);
         });
     }
 
-    getImagesIdList() {
-        return this.genObservable( [], () => {
+    public getImagesIdList() {
+        return this.genObservable( () => {
             let result = [];
 
             for (let key of Storage.getKeys(this.imgKey())) {
@@ -82,7 +81,7 @@ export class LayoutService {
     }
 
     public getAndIncLayoutViewerCropFileCounter(imgId) {
-        return this.genObservable( [imgId], (imgId) => {
+        return this.genObservable( () => {
             let counterKey = this.keyPrefix + 'layoutsViewer.crop_file_counter.' + imgId ;
             let counter = Storage.get(counterKey);
             if (!counter) { counter = 0; }
@@ -93,14 +92,14 @@ export class LayoutService {
     }
 
     public saveLayoutViewerSettings(settings) {
-        return this.genObservable( [settings], (settings) => {
+        return this.genObservable( () => {
             let counterKey = this.keyPrefix + 'layoutsViewer.hint.settings';
             Storage.set(counterKey, settings);
         });
     }
 
     public loadLayoutViewerSettings() {
-        return this.genObservable( [], () => {
+        return this.genObservable( () => {
             let counterKey = this.keyPrefix + 'layoutsViewer.hint.settings';
             return Storage.get(counterKey);
         });
@@ -112,7 +111,6 @@ export class LayoutService {
             let canvas: any = document.createElement('CANVAS');
             let img = document.createElement('img');
             img.setAttribute('crossorigin', 'anonymous');
-            //img.src = 'https://crossorigin.me/' + url;
             img.src = link;
 
             img.onload = () => {
@@ -134,18 +132,17 @@ export class LayoutService {
             };
 
             img.onerror = (err) => {
-                console.log('eeeeerrr',err)
                 observer.error(err);
             };
 
-            return function () {  } // you can put coda that will execute after subscription
+            return () => { ; }; // you can put coda that will execute after subscription
         });
 
     }
 
-    savePictureLink(name, url) {
-        return Observable.create((observer) => {
-            this.loadImgAsBase64(url).subscribe((image)=>{
+    public savePictureLink(name, url) {
+        return Observable.create( (observer) => {
+            this.loadImgAsBase64(url).subscribe( (image) => {
                 let keyCounter = this.imgCounterKey();
                 let counter = Storage.get(keyCounter);
                 counter = (counter ? counter : 0) + 1;
@@ -172,7 +169,7 @@ export class LayoutService {
         });
     }
 
-    savePictureFile(name, imgDataURI, width, height) {
+    public savePictureFile(name, imgDataURI, width, height) {
         return Observable.create((observer) => {
             let keyCounter = this.imgCounterKey();
             let counter = Storage.get(keyCounter);
@@ -192,21 +189,20 @@ export class LayoutService {
                     name,
                     urlOnly: false, // not save imgDataURI
                 });
+                observer.next();
+                observer.complete();
             } catch (err) {
                 observer.error(err);
             }
+
         });
-        // return this.genObservable( [name, imgDataURI, width, height], (name, imgDataURI, width, height) => {
-        //
-        // });
     }
 
-
-    genObservable(params, func) {
+    public genObservable(func) {
         return Observable.create((observer) => {
-            observer.next(func(...params));
+            observer.next(func());
             observer.complete();
-            return function () {  } // you can put coda that will execute after subscription
+            return () => { ; }; // you can put coda that will execute after subscription
         });
     }
 

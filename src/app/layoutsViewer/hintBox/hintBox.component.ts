@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '../../common';
-import { LayoutService } from "../../layoutsManager/layout.service";
+import { LayoutService } from '../../layoutsManager/layout.service';
 
 @Component({
     selector: 'hint-box',
@@ -98,7 +98,7 @@ export class HintBoxComponent implements OnInit {
     // ----- hint setting ------
 
     public loadHintSettings() {
-        this._layoutService.loadLayoutViewerSettings().subscribe( settings => {
+        this._layoutService.loadLayoutViewerSettings().subscribe( (settings) => {
             if (!settings) { return; }
 
             this.hint.compact = settings.compact;
@@ -114,7 +114,7 @@ export class HintBoxComponent implements OnInit {
             }
         });
     }
-    
+
     public ignoreMove(event) {
 
         this.hint.ignoreMove = event;
@@ -128,7 +128,7 @@ export class HintBoxComponent implements OnInit {
             left: this.hint.left,
         };
 
-        this._layoutService.saveLayoutViewerSettings(settings).subscribe(()=>{});
+        this._layoutService.saveLayoutViewerSettings(settings).subscribe( () => { ; } );
     }
 
     // ---------- move hint -----------------

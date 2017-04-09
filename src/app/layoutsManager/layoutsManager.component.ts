@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage, Url } from '../common';
 import { Router } from '@angular/router';
-import { LayoutService } from "./layout.service";
+import { LayoutService } from './layout.service';
 
 @Component({
     selector: 'layouts-manager',
@@ -30,41 +30,44 @@ export class LayoutsManagerComponent implements OnInit {
         this.dataReload();
     }
 
-    formatedFreeSpace() {
-        return Math.ceil(this.meta.freeSpace/1024) + ' KB'
+    public formatedFreeSpace() {
+        return Math.ceil(this.meta.freeSpace / 1024) + ' KB';
     }
 
     public dataReload() {
         this._layoutService.getImagesIdList().subscribe( (ids) => {
             this.meta.list = [];
             this._layoutService.loadPictures(ids).subscribe( (data) => {
-                this.meta.list = data.sort( (a,b) => { return b.id - a.id });
+                this.meta.list = data.sort( (a, b) => { return b.id - a.id; });
             });
 
-            this._layoutService.getFreeSpace().subscribe( (amout) => { this.meta.freeSpace = amout} );
+            this._layoutService.getFreeSpace().subscribe( (amount) => {
+                this.meta.freeSpace = amount;
+            } );
         });
     }
 
     public downloadFile(url) {
         let name = url;
-        try
-        {
-            name = /.*\/([^?]+)/.exec(url)[ 1 ]; // extract filename rom url (last part without parameters)
-        } catch (e) {}
+        try {
+            // extract filename rom url (last part without parameters)
+            name = /.*\/([^?]+)/.exec(url)[ 1 ];
+        } catch (e) { ; }
 
-        this._layoutService.savePictureLink(name, url).subscribe( () => { this.dataReload() }, (err) => {
-            console.log(err);
-            this.meta.notification.show = true;
-            this.meta.notification.msg = 'The image url is broken or the server don\'t give access to cors origin reference. ' +
-                'Try download image and upload it here from local file. You can also provide alternative link to this image ' +
-                'by upload image to different server which allow cors origin e.g http://imgur.com/. You can also use some proxy which allow cors ' +
-                'origin - e.g. try this link: ' + 'https://cors-anywhere.herokuapp.com/' + url ;
+        this._layoutService.savePictureLink(name, url).subscribe(
+            () => { this.dataReload(); },
+            (err) => {
+                this.meta.notification.show = true;
+                this.meta.notification.msg = 'The image url is broken or the server don\'t give' +
+                    ' access to cors origin reference. Try download image and upload it here' +
+                    ' from local file. You can also provide alternative link to this image by' +
+                    ' upload image to different server which allow cors origin e.g' +
+                    ' http://imgur.com/ . You can also use some proxy which allow cors origin' +
+                    ' - e.g. try this link: https://cors-anywhere.herokuapp.com/' + url ;
         });
-        //this.loadImgAsBase64(url);
-
     }
 
-    closeNotofication() {
+    public closeNotofication() {
         this.meta.notification.show = false;
     }
 
@@ -93,14 +96,14 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public savePicToStorage(name, image, width, height) {
-        // let image = e.target.result;
-        this._layoutService.savePictureFile(name, image, width, height).subscribe( () => {
+
+        this._layoutService.savePictureFile(name, image, width, height).subscribe( (x) => {
             this.dataReload();
         }, (err) => {
-            console.log({err})
             this.meta.notification.show = true;
-            this.meta.notification.msg = 'Problem with upload file: you have not free space in your browser local storage! ' +
-                'Remove some old images (without link) to get more space (max 5MB).' ;
+            this.meta.notification.msg = 'Problem with upload file: you have not free space in' +
+                ' your browser local storage! Remove some old images (without link) to get more' +
+                ' space (max 5MB).' ;
         });
 
     }
@@ -117,7 +120,7 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public select(item) {
-        if(!item.imgDataURI) {
+        if (!item.imgDataURI) {
             this.loadImgAsBase64(item);
         }
         this.meta.selectedImage = item;
@@ -130,7 +133,6 @@ export class LayoutsManagerComponent implements OnInit {
 
     public saveItem(item) {
         this.meta.editItem = null;
-        //Storage.set(item.key, item); // TODO - przerzuic to do servisu + warunke if(item.url==null) then item.imageDataUri = null
         this._layoutService.updatePicture(item).subscribe( () => { this.dataReload(); });
     }
 

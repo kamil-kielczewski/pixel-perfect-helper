@@ -1,6 +1,9 @@
 /**
  * 	Klasa zawiera różnego rodzaju drobne narzędzia przyatne w pracy
  */
+
+declare function unescape(s: string): string;
+
 export class Storage {
 
     public static set(key: string, value: any) {
@@ -14,7 +17,6 @@ export class Storage {
 
     public static getSize() {
         return unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
-        //return key.length*16 + window.localStorage[key].length*16;
     }
 
     public static has(key: string) {
