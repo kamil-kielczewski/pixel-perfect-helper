@@ -1,10 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Storage } from '../common';
 import { LayoutService } from '../layoutsManager/layout.service';
 
-// TODO color picker http://stackoverflow.com/...
-//   .../questions/8751020/how-to-get-a-pixels-x-y-coordinate-color-from-an-image
 
 @Component({
     selector: 'layouts-viewer',
@@ -34,7 +31,7 @@ export class LayoutsViewerComponent implements OnInit {
 
     public ngOnInit() {
         this._layoutService.loadLayoutViewerSettings().subscribe( () => {
-            //TODO Zapis + odczyt ustawień
+            // TODO Zapis + odczyt ustawień
         });
 
         this._route.params.subscribe( (params) => {

@@ -1,5 +1,5 @@
 <div>
-    <h1 x-large class="sample-content">Wyświetlarka obrazków (localstorage)</h1>
+    <h1 x-large class="sample-content">{{ tr('layoutManager.title') }}</h1>
 
     <div *ngIf="meta.notification.show" class="notification">
         <div style="overflow-y: auto;">{{ meta.notification.msg }}</div>
@@ -7,11 +7,14 @@
         <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok">OK</button></div>
     </div>
 
+    <button *ngIf="currentLang() != 'pl'" (click)="switchLang('pl')">Polski</button>
+    <button *ngIf="currentLang() != 'en'" (click)="switchLang('en')">English</button>
+
     <div>
         <div><input type="file" (change)="onImport($event)"  #file/></div>
         <div>
-            <input type="text" [(ngModel)]="meta.pictureUrl"  placeholder="Paste URL to image"/>
-            <button (click)="downloadFile(meta.pictureUrl)">GET (max 2MB)</button>
+            <input type="text" [(ngModel)]="meta.pictureUrl"  placeholder="{{ tr('layoutManager.pasteUrl') }}"/>
+            <button (click)="downloadFile(meta.pictureUrl)">{{ tr('layoutManager.getUtl') }}</button>
         </div>
     </div>
 
@@ -23,14 +26,23 @@
     </div>
 
     <div>
-        <div>Free space: {{ formatedFreeSpace() }} (space is used only by items with no link)</div>
+        <form #formDonate action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="MECR7Z6DVZYS6">
+            <input (click)="formDonate.submit()"  type="image" src="https://www.paypalobjects.com/en_US/PL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
+        </form>
+    </div>
+
+    <div>
+        <div>{{ tr('layoutManager.freeSpace', { freeSpace: formatedFreeSpace() } ) }}</div>
             <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
             <table class="image-table">
                 <thead>
                     <tr>
-                        <td style="width: 40px;">Id</td>
-                        <td>Name</td>
-                        <td>Actions</td>
+                        <td style="width: 40px;">{{ tr('layoutManager.table.col.id') }}</td>
+                        <td>{{ tr('layoutManager.table.col.name') }}</td>
+                        <td>{{ tr('layoutManager.table.col.actions') }}</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,10 +60,10 @@
                         </td>
                         <td>
                             <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
-                                <button (click)="show(item)"><i (click)='select(item)' class="fa fa-scissors" aria-hidden="true"> Edit </i></button>
-                                <button (click)="editItem(item)"><i (click)='select(item)' class="fa fa-pencil" aria-hidden="true"> Edit name</i></button>
-                                <button><i (click)='select(item)' class="fa fa-eye" aria-hidden="true"> Preview</i></button>
-                                <button><i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"> Delete</i></button>
+                                <button (click)="show(item)"><i (click)='select(item)' class="fa fa-scissors" aria-hidden="true"> {{ tr('layoutManager.table.actions.edit') }} </i></button>
+                                <button (click)="editItem(item)"><i (click)='select(item)' class="fa fa-pencil" aria-hidden="true"> {{ tr('layoutManager.table.actions.editName') }}</i></button>
+                                <button><i (click)='select(item)' class="fa fa-eye" aria-hidden="true"> {{ tr('layoutManager.table.actions.preview') }}</i></button>
+                                <button><i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"> {{ tr('layoutManager.table.actions.del') }}</i></button>
                             </span>
                             <span *ngIf="meta.editItem && meta.editItem.id == item.id ">
                                 <button (click)="saveItem(item)">Save</button>

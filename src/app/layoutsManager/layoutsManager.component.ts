@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Storage, Url } from '../common';
 import { Router } from '@angular/router';
 import { LayoutService } from './layout.service';
+import { Lang } from "../common/lang/lang";
 
 @Component({
     selector: 'layouts-manager',
@@ -58,12 +59,7 @@ export class LayoutsManagerComponent implements OnInit {
             () => { this.dataReload(); },
             (err) => {
                 this.meta.notification.show = true;
-                this.meta.notification.msg = 'The image url is broken or the server don\'t give' +
-                    ' access to cors origin reference. Try download image and upload it here' +
-                    ' from local file. You can also provide alternative link to this image by' +
-                    ' upload image to different server which allow cors origin e.g' +
-                    ' http://imgur.com/ . You can also use some proxy which allow cors origin' +
-                    ' - e.g. try this link: https://cors-anywhere.herokuapp.com/' + url ;
+                this.meta.notification.msg = this.tr('layoutManager.err.linkProblem', { url });
         });
     }
 
@@ -101,9 +97,7 @@ export class LayoutsManagerComponent implements OnInit {
             this.dataReload();
         }, (err) => {
             this.meta.notification.show = true;
-            this.meta.notification.msg = 'Problem with upload file: you have not free space in' +
-                ' your browser local storage! Remove some old images (without link) to get more' +
-                ' space (max 5MB).' ;
+            this.meta.notification.msg = this.tr('layoutManager.err.noFreeSpace');
         });
 
     }
@@ -138,5 +132,17 @@ export class LayoutsManagerComponent implements OnInit {
 
     public cancelSaveItem(item) {
         this.meta.editItem = null;
+    }
+
+    public tr(key, values = null) {
+        return Lang.t(key, values);
+    }
+
+    public currentLang() {
+        return Lang.getCurrentLang();
+    }
+
+    public switchLang(lang) {
+        Lang.switchLang(lang)
     }
 }

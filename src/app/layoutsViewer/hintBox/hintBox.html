@@ -12,36 +12,36 @@
          (pointerup)="moveHintStop($event)"
          class="hint"
     >
-        <i (click)="close()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
-        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="Compact mode"></i>
-        <a [attr.id]="hint.link" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
+        <i (click)="close()" class="fa fa-times hintButton" aria-hidden="true" title="{{ tr('layoutViewer.buttons.close') }}"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-compress hintButton" style='margin-right:5px;' aria-hidden="true" title="{{ tr('layoutViewer.buttons.compact') }}"></i>
+        <a [attr.id]="hint.link" download="image.png" (click)="saveCutImgClick()" title="{{ tr('layoutViewer.buttons.save') }}">
             <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
 
         <div>
-            Image name: <b>{{ imgItem.name }}</b><br />
+            {{ tr('layoutViewer.image_name') }} <b>{{ imgItem.name }}</b><br />
             <br />
             <div style="color: #ffffff">
-                <span class="explanation">Draw box using</span> Mouse!<br />
-                <b>Click/Space</b> <span class="explanation">: select color</span><br />
-                <b>Double-click</b> <span class="explanation">: show info</span> <br />
-                <b>Wheel</b> <span class="explanation">: vertical scroll</span> <br />
-                +<b>Shift</b> <span class="explanation">: horizontal </span> <br />
-                +<b>Alt</b> <span class="explanation">: per-pixel</span> <br />
-                <b>Arrows</b> <span class="explanation">: move per-pixel box-edge-vertex,color</span> <br />
-                <b>S</b> <span class="explanation">: crop to selection box and save image</span> <br />
-                <b>I</b> <span class="explanation">: show/hide info box</span> <br />
+                <span class="explanation">{{ tr('layoutViewer.help.draw') }}</span> {{ tr('layoutViewer.help.mouse') }}<br />
+                <b>{{ tr('layoutViewer.help.click') }}</b> <span class="explanation">{{ tr('layoutViewer.help.click_info') }}</span><br />
+                <b>{{ tr('layoutViewer.help.dbclick') }}</b> <span class="explanation">{{ tr('layoutViewer.help.dbclick_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.wheel') }}</b> <span class="explanation">{{ tr('layoutViewer.help.wheel_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.shift') }}</b> <span class="explanation">{{ tr('layoutViewer.help.shift_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.alt') }}</b> <span class="explanation">{{ tr('layoutViewer.help.alt_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.arrows') }}</b> <span class="explanation">{{ tr('layoutViewer.help.arrows_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.s') }}</b> <span class="explanation">{{ tr('layoutViewer.help.s_info') }}</span> <br />
+                <b>{{ tr('layoutViewer.help.i') }}</b> <span class="explanation">{{ tr('layoutViewer.help.i_info') }}</span> <br />
                 <br/>
             </div>
-            Image Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }} x {{ imgItem.height }}</b></span> <br />
-            Screen Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }} x {{ screenHeight }}</b></span> <br />
-            Image Left x Top: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgLeft }} x {{ imgTop }}</b></span> <br />
-            Mouse X x Y: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ mouseX }} x {{ mouseY }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.img_wh') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }} x {{ imgItem.height }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.scr_wh') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }} x {{ screenHeight }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.img_lt') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgLeft }} x {{ imgTop }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.mouse_xy') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ mouseX }} x {{ mouseY }}</b></span> <br />
             <br/>
-            Selection Box: <br />
-            Left x Top: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }} x {{ box.top }}</b></span>  <br />
-            Right x Bottom: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.right }} x {{ box.bottom }}</b></span> <br />
-            Width x Height: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.width }} x {{ box.height }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.box') }} <br />
+            {{ tr('layoutViewer.num_long.box_lt') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }} x {{ box.top }}</b></span>  <br />
+            {{ tr('layoutViewer.num_long.box_rb') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.right }} x {{ box.bottom }}</b></span> <br />
+            {{ tr('layoutViewer.num_long.box_wh') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.width }} x {{ box.height }}</b></span> <br />
         </div>
         <br />
 
@@ -60,15 +60,15 @@
          (pointerup)="moveHintStop($event)"
          class="hint"
     >
-        <i (click)="close()" class="fa fa-times hintButton" aria-hidden="true" title="Close - you can reopen by double click or page reload"></i>
-        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="Show more help information"></i>
-        <a [attr.id]="hint.linkSmall" download="image.png" (click)="saveCutImgClick()" title="Cut image to selection box and save it">
+        <i (click)="close()" class="fa fa-times hintButton" aria-hidden="true" title="{{ tr('layoutViewer.buttons.close') }}"></i>
+        <i (click)="toggleCompactHint()" class="fa fa-expand hintButton" style='margin-right:5px;' aria-hidden="true" title="{{ tr('layoutViewer.buttons.full') }}"></i>
+        <a [attr.id]="hint.linkSmall" download="image.png" (click)="saveCutImgClick()" title="{{ tr('layoutViewer.buttons.save') }}">
             <i *ngIf="box.isVisible"  class="fa fa-download hintButton" style='margin-right:5px;' aria-hidden="true" ></i>
         </a>
 
-        img: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }}x{{ imgItem.height }}</b>, (lt: <b>{{ imgLeft }}x{{ imgTop }}</b>)</span> <br />
-        screen: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }}x{{ screenHeight}}</b>, mouse: <b>{{ mouseX }}x{{ mouseY }}</b></span> <br />
-        box lt: <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }}x{{ box.top }}</b>, rb: <b>{{ box.right }}x{{ box.bottom }}</b>,size: <b>{{ box.width }}x{{ box.height }}</b></span>
+        {{ tr('layoutViewer.num_short.img') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ imgItem.width }}x{{ imgItem.height }}</b>, ({{ tr('layoutViewer.num_short.lt') }} <b>{{ imgLeft }}x{{ imgTop }}</b>)</span> <br />
+        {{ tr('layoutViewer.num_short.screen') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ screenWidth }}x{{ screenHeight}}</b>, {{ tr('layoutViewer.num_short.mouse') }} <b>{{ mouseX }}x{{ mouseY }}</b></span> <br />
+        {{ tr('layoutViewer.num_short.box') }} {{ tr('layoutViewer.num_short.lt') }} <span (pointerdown)="ignoreMove(true)" class="textCursor"><b>{{ box.left }}x{{ box.top }}</b>, {{ tr('layoutViewer.num_short.rb') }} <b>{{ box.right }}x{{ box.bottom }}</b>, {{ tr('layoutViewer.num_short.size') }} <b>{{ box.width }}x{{ box.height }}</b></span>
 
         <color-picker #colorPickerSmall  [canvas]="canvas" [small]="true" (ignoreMove)="ignoreMove($event)"> {{ bindColorPickerSmall(colorPickerSmall) }}</color-picker>
 

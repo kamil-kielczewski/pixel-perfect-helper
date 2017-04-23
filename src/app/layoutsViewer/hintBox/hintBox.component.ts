@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '../../common';
 import { LayoutService } from '../../layoutsManager/layout.service';
+import { Lang } from "../../common/lang/lang";
 
 @Component({
     selector: 'hint-box',
@@ -173,6 +174,10 @@ export class HintBoxComponent implements OnInit {
 
         this.meta.colorPicker.zoomPixel(x - this.imgLeft, y - this.imgTop);
         this.meta.colorPickerSmall.zoomPixel(x - this.imgLeft, y - this.imgTop);
+    }
+
+    public tr(key, values = null) {
+        return Lang.t(key, values);
     }
 
 }
