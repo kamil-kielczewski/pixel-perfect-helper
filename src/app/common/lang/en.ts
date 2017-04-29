@@ -3,13 +3,15 @@ export const en = {
     layoutManager: {
 
         title: 'Html Cutting Helper',
-        uploadFile: 'Choose file',
+        uploadFile: 'Choose file <br/>(drag here)',
         pasteUrl: 'Paste Image URL',
         getUtl: 'Get',
         freeSpace: 'Free space %{freeSpace} (the most space use pictures from files)',
         donate: 'If you like this app - please donate :)',
         info1: 'Choose layout picture from your graphican and then start cutting it!',
-        info2: '(all your files/links are sace in browser memory - nothing is uploaded)',
+        info2: '(all your files/links are save in browser memory - nothing is uploaded)',
+        or: 'Or',
+        notChrome: 'Sorry but this tool not working yet for other browsers than Google Chrome',
 
         table: {
             col: {
@@ -27,11 +29,11 @@ export const en = {
 
         err: {
             linkProblem: 'The image url is broken or the server don\'t give' +
-                ' access to cors origin reference. Try download image and upload it here' +
+                ' access to CORS origin reference. Try download image and upload it here' +
                 ' from local file. You can also provide alternative link to this image by' +
-                ' upload image to different server which allow cors origin e.g' +
-                ' http://imgur.com/ . You can also use some proxy which allow cors origin' +
-                ' - e.g. try this link: https://cors-anywhere.herokuapp.com/${url}',
+                ' upload image to different server which allow CORS origin e.g' +
+                ' <b>http://imgur.com</b> or google disc . You can also use some proxy which allow CORS origin' +
+                ' - e.g. try this link: <br/><b>https://cors-anywhere.herokuapp.com/%{url}</b>',
             noFreeSpace: 'Problem with upload file: you have not free space in' +
                 ' your browser local storage! Remove some old images (without link) to get more' +
                 ' space (max 5MB).',

@@ -3,9 +3,9 @@
     <h1 class="title">{{ tr('layoutManager.title') }}</h1>
 
     <div *ngIf="meta.notification.show" class="notification">
-        <div style="overflow-y: auto;">{{ meta.notification.msg }}</div>
+        <div style="overflow-y: auto;" [innerHTML]="meta.notification.msg"></div>
 
-        <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok">OK</button></div>
+        <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok button button-info">OK </button></div>
     </div>
 
     <div *ngIf="currentLang() != 'pl'" (click)="switchLang('pl')" class="lang">[Polski]</div>
@@ -25,10 +25,29 @@
     </div>
 
     <div class="get-image">
-        <div><input type="file" (change)="onImport($event)"  #file/></div>
         <div>
-            <input type="text" [(ngModel)]="meta.pictureUrl"  placeholder="{{ tr('layoutManager.pasteUrl') }}"/>
-            <button (click)="downloadFile(meta.pictureUrl)">{{ tr('layoutManager.getUtl') }}</button>
+            <label (drop)="dropFile($event)"
+                   (dragover)="dragFileOver($event, true)"
+                   (dragleave)="dragFileOver($event, false)"
+                   class="button upload"
+                   [class.button-info]="meta.dragOver"
+                   [class.button-success]="!meta.dragOver"
+            >
+                <div [innerHTML] ="tr('layoutManager.uploadFile')"></div>
+                <input type="file" (change)="onImport($event)"  #file style="display: none"/>
+            </label>
+        </div>
+        <div class="upload-or">
+            {{ tr('layoutManager.or') }}
+        </div>
+        <div>
+            <input type="text"
+                   [(ngModel)]="meta.pictureUrl"
+                   class="upload-url"
+                   placeholder="{{ tr('layoutManager.pasteUrl') }}"/>
+            <button (click)="downloadFile(meta.pictureUrl)"
+                    class="button button-success upload-url-button"
+                >{{ tr('layoutManager.getUtl') }}</button>
         </div>
     </div>
 
@@ -38,7 +57,7 @@
         <!--&lt;!&ndash;<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />&ndash;&gt;-->
     <!--</div>-->
 
-    <div>
+    <div *ngIf="meta.list.length">
             <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
             <table class="image-table">
                 <thead>
@@ -51,7 +70,7 @@
                 <tbody>
                     <tr *ngFor="let item of meta.list">
                         <td (click)='select(item)' class="pointer" >{{ item.id }}</td>
-                        <td (click)='select(item)' class="pointer" >
+                        <td (click)='select(item)' [class.pointer]="!meta.selectedItem || meta.selectedItem.id != item.id" >
                             <div *ngIf="!meta.editItem || meta.editItem.id != item.id " class="align-left">
                                 <div>{{ item.name }}</div>
                                 <div *ngIf="item.url" class="item-url">{{ item.url }}</div>
@@ -67,22 +86,22 @@
                         </td>
                         <td>
                             <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
-                                <button *ngIf= "!meta.selectedItem ||  meta.selectedItem.id != item.id" class="button-xs button-success" (click)="show(item)">
+                                <button *ngIf= "!meta.selectedItem ||  meta.selectedItem.id != item.id" class="button button-xs button-success" (click)="show(item)">
                                     <i class="fa fa-scissors" aria-hidden="true"></i>
                                     {{ tr('layoutManager.table.actions.edit') }}
                                 </button>
-                                <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button-xs button-info" (click)="editItem(item)">
+                                <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button button-xs button-info" (click)="editItem(item)">
                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                     {{ tr('layoutManager.table.actions.editName') }}
                                 </button>
-                                <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button-xs button-danger">
-                                    <i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>
+                                <button (click)='remove(item)' *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button button-xs button-danger">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
                                     {{ tr('layoutManager.table.actions.del') }}
                                 </button>
                             </span>
                             <span *ngIf="meta.editItem && meta.editItem.id == item.id ">
-                                <button class="button-xs button-success" (click)="saveItem(item)">Save</button>
-                                <button class="button-xs button-danger" (click)="cancelSaveItem(item)">Cancel</button>
+                                <button class="button button-xs button-success" (click)="saveItem(item)">Save</button>
+                                <button class="button button-xs button-danger" (click)="cancelSaveItem(item)">Cancel</button>
                             </span>
                         </td>
                     </tr>
@@ -97,7 +116,7 @@
 
     </div>
 
-    <div class="free-space">
+    <div  *ngIf="meta.list.length" class="free-space">
         <i class="fa fa-info-circle" aria-hidden="true"></i>
         {{ tr('layoutManager.freeSpace', { freeSpace: formatedFreeSpace() } ) }}
     </div>
@@ -122,6 +141,9 @@
     </div>
 
     <style>
+
+        textarea, input, button { outline: none; } /* remove blue glow */
+
         .info-box {
             background: #e1e9f7;
             width: 800px;
@@ -144,7 +166,31 @@
             margin-bottom: 50px;
         }
 
-        .button-xs {
+        label.upload {
+            padding: 30px;
+            font-size: 30px;
+            /*background: rgba(72, 204, 64, 0.56);*/
+        }
+
+        .upload-or {
+            margin: 20px;
+        }
+
+        .upload-url {
+            font-size: 20px;
+            width: 500px;
+            border-radius: 5px;
+            border: solid 1px #aaa;
+            padding: 5px 10px;
+        }
+
+        button.upload-url-button {
+            line-height: normal;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .button {
             display: inline-block;
             padding: 6px 12px;
             margin-bottom: 0;
@@ -165,6 +211,9 @@
             border: 1px solid transparent;
             border-radius: 4px;
 
+        }
+
+        .button-xs {
             padding: 1px 5px;
             font-size: 12px;
             line-height: 1.5;
@@ -177,16 +226,34 @@
             border-color: #4cae4c;
         }
 
+        .button-success:hover {
+            color: #fff;
+            background-color: #449d44;
+            border-color: #398439;
+        }
+
         .button-danger {
             color: #fff;
             background-color: #d9534f;
             border-color: #d43f3a;
         }
 
+        .button-danger:hover {
+            color: #fff;
+            background-color: #c9302c;
+            border-color: #ac2925;
+        }
+
         .button-info {
             color: #fff;
             background-color: #337ab7;
             border-color: #2e6da4;
+        }
+
+        .button-info:hover {
+            color: #fff;
+            background-color: #286090;
+            border-color: #204d74;
         }
 
         .lang {
@@ -241,7 +308,7 @@
         }
 
         .image-table {
-            widht: 1000px;
+            width: 1000px;
             margin: 0 auto;
             margin-top:20px;
             border-spacing: 0;

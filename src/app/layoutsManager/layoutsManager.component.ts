@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LayoutService } from './layout.service';
 import { Lang } from "../common/lang/lang";
 
+
 @Component({
     selector: 'layouts-manager',
     templateUrl: './layoutsManager.html',
@@ -18,6 +19,7 @@ export class LayoutsManagerComponent implements OnInit {
         editItem: null,
         list: [],
         freeSpace: 0,
+        dragOver: false,
 
         notification: {
             show: false,
@@ -29,6 +31,10 @@ export class LayoutsManagerComponent implements OnInit {
 
     public ngOnInit() {
         this.dataReload();
+        if(!this.isChrome()) {
+            this.meta.notification.show = true;
+            this.meta.notification.msg = this.tr('layoutManager.notChrome');
+        }
     }
 
     public formatedFreeSpace() {
@@ -78,7 +84,12 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public onImport(event) {
-        let file: File = event.srcElement.files[ 0 ];
+        console.log({event})
+
+        //let file: File = event.srcElement.files[ 0 ];
+        let files = event.target.files || event.dataTransfer.files;
+        let file: File = files[0];
+
         let myReader: FileReader = new FileReader();
         let body = myReader.result;
 
@@ -134,6 +145,7 @@ export class LayoutsManagerComponent implements OnInit {
 
     public cancelSaveItem(item) {
         this.meta.editItem = null;
+        this.dataReload();
     }
 
     public tr(key, values = null) {
@@ -146,5 +158,37 @@ export class LayoutsManagerComponent implements OnInit {
 
     public switchLang(lang) {
         Lang.switchLang(lang)
+    }
+
+    public dropFile(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        this.meta.dragOver = false;
+        this.onImport(event);
+    }
+
+    public dragFileOver(event, fileIsOverButton) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.meta.dragOver = fileIsOverButton;
+
+    }
+
+    isChrome() {
+        var isChromium = window['chrome'],
+            winNav = window.navigator,
+            vendorName = winNav.vendor,
+            isOpera = winNav.userAgent.indexOf("OPR") > -1,
+            isIEedge = winNav.userAgent.indexOf("Edge") > -1,
+            isIOSChrome = winNav.userAgent.match("CriOS");
+
+        if(isIOSChrome){
+            return true;
+        } else if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
