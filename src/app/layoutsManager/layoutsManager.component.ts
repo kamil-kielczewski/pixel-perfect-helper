@@ -13,7 +13,7 @@ export class LayoutsManagerComponent implements OnInit {
     public meta = {
         loading: false,
         editItemNameMode: null,
-        selectedImage: null,
+        selectedItem: null,
         pictureUrl : null,
         editItem: null,
         list: [],
@@ -72,6 +72,8 @@ export class LayoutsManagerComponent implements OnInit {
         this._layoutService.loadImgAsBase64(item.url).subscribe( (image) => {
             item.imgDataURI = image.imgDataURI;
             this.meta.loading = false;
+        }, err => {
+            this.meta.loading = false;
         });
     }
 
@@ -103,7 +105,7 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public remove(item) {
-        this.meta.selectedImage = null;
+        this.meta.selectedItem = null;
         this._layoutService.delPicture(item.id).subscribe( () => {
             this.dataReload();
         });
@@ -117,7 +119,7 @@ export class LayoutsManagerComponent implements OnInit {
         if (!item.imgDataURI) {
             this.loadImgAsBase64(item);
         }
-        this.meta.selectedImage = item;
+        this.meta.selectedItem = item;
     }
 
     public editItem(item) {

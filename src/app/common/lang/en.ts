@@ -2,11 +2,14 @@ export const en = {
 
     layoutManager: {
 
-        title: 'HtmlCuttingHelper',
+        title: 'Html Cutting Helper',
         uploadFile: 'Choose file',
         pasteUrl: 'Paste Image URL',
         getUtl: 'Get',
         freeSpace: 'Free space %{freeSpace} (the most space use pictures from files)',
+        donate: 'If you like this app - please donate :)',
+        info1: 'Choose layout picture from your graphican and then start cutting it!',
+        info2: '(all your files/links are sace in browser memory - nothing is uploaded)',
 
         table: {
             col: {
@@ -15,7 +18,7 @@ export const en = {
                 actions: 'Actions',
             },
             actions: {
-                edit: 'Edit',
+                edit: 'Start cutting',
                 editName: 'Edit name',
                 preview: 'Preview',
                 del: 'Delete',

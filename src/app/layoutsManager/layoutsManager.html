@@ -1,5 +1,6 @@
-<div>
-    <h1 x-large class="sample-content">{{ tr('layoutManager.title') }}</h1>
+<div class="container">
+
+    <h1 class="title">{{ tr('layoutManager.title') }}</h1>
 
     <div *ngIf="meta.notification.show" class="notification">
         <div style="overflow-y: auto;">{{ meta.notification.msg }}</div>
@@ -7,10 +8,23 @@
         <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok">OK</button></div>
     </div>
 
-    <button *ngIf="currentLang() != 'pl'" (click)="switchLang('pl')">Polski</button>
-    <button *ngIf="currentLang() != 'en'" (click)="switchLang('en')">English</button>
+    <div *ngIf="currentLang() != 'pl'" (click)="switchLang('pl')" class="lang">[Polski]</div>
+    <div *ngIf="currentLang() != 'en'" (click)="switchLang('en')" class="lang">[English]</div>
 
-    <div>
+    <div class="info-box">
+        <div>
+            <span style="font-weight: bold">
+                {{ tr('layoutManager.info1') }}
+            </span>
+            <br/>
+
+            <small>
+                {{ tr('layoutManager.info2') }}
+            </small>
+        </div>
+    </div>
+
+    <div class="get-image">
         <div><input type="file" (change)="onImport($event)"  #file/></div>
         <div>
             <input type="text" [(ngModel)]="meta.pictureUrl"  placeholder="{{ tr('layoutManager.pasteUrl') }}"/>
@@ -18,24 +32,13 @@
         </div>
     </div>
 
-    <div style="height:220px; margin-top:20px;">
-        <i *ngIf="meta.loading" class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
-        <img *ngIf="meta.selectedImage" src="{{ meta.selectedImage.imgDataURI }}" style="max-height:200px;"/>
-        <!--<img  src="https://static.pexels.com/photos/87293/pexels-photo-87293.jpeg" style="max-height:200px;"/>-->
-        <!--<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />-->
-    </div>
+    <!--<div style="height:220px; margin-top:20px;">-->
+        <!--&lt;!&ndash;<i *ngIf="meta.loading" class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>&ndash;&gt;-->
+        <!--&lt;!&ndash;<img  src="https://static.pexels.com/photos/87293/pexels-photo-87293.jpeg" style="max-height:200px;"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />&ndash;&gt;-->
+    <!--</div>-->
 
     <div>
-        <form #formDonate action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-            <input type="hidden" name="cmd" value="_s-xclick">
-            <input type="hidden" name="hosted_button_id" value="MECR7Z6DVZYS6">
-            <input (click)="formDonate.submit()"  type="image" src="https://www.paypalobjects.com/en_US/PL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-            <img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
-        </form>
-    </div>
-
-    <div>
-        <div>{{ tr('layoutManager.freeSpace', { freeSpace: formatedFreeSpace() } ) }}</div>
             <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
             <table class="image-table">
                 <thead>
@@ -47,27 +50,39 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of meta.list">
-                        <td>{{ item.id }}</td>
-                        <td>
-                            <div *ngIf="!meta.editItem || meta.editItem.id != item.id ">
-                                <div><a (click)="show(item)" class="itemView">{{ item.name }}</a></div>
+                        <td (click)='select(item)' class="pointer" >{{ item.id }}</td>
+                        <td (click)='select(item)' class="pointer" >
+                            <div *ngIf="!meta.editItem || meta.editItem.id != item.id " class="align-left">
+                                <div>{{ item.name }}</div>
                                 <div *ngIf="item.url" class="item-url">{{ item.url }}</div>
                             </div>
-                            <div *ngIf="meta.editItem && meta.editItem.id == item.id ">
+                            <div *ngIf="meta.editItem && meta.editItem.id == item.id " class="align-left">
                                 <input type="text" [(ngModel)]="meta.editItem.name" style="width:90%"/>
+                            </div>
+                            <div *ngIf="meta.selectedItem && meta.selectedItem.id == item.id" class="center">
+                                <i *ngIf="meta.loading" class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
+                                <img (click)="show(item)" src="{{ meta.selectedItem.imgDataURI }}" class="preview"/>
                             </div>
 
                         </td>
                         <td>
                             <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
-                                <button (click)="show(item)"><i (click)='select(item)' class="fa fa-scissors" aria-hidden="true"> {{ tr('layoutManager.table.actions.edit') }} </i></button>
-                                <button (click)="editItem(item)"><i (click)='select(item)' class="fa fa-pencil" aria-hidden="true"> {{ tr('layoutManager.table.actions.editName') }}</i></button>
-                                <button><i (click)='select(item)' class="fa fa-eye" aria-hidden="true"> {{ tr('layoutManager.table.actions.preview') }}</i></button>
-                                <button><i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"> {{ tr('layoutManager.table.actions.del') }}</i></button>
+                                <button *ngIf= "!meta.selectedItem ||  meta.selectedItem.id != item.id" class="button-xs button-success" (click)="show(item)">
+                                    <i class="fa fa-scissors" aria-hidden="true"></i>
+                                    {{ tr('layoutManager.table.actions.edit') }}
+                                </button>
+                                <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button-xs button-info" (click)="editItem(item)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    {{ tr('layoutManager.table.actions.editName') }}
+                                </button>
+                                <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button-xs button-danger">
+                                    <i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>
+                                    {{ tr('layoutManager.table.actions.del') }}
+                                </button>
                             </span>
                             <span *ngIf="meta.editItem && meta.editItem.id == item.id ">
-                                <button (click)="saveItem(item)">Save</button>
-                                <button (click)="cancelSaveItem(item)">Cancel</button>
+                                <button class="button-xs button-success" (click)="saveItem(item)">Save</button>
+                                <button class="button-xs button-danger" (click)="cancelSaveItem(item)">Cancel</button>
                             </span>
                         </td>
                     </tr>
@@ -82,18 +97,123 @@
 
     </div>
 
+    <div class="free-space">
+        <i class="fa fa-info-circle" aria-hidden="true"></i>
+        {{ tr('layoutManager.freeSpace', { freeSpace: formatedFreeSpace() } ) }}
+    </div>
+
+    <div class="donate">
+        <div style="margin-bottom:30px;">{{ tr('layoutManager.donate') }}</div>
+        <div>
+            <form #formDonate action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="MECR7Z6DVZYS6">
+                <input (click)="formDonate.submit()"  type="image" src="https://www.paypalobjects.com/en_US/PL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                <img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
+            </form>
+        </div>
+    </div>
+
+    <div class="airavana">
+
+        <a href="http://airavana.net"><img src="assets/img/airavana-logo.png" style="height:20px" /></a>
+        &copy; 2016-2017
+
+    </div>
+
     <style>
-        .itemView {
-            cursor:pointer
+        .info-box {
+            background: #e1e9f7;
+            width: 800px;
+            margin: auto;
+            margin-top: 30px;
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        .align-left {
+            text-align:left;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        .get-image {
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .button-xs {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+
+            padding: 1px 5px;
+            font-size: 12px;
+            line-height: 1.5;
+            border-radius: 3px;
+        }
+
+        .button-success {
+            color: #fff;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+
+        .button-danger {
+            color: #fff;
+            background-color: #d9534f;
+            border-color: #d43f3a;
+        }
+
+        .button-info {
+            color: #fff;
+            background-color: #337ab7;
+            border-color: #2e6da4;
+        }
+
+        .lang {
+            text-decoration: underline;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .title {
+            margin-top: 50px;
+            margin-bottom: 30px;
+            color: #000;
+
+            font-size: 100px;
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            font-family: 'Lato';
+            text-align: center;
         }
 
         .item-url {
             font-size:10px;
             color: gray;
-        }
-
-        .itemView:hover {
-            text-decoration: underline;
         }
 
         .notification {
@@ -114,19 +234,49 @@
             right: 0;
         }
 
-        table {
+        .preview {
+            max-height:200px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .image-table {
+            widht: 1000px;
             margin: 0 auto;
             margin-top:20px;
             border-spacing: 0;
+            border-bottom: solid 1px #bbb;
         }
 
-        thead > tr > td {
+        .image-table thead > tr > td {
             border-bottom: 1px solid gray;
+            font-weight: bold;
         }
 
-        tbody > tr > td {
+        .image-table tbody > tr > td {
             padding-top: 5px;
             padding-bottom: 5px;
+        }
+
+        .image-table tr:nth-child(even) {background: #EEE}
+
+        .free-space {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #90b1e6;
+            /*color: #daabab;*/
+        }
+
+        .donate {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .airavana {
+            text-align: center;
+            margin-top: 100px;
+            margin-bottom: 50px;
         }
 
 

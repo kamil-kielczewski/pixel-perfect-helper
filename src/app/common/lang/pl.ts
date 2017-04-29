@@ -2,11 +2,14 @@ export const pl = {
 
     layoutManager: {
 
-        title: 'HtmlCuttingHelper - wycinarka :)',
+        title: 'Html Cutting Helper',
         uploadFile: 'Wybierz plik',
         pasteUrl: 'Wklej URL obrazka',
         getUtl: 'Wczytaj',
-        freeSpace: 'Wolna przestrzeń %{freeSpace} (najwięcej zużywają obrazki bez z pliku czyli linku)',
+        freeSpace: 'Wolna przestrzeń %{freeSpace} (najwięcej zużywają obrazki z pliku, najmniej z linku)',
+        donate: 'Jeśli podoba Ci się to narzędzie - rzuć trochę grosza co łaska królu złoty :)',
+        info1: 'Wybierz plik graficzny layoutu otrzymany od grafika a następnie przejdź do wycinania jego elementów!',
+        info2: '(wszystkie Twoje pliki/linki są trzymane w pamięci przeglądarki - nie sa nigdzie uploadowane)',
 
         table: {
             col: {
@@ -15,7 +18,7 @@ export const pl = {
                 actions: 'Akcje',
             },
             actions: {
-                edit: 'Edytuj',
+                edit: 'Wycinaj',
                 editName: 'Edytuj nazwę',
                 preview: 'Podgląd',
                 del: 'Usuń',
