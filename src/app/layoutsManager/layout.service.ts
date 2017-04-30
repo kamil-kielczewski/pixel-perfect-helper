@@ -51,6 +51,8 @@ export class LayoutService {
     public delPicture(imgId) {
         return this.genObservable( () => {
             Storage.remove(this.imgKey() + imgId);
+            let counterKey = this.keyPrefix + 'layoutsViewer.crop_file_counter.' + imgId ;
+            Storage.remove((counterKey);
         });
     }
 
@@ -101,6 +103,20 @@ export class LayoutService {
     public loadLayoutViewerSettings() {
         return this.genObservable( () => {
             let counterKey = this.keyPrefix + 'layoutsViewer.hint.settings';
+            return Storage.get(counterKey);
+        });
+    }
+
+    public saveLayoutManagerSettings(settings) {
+        return this.genObservable( () => {
+            let counterKey = this.keyPrefix + 'layoutsManager.settings';
+            Storage.set(counterKey, settings);
+        });
+    }
+
+    public loadLayoutManagerSettings() {
+        return this.genObservable( () => {
+            let counterKey = this.keyPrefix + 'layoutsManager.settings';
             return Storage.get(counterKey);
         });
     }

@@ -16,7 +16,7 @@ export const en = {
         table: {
             col: {
                 id: 'ID',
-                name : 'Name (and optional link)',
+                name : 'Name',
                 actions: 'Actions',
             },
             actions: {

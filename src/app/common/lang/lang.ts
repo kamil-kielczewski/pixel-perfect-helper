@@ -17,9 +17,9 @@ export class Lang {
 
     public static switchLang(lang = null) {
         if (!lang) {
-            Lang.instance.currentLang = Lang.getUserLang();
+            Lang.getInstance().currentLang = Lang.getUserLang();
         } else {
-            Lang.instance.currentLang = lang;
+            Lang.getInstance().currentLang = lang;
         }
     }
 

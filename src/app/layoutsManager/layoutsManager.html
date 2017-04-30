@@ -8,8 +8,8 @@
         <div style='float:right'><button (click)="closeNotofication()" class="notification-button-ok button button-info">OK </button></div>
     </div>
 
-    <div *ngIf="currentLang() != 'pl'" (click)="switchLang('pl')" class="lang">[Polski]</div>
-    <div *ngIf="currentLang() != 'en'" (click)="switchLang('en')" class="lang">[English]</div>
+    <div *ngIf="meta.lang && meta.lang != 'pl'" (click)="switchLang('pl')" class="lang">[Polski]</div>
+    <div *ngIf="meta.lang && meta.lang != 'en'" (click)="switchLang('en')" class="lang">[English]</div>
 
     <div class="info-box">
         <div>
@@ -50,12 +50,6 @@
                 >{{ tr('layoutManager.getUtl') }}</button>
         </div>
     </div>
-
-    <!--<div style="height:220px; margin-top:20px;">-->
-        <!--&lt;!&ndash;<i *ngIf="meta.loading" class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>&ndash;&gt;-->
-        <!--&lt;!&ndash;<img  src="https://static.pexels.com/photos/87293/pexels-photo-87293.jpeg" style="max-height:200px;"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;<img src="http://www.freeiconspng.com/uploads/flower-icons-29.png" />&ndash;&gt;-->
-    <!--</div>-->
 
     <div *ngIf="meta.list.length">
             <!-- TODO table scroll http://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table-->
@@ -106,12 +100,7 @@
                         </td>
                     </tr>
                 </tbody>
-            <!--<li *ngFor="let item of meta.list" (click)="select(item)">-->
-                <!--<i (click)='show(item)' class="fa fa-eye" aria-hidden="true"></i>-->
-                <!--#{{ item.id }}-->
 
-                <!--<i (click)='remove(item)' class="fa fa-trash" aria-hidden="true"></i>-->
-            <!--</li>-->
             </table>
 
     </div>

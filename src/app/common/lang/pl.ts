@@ -16,7 +16,7 @@ export const pl = {
         table: {
             col: {
                 id: 'ID',
-                name : 'Nazwa (i link opcjonalnie)',
+                name : 'Nazwa',
                 actions: 'Akcje',
             },
             actions: {

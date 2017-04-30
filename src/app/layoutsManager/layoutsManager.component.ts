@@ -20,6 +20,7 @@ export class LayoutsManagerComponent implements OnInit {
         list: [],
         freeSpace: 0,
         dragOver: false,
+        lang: null,
 
         notification: {
             show: false,
@@ -30,6 +31,7 @@ export class LayoutsManagerComponent implements OnInit {
     constructor(private _router: Router, private _layoutService: LayoutService) {}
 
     public ngOnInit() {
+        this.loadLayoutManagerSettings();
         this.dataReload();
         if(!this.isChrome()) {
             this.meta.notification.show = true;
@@ -84,8 +86,6 @@ export class LayoutsManagerComponent implements OnInit {
     }
 
     public onImport(event) {
-        console.log({event})
-
         //let file: File = event.srcElement.files[ 0 ];
         let files = event.target.files || event.dataTransfer.files;
         let file: File = files[0];
@@ -152,12 +152,28 @@ export class LayoutsManagerComponent implements OnInit {
         return Lang.t(key, values);
     }
 
-    public currentLang() {
-        return Lang.getCurrentLang();
+    public loadLayoutManagerSettings() {
+        this._layoutService.loadLayoutManagerSettings().subscribe( (settings) => {
+            if(settings && settings.lang) {
+                this.meta.lang = settings.lang;
+                console.log('b',{settings});
+                Lang.switchLang(settings.lang);
+            } else {
+                this.meta.lang = Lang.getCurrentLang();
+            }
+        });
     }
 
     public switchLang(lang) {
-        Lang.switchLang(lang)
+
+        let settings = {
+            lang
+        };
+
+        this._layoutService.saveLayoutManagerSettings(settings).subscribe( () => {
+            this.meta.lang = lang;
+            Lang.switchLang(lang);
+        });
     }
 
     public dropFile(event) {
