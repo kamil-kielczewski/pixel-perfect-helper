@@ -2,7 +2,6 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LayoutService } from '../layoutsManager/layout.service';
 
-
 @Component({
     selector: 'layouts-viewer',
     templateUrl: './layoutsViewer.html',

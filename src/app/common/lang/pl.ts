@@ -6,12 +6,16 @@ export const pl = {
         uploadFile: 'Wybierz plik <br/>(przenieś tu)',
         pasteUrl: 'Wklej URL obrazka',
         getUtl: 'Wczytaj',
-        freeSpace: 'Wolna przestrzeń %{freeSpace} (najwięcej zużywają obrazki z pliku, najmniej z linku)',
+        freeSpace: 'Wolna przestrzeń %{freeSpace} (najwięcej zużywają obrazki z pliku, najmniej' +
+            ' z linku)',
         donate: 'Jeśli podoba Ci się to narzędzie - rzuć trochę grosza co łaska królu złoty :)',
-        info1: 'Wybierz plik graficzny layoutu otrzymany od grafika a następnie przejdź do wycinania jego elementów!',
-        info2: '(wszystkie Twoje pliki/linki są trzymane w pamięci przeglądarki - nie sa nigdzie uploadowane)',
+        info1: 'Wybierz plik graficzny layoutu otrzymany od grafika a następnie przejdź do ' +
+            'wycinania jego elementów!',
+        info2: '(wszystkie Twoje pliki/linki są trzymane w pamięci przeglądarki - nie sa nigdzie' +
+            ' uploadowane)',
         or: 'Lub',
-        notChrome: 'Przepraszamy, ale to narzędzie nie działa jeszcze na innych przeglądarkach poza Google Chrome',
+        notChrome: 'Przepraszamy, ale to narzędzie nie działa jeszcze na innych przeglądarkach' +
+            ' poza Google Chrome',
 
         table: {
             col: {
@@ -33,7 +37,8 @@ export const pl = {
             ' lokalnego pliku. Możesz też podać alternatywny link do obrazka' +
             ' który załadowałeś na serwer akceptujący zapytania CORS np.' +
             ' <b>http://imgur.com</b> lub dysk google. Możesz też użyć proxy zezwalające na CORS' +
-            ' - np. spróbuj wkleić ten link: <br/><b>https://cors-anywhere.herokuapp.com/%{url}</b>',
+            ' - np. spróbuj wkleić ten link:' +
+            ' <br/><b>https://cors-anywhere.herokuapp.com/%{url}</b>',
             noFreeSpace: 'Problem z wczytaniem pliku: nie masz wystarczająco miejsca w' +
             ' pamięci przeglądarki! Usuń stare obrazki (bez linku) by mieć go więcej' +
             ' (max 5MB).',

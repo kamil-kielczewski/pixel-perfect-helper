@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Storage, Url } from '../common';
 import { Router } from '@angular/router';
 import { LayoutService } from './layout.service';
-import { Lang } from "../common/lang/lang";
-
+import { Lang } from '../common/lang/lang';
 
 @Component({
     selector: 'layouts-manager',
@@ -33,7 +32,7 @@ export class LayoutsManagerComponent implements OnInit {
     public ngOnInit() {
         this.loadLayoutManagerSettings();
         this.dataReload();
-        if(!this.isChrome()) {
+        if (!this.isChrome()) {
             this.meta.notification.show = true;
             this.meta.notification.msg = this.tr('layoutManager.notChrome');
         }
@@ -80,13 +79,13 @@ export class LayoutsManagerComponent implements OnInit {
         this._layoutService.loadImgAsBase64(item.url).subscribe( (image) => {
             item.imgDataURI = image.imgDataURI;
             this.meta.loading = false;
-        }, err => {
+        }, (err) => {
             this.meta.loading = false;
         });
     }
 
     public onImport(event) {
-        //let file: File = event.srcElement.files[ 0 ];
+
         let files = event.target.files || event.dataTransfer.files;
         let file: File = files[0];
 
@@ -154,9 +153,8 @@ export class LayoutsManagerComponent implements OnInit {
 
     public loadLayoutManagerSettings() {
         this._layoutService.loadLayoutManagerSettings().subscribe( (settings) => {
-            if(settings && settings.lang) {
+            if (settings && settings.lang) {
                 this.meta.lang = settings.lang;
-                console.log('b',{settings});
                 Lang.switchLang(settings.lang);
             } else {
                 this.meta.lang = Lang.getCurrentLang();
@@ -191,17 +189,21 @@ export class LayoutsManagerComponent implements OnInit {
 
     }
 
-    isChrome() {
-        var isChromium = window['chrome'],
-            winNav = window.navigator,
-            vendorName = winNav.vendor,
-            isOpera = winNav.userAgent.indexOf("OPR") > -1,
-            isIEedge = winNav.userAgent.indexOf("Edge") > -1,
-            isIOSChrome = winNav.userAgent.match("CriOS");
+    public isChrome() {
+        let isChromium = window['chrome'];
+        let winNav = window.navigator;
+        let vendorName = winNav.vendor;
+        let isOpera = winNav.userAgent.indexOf('OPR') > -1;
+        let isIEedge = winNav.userAgent.indexOf('Edge') > -1;
+        let isIOSChrome = winNav.userAgent.match('CriOS');
 
-        if(isIOSChrome){
+        if (isIOSChrome) {
             return true;
-        } else if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+        } else if ( isChromium !== null &&
+                    isChromium !== undefined &&
+                    vendorName === 'Google Inc.' &&
+                    isOpera === false &&
+                    isIEedge === false) {
             return true;
         } else {
             return false;

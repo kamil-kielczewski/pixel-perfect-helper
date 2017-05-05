@@ -1,8 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Storage } from '../../common';
 import { LayoutService } from '../../layoutsManager/layout.service';
-import { Lang } from "../../common/lang/lang";
+import { Lang } from '../../common/lang/lang';
 
 @Component({
     selector: 'hint-box',

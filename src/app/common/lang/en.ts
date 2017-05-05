@@ -32,8 +32,9 @@ export const en = {
                 ' access to CORS origin reference. Try download image and upload it here' +
                 ' from local file. You can also provide alternative link to this image by' +
                 ' upload image to different server which allow CORS origin e.g' +
-                ' <b>http://imgur.com</b> or google disc . You can also use some proxy which allow CORS origin' +
-                ' - e.g. try this link: <br/><b>https://cors-anywhere.herokuapp.com/%{url}</b>',
+                ' <b>http://imgur.com</b> or google disc . You can also use some proxy which' +
+                ' allow CORS origin - e.g. try this link:' +
+                ' <br/><b>https://cors-anywhere.herokuapp.com/%{url}</b>',
             noFreeSpace: 'Problem with upload file: you have not free space in' +
                 ' your browser local storage! Remove some old images (without link) to get more' +
                 ' space (max 5MB).',

@@ -52,7 +52,7 @@ export class LayoutService {
         return this.genObservable( () => {
             Storage.remove(this.imgKey() + imgId);
             let counterKey = this.keyPrefix + 'layoutsViewer.crop_file_counter.' + imgId ;
-            Storage.remove((counterKey);
+            Storage.remove(counterKey);
         });
     }
 

@@ -24,7 +24,7 @@ export class Lang {
     }
 
     public static getUserLang() {
-        return navigator.language || navigator.userLanguage;
+        return navigator.language || navigator['userLanguage'];
     }
 
     public static getCurrentLang() {
