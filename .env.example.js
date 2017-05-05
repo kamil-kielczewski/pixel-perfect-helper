@@ -1,3 +1,4 @@
+// copy this file to './.env.js' and modify variables in EnvData
 
 var EnvData = {
     // If some of below variable is NULL then that varabile feature is off
