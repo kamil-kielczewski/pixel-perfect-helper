@@ -28,12 +28,13 @@ npm install
 # install typings (important in linux - in macos can be omit)
 npm run typings install
 
+# create file .env.js from example and edit it
+cp .env.example.js .env.js
+
 # start the server
 npm start
-
-# use Hot Module Replacement
 ```
-go to [http://0.0.0.0:3333](http://0.0.0.0:3333) or [http://localhost:3333](http://localhost:3333) in your browser
+go to [http://0.0.0.0:3004](http://0.0.0.0:3004) or [http://localhost:3004](http://localhost:3004) in your browser
 
 # Table of Contents
 * [Getting Started](#getting-started)
