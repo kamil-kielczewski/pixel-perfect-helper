@@ -2,13 +2,13 @@ export const en = {
 
     layoutManager: {
 
-        title: 'Html Cutting Helper',
+        title: 'Pixel Perfect Helper',
         uploadFile: 'Choose file <br/>(drag here)',
         pasteUrl: 'Paste Image URL',
         getUtl: 'Get',
         freeSpace: 'Free space %{freeSpace} (the most space use pictures from files)',
         donate: 'If you like this app - please donate :)',
-        info1: 'Choose layout picture from your graphican and then start cutting it!',
+        info1: 'Choose layout picture from your graphican and then start measuring and cutting it!',
         info2: '(all your files/links are save in browser memory - nothing is uploaded)',
         or: 'Or',
         notChrome: 'Sorry but this tool not working yet for other browsers than Google Chrome',
@@ -20,7 +20,7 @@ export const en = {
                 actions: 'Actions',
             },
             actions: {
-                edit: 'Start cutting',
+                edit: 'Measure it',
                 editName: 'Edit name',
                 preview: 'Preview',
                 del: 'Delete',

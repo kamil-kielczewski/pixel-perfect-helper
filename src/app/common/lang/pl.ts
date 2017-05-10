@@ -2,15 +2,15 @@ export const pl = {
 
     layoutManager: {
 
-        title: 'Html Cutting Helper',
+        title: 'Pixel Perfect Helper',
         uploadFile: 'Wybierz plik <br/>(przenieś tu)',
         pasteUrl: 'Wklej URL obrazka',
         getUtl: 'Wczytaj',
         freeSpace: 'Wolna przestrzeń %{freeSpace} (najwięcej zużywają obrazki z pliku, najmniej' +
             ' z linku)',
         donate: 'Jeśli podoba Ci się to narzędzie - rzuć trochę grosza co łaska królu złoty :)',
-        info1: 'Wybierz plik graficzny layoutu otrzymany od grafika a następnie przejdź do ' +
-            'wycinania jego elementów!',
+        info1: 'Wybierz plik layoutu otrzymany od grafika a następnie przejdź do ' +
+            'jego mierzenia i wycinania!',
         info2: '(wszystkie Twoje pliki/linki są trzymane w pamięci przeglądarki - nie sa nigdzie' +
             ' uploadowane)',
         or: 'Lub',
@@ -24,7 +24,7 @@ export const pl = {
                 actions: 'Akcje',
             },
             actions: {
-                edit: 'Wycinaj',
+                edit: 'Mierz',
                 editName: 'Edytuj nazwę',
                 preview: 'Podgląd',
                 del: 'Usuń',

@@ -81,7 +81,7 @@
                         <td>
                             <span *ngIf="!meta.editItem || meta.editItem.id != item.id ">
                                 <button *ngIf= "!meta.selectedItem ||  meta.selectedItem.id != item.id" class="button button-xs button-success" (click)="show(item)">
-                                    <i class="fa fa-scissors" aria-hidden="true"></i>
+                                    <i class="fa fa-expand" aria-hidden="true"></i>
                                     {{ tr('layoutManager.table.actions.edit') }}
                                 </button>
                                 <button *ngIf= "meta.selectedItem && meta.selectedItem.id == item.id" class="button button-xs button-info" (click)="editItem(item)">
