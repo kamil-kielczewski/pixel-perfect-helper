@@ -2,7 +2,9 @@
 
 
 
-# Airavana web page
+# Pixel Perfect Helper
+ 
+This tool if for measure and compare devloped web page with layout created by graphican. 
  
 Based on [angular2 webpack starter](https://github.com/AngularClass/angular2-webpack-starter) 2017-03-08 [commit 55d4325](https://github.com/AngularClass/angular2-webpack-starter/tree/55d4325aad6caae60e9a15749f1d15953a9f51d6).
 
