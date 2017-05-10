@@ -50,6 +50,7 @@ What you need to run this app:
 > If you have `nvm` installed, which is highly recommended (`brew install nvm`) you can do a `nvm install --lts && nvm use` in `$` to run with the latest Node LTS. You can also have this `zsh` done for you [automatically](https://github.com/creationix/nvm#calling-nvm-use-automatically-in-a-directory-with-a-nvmrc-file) 
 
 Once you have those, you should install these globals with `npm install --global`:
+
 * `webpack` (`npm install --global webpack`)
 * `webpack-dev-server` (`npm install --global webpack-dev-server`)
 * `karma` (`npm install --global karma-cli`)
