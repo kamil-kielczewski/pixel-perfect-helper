@@ -4,8 +4,7 @@ import * as EnvData  from '../../.env.js';
 
 if ('production' === ENV) {
     let s = EnvData['sentry_clientKey_publicDSN'];
-    if(s)
-    {
+    if (s) {
         Raven.config(s).install(); // Sentry configuration http://sentry.io
     }
 }

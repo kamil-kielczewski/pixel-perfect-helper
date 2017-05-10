@@ -7,6 +7,7 @@ declare function unescape(s: string): string;
 export class Storage {
 
     public static set(key: string, value: any) {
+        //noinspection TypeScriptUnresolvedFunction
         window.localStorage.setItem(key, JSON.stringify(value));
     }
 
@@ -26,6 +27,7 @@ export class Storage {
     public static remove(key: string) {
         // only for IE11 (problems with sessionStorage.removeItem)
         Storage.set(key, JSON.stringify(null));
+        //noinspection TypeScriptUnresolvedFunction
         window.localStorage.removeItem(key);
     }
 
