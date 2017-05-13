@@ -14,8 +14,6 @@ Here is [ONLINE WORKING PROJECT](http://pixel-perfect.airavana.net/)
 ### Quick start
 **Make sure you have Node version >= 5.0 and NPM >= 3**
 
-This tool based on framework: [angular2 webpack starter](https://github.com/AngularClass/angular2-webpack-starter) 2017-03-08 [commit 55d4325](https://github.com/AngularClass/angular2-webpack-starter/tree/55d4325aad6caae60e9a15749f1d15953a9f51d6).
-
 Clone/Download the repo and in console execute commands: 
 
 ```bash
@@ -47,6 +45,9 @@ go to [http://0.0.0.0:3004](http://0.0.0.0:3004) or [http://localhost:3004](http
 
 
 # Getting Started
+
+This tool based on framework: [angular2 webpack starter](https://github.com/AngularClass/angular2-webpack-starter) 2017-03-08 [commit 55d4325](https://github.com/AngularClass/angular2-webpack-starter/tree/55d4325aad6caae60e9a15749f1d15953a9f51d6).
+
 ## Dependencies
 What you need to run this app:
 * `node` and `npm` (`brew install node`)
@@ -54,7 +55,7 @@ What you need to run this app:
 
 > If you have `nvm` installed, which is highly recommended (`brew install nvm`) you can do a `nvm install --lts && nvm use` in `$` to run with the latest Node LTS. You can also have this `zsh` done for you [automatically](https://github.com/creationix/nvm#calling-nvm-use-automatically-in-a-directory-with-a-nvmrc-file) 
 
-## Docker
+# Docker
 
 ### Install Docker Mac OS
 
@@ -75,6 +76,31 @@ And install fresh docker by:
 `brew cask install docker`
 
 And run docker by Mac bottom menu> launchpad > docker (in first run it want your password) 
+
+### Install Docker on Ubuntu 16.4 (Digital ocean)
+
+Below instrucions are based on this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04). After login (as no root user) execute below commands
+
+```bash
+sudo apt-get update
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+sudo apt-get update
+apt-cache policy docker-engine
+sudo apt-get install -y docker-engine
+sudo systemctl status docker  # test:  shoud be ‘active’
+
+```
+
+And add your user to docker group (to avoid `sudo` before using `docker` command in future):
+
+```bash
+sudo usermod -aG docker $(whoami)
+```
+
+and lougout and login again.
+
 
 ### Build image
 
