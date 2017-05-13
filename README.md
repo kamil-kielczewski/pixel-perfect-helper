@@ -105,8 +105,9 @@ and lougout and login again.
 
 ### Build image
 
-To build docker image first we must create .env.js file as a copy of .env.example.js and edit (if not scripts in dockerfile make this copy automaticaly) 
-Then we can choose between small image (but slow rebuild, ~25MB): 
+To build docker image first we must create in project directory `.env.js` file as a copy of `.env.example.js` and
+edit (if not scripts in dockerfile make this copy automaticaly). Then when we are in project directory 
+we can build image by choose between small image (slow rebuild, ~25MB): 
 
 `docker build -f Dockerfile-small -t kkielczewski/pixel-perfect:small .`
 
