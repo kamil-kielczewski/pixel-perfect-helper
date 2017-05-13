@@ -50,16 +50,82 @@ What you need to run this app:
 
 > If you have `nvm` installed, which is highly recommended (`brew install nvm`) you can do a `nvm install --lts && nvm use` in `$` to run with the latest Node LTS. You can also have this `zsh` done for you [automatically](https://github.com/creationix/nvm#calling-nvm-use-automatically-in-a-directory-with-a-nvmrc-file) 
 
-Once you have those, you should install these globals with `npm install --global`:
+## Docker
 
-* `webpack` (`npm install --global webpack`)
-* `webpack-dev-server` (`npm install --global webpack-dev-server`)
-* `karma` (`npm install --global karma-cli`)
-* `protractor` (`npm install --global protractor`)
-* `typescript` (`npm install --global typescript`)
+### Install Docker Mac OS
+
+If your previous GUI-instalation not satisfy you, you can [uninstall it](https://therealmarv.com/how-to-fully-uninstall-the-offical-docker-os-x-installation/) (and all images) by:
+
+``` bash
+sudo rm -rf /Applications/Docker
+sudo rm -f /usr/local/bin/docker
+sudo rm -f /usr/local/bin/docker-machine
+sudo rm -f /usr/local/bin/docker-compose
+sudo rm -f /usr/local/bin/docker-credential-osxkeychain
+sudo rm -rf ~/.docker
+sudo rm -rf $HOME/Library/Containers/com.docker.docker  # here we delete stored images
+```
+
+And install fresh docker by:
+
+`brew cask install docker`
+
+And run docker by Mac bottom menu> launchpad > docker (in first run it want your password) 
+
+### Build image
+
+To build docker image first we must create .env.js file as a copy of .env.example.js and edit (if not scripts in dockerfile make this copy automaticaly) 
+Then we can choose between small image (but slow rebuild, ~25MB): 
+
+`docker build -f Dockerfile-small -t kkielczewski/pixel-perfect:small .`
+
+or fast image (fast rebuild, >400MB)
+
+`docker build -f Dockerfile-fast -t kkielczewski/pixel-perfect:fast .`
+
+We can also add url to .env.js file content in `JSENV_FILE_URL` parameter e.g.:
+
+`docker build -f Dockerfile-small -t kkielczewski/pixel-perfect:small --build-arg JSENV_FILE_URL="https://raw.githubusercontent.com/kamil-kielczewski/pixel_perfect_helper/master/.env.example.js" .`
+
+### Run image
+
+To run image we use e.g:
+
+`docker run --name pixel-perfect -p 8080:80 kkielczewski/pixel-perfect:small &`
+
+To stop image (and remove container)
+
+`docker rm -f pixel-perfect`
+
+### Run image as virtual host
+
+We will use [proxy](https://github.com/jwilder/nginx-proxy):
+
+`docker pull jwilder/nginx-proxy:alpine`
+
+And run it:
+
+`docker run -d -p 80:80 --name nginx-proxy -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy:alpine`
+
+Now we shoud edit /etc/hosts file in our MacOs by adding following (or similar) line at the bottom:
+
+`127.0.0.1 pixel-perfect.dev`
+
+And now we can run container:
+
+`docker run -e VIRTUAL_HOST=pixel-perfect.dev --name pixel-perfect kkielczewski/pixel-perfect:small &`
+
+And in browser on adresss [http://pixel-perfect.dev](http://pixel-perfect.dev) we shoud see our application :)
+
+### Connect to running container via cmd
+
+`docker exec -t -i pixel-perfect /bin/bash`
 
 
-### server
+# Server
+
+Below we see few npm commands to build and run application on dev, prod and aot
+
 ```bash
 # development
 npm run server
@@ -70,7 +136,7 @@ npm run build:prod
 # Aot build
 npm run build:aot
 
-# run
+# run last aot or prod build
 npm run server:prod
 ```
 

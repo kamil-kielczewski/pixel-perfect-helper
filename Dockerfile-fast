@@ -1,0 +1,57 @@
+# This dockerfile build large docker image (>400MB) but image rebuild is fast
+# (however if you hange value of JSENV_FILE_URL then is slow).
+#
+# Example of usage:
+#
+# 1. Without external .env.js - this file must be provided in dockerfile directory
+#    in onther case it will be created from .env.examle.js :
+#    docker build --no-cache=true -f Dockerfile-fast -t pph .
+#
+# 2. With external .env.js file with configuration variables :
+#    docker build --no-cache=true -f Dockerfile-fast -t pph --build-arg JSENV_FILE_URL="https://.../some-env-file.js" .
+#
+# You can run this image using:
+# docker run --name pph -p 8080:80 pph &
+#
+# During building max size is about 587 MB.
+# Alpine+bash+openssl 26 MB, nodejs = 36 MB
+
+FROM smebberson/alpine-nginx:3.0.0
+ARG JSENV_FILE_URL
+RUN apk update \
+ && apk add bash=4.3.42-r6 \
+ && apk add openssl=1.0.2k-r0 \
+ && apk add nodejs=6.7.0-r0
+
+# docker image size: 26.1MB + nodejs = 62.1MB
+
+ADD package.json /tmp/package.json
+RUN cd /tmp && npm install
+RUN mkdir -p /opt/app \
+ && cp -a /tmp/node_modules /opt/app/
+
+# download .env.js file if link is given (but empty file will be deleted)
+
+RUN cd /tmp \
+ && wget -O .env.js $JSENV_FILE_URL > /dev/null 2>&1 | : \
+ && if [ ! -s /tmp/.env.js ] ; then rm -f /tmp/.env.js; fi
+
+WORKDIR /opt/app
+ADD . /opt/app
+RUN if [ ! -f .env.js ]; then cp .env.example.js .env.js; fi \
+ && if [ -f /tmp/.env.js ]; then cp /tmp/.env.js .env.js; fi
+
+# build and publish application
+
+RUN npm run build:aot \
+ && cp -af ./dist/. /usr/html
+
+# reduce image size from 587.5MB to 29.3 MB
+
+RUN rm -rf /tmp/*  \
+ && rm -rf /opt/app/* \
+ && rm -rf /root/.npm \
+ && apk del nodejs
+
+# this is for virtual host purposes
+EXPOSE 80
