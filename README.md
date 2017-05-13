@@ -1,4 +1,5 @@
-![Alt AIRAVANA](./src/assets/img/airavana-logo.png?raw=true "Optional Title")
+[![Alt AIRAVANA](./src/assets/img/airavana-logo.png?raw=true "Optional Title")](http://airavna.net)
+
 
 
 
@@ -6,11 +7,14 @@
  
 This tool if for measure and compare devloped web page with layout created by graphican. 
  
-Based on [angular2 webpack starter](https://github.com/AngularClass/angular2-webpack-starter) 2017-03-08 [commit 55d4325](https://github.com/AngularClass/angular2-webpack-starter/tree/55d4325aad6caae60e9a15749f1d15953a9f51d6).
+Here is [ONLINE WORKING PROJECT](http://pixel-perfect.airavana.net/) 
+(currently support only for chrome)
 
 
 ### Quick start
 **Make sure you have Node version >= 5.0 and NPM >= 3**
+
+This tool based on framework: [angular2 webpack starter](https://github.com/AngularClass/angular2-webpack-starter) 2017-03-08 [commit 55d4325](https://github.com/AngularClass/angular2-webpack-starter/tree/55d4325aad6caae60e9a15749f1d15953a9f51d6).
 
 Clone/Download the repo and in console execute commands: 
 
@@ -107,7 +111,7 @@ And run it:
 
 `docker run -d -p 80:80 --name nginx-proxy -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy:alpine`
 
-Now we shoud edit /etc/hosts file in our MacOs by adding following (or similar) line at the bottom:
+Now we shoud edit `/etc/hosts` file in our MacOs by adding following (or similar) line at the bottom:
 
 `127.0.0.1 pixel-perfect.dev`
 
