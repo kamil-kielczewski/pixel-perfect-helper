@@ -40,7 +40,8 @@ go to [http://0.0.0.0:3004](http://0.0.0.0:3004) or [http://localhost:3004](http
 
 # Table of Contents
 * [Getting Started](#getting-started)
-    * [Dependencies](#dependencies)
+* [Docker](#docker)
+* [Server](#server)
 * [License](#license)
 
 
@@ -127,7 +128,8 @@ To stop image (and remove container)
 
 `docker rm -f pixel-perfect`
 
-### Run image as virtual host
+
+### Run image as virtual host 
 
 We will use [proxy](https://github.com/jwilder/nginx-proxy):
 
@@ -146,6 +148,24 @@ And now we can run container:
 `docker run -e VIRTUAL_HOST=pixel-perfect.dev --name pixel-perfect kkielczewski/pixel-perfect:small &`
 
 And in browser on adresss [http://pixel-perfect.dev](http://pixel-perfect.dev) we shoud see our application :)
+
+### Set subdomain on digital ocean
+
+To run application on subdomain first we need to setup subdomain on digital ocean. 
+First login to online panel and go to menu> Networking> and in table with domains click 
+on "more" in selected domain and choose "Manage domain". Then on new screen below "Create new record" click on "CNAME"
+and fill fields:
+
+```bash
+HOSTNAME: pixel-perfect
+IS AN ALIAS OF: your_domain.com    # '.com' is suffix only example
+TTL Seconds: 43200
+```
+and click 'create record'.
+
+Now in  [section](#run-image-as-virtual-host) ommit changes in `/etc/hosts` file and run docker image in this way:
+
+`docker run -e VIRTUAL_HOST=pixel-perfect.your_domain.com --name pixel-perfect kkielczewski/pixel-perfect:small &`
 
 ### Connect to running container via cmd
 
