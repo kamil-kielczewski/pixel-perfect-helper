@@ -1,4 +1,4 @@
-[![Alt AIRAVANA](./src/assets/img/airavana-logo.png?raw=true "Optional Title")](http://airavna.net)
+[![Alt AIRAVANA](./src/assets/img/airavana-logo.png?raw=true "Optional Title")](http://airavana.net)
 
 
 
