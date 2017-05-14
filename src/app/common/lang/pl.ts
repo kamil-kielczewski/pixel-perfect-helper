@@ -16,6 +16,7 @@ export const pl = {
         or: 'Lub',
         notChrome: 'Przepraszamy, ale to narzędzie nie działa jeszcze na innych przeglądarkach' +
             ' poza Google Chrome',
+        tutorial: 'Szybkie szkolenie',
 
         table: {
             col: {

@@ -110,6 +110,16 @@
         {{ tr('layoutManager.freeSpace', { freeSpace: formatedFreeSpace() } ) }}
     </div>
 
+    <div class="tutorial">
+        <div style="margin-bottom:20px">{{ tr('layoutManager.tutorial') }}</div>
+        <div *ngIf="meta.lang && meta.lang == 'pl'">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/B1bdoT4u3so" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div *ngIf="meta.lang && meta.lang == 'en'">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/W-V_GUt7qKk" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <div class="donate">
         <div style="margin-bottom:30px;">{{ tr('layoutManager.donate') }}</div>
         <div>
@@ -325,6 +335,11 @@
         }
 
         .donate {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .tutorial {
             text-align: center;
             margin-top: 100px;
         }

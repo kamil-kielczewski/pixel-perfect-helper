@@ -12,6 +12,7 @@ export const en = {
         info2: '(all your files/links are save in browser memory - nothing is uploaded)',
         or: 'Or',
         notChrome: 'Sorry but this tool not working yet for other browsers than Google Chrome',
+        tutorial: 'Short tutorial',
 
         table: {
             col: {
@@ -75,7 +76,7 @@ export const en = {
             img_wh: 'Image Width x Height:',
             scr_wh: 'Screen Width x Height:',
             img_lt: 'Image Left x Top:',
-            mouse_xy: 'Image Left x Top:',
+            mouse_xy: 'Mouse Left x Top:',
 
             box: 'Selection Box:',
             box_lt: 'Left x Top:',
