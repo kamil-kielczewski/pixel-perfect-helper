@@ -66,7 +66,7 @@ export class ColorPickerComponent implements OnInit {
 
     public selectColor() {
         this.zoom.colorSelected = this.zoom.colorCenterPixel;
-        
+
         let [r, g, b, a] = this.zoom.colorSelected;
         this.zoom.colorSelectedRgba = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a / 255) + ')';
         this.zoom.colorSelectedHex = this.rgbaToHex(r, g, b, a);
