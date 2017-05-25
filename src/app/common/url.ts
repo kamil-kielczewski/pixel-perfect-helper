@@ -18,7 +18,7 @@ export class Url {
      *
      * @return {string}             Short url for instance "users/23/education"
      */
-    public static to(routingName: string, values?: any) {
+    public static to(routingName: string, values = {}) {
         return {
             layoutsViewer : 'view/' + values['id'],
         }[routingName];
