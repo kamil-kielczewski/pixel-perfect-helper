@@ -22,7 +22,7 @@ ADD . /tmp
     # install shell and nodejs
 RUN apk add --no-cache bash=4.3.46-r5 &&\
     apk add --no-cache openssl=1.0.2k-r0 &&\
-    apk add --no-cache nodejs=6.7.0-r0 &&\
+    apk add --no-cache nodejs=6.9.5-r0 &&\
 
     # install node modules
     cd /tmp &&\
