@@ -15,35 +15,33 @@
 # During building max size is about 587 MB.
 # Alpine+bash+openssl 26 MB, nodejs = 36 MB
 
-FROM smebberson/alpine-nginx:3.0.0
+FROM nginx:1.13.0-alpine
 ARG JSENV_FILE_URL
 ADD . /tmp
 
-RUN apk update \
+    # install shell and nodejs
+RUN apk add --no-cache bash=4.3.46-r5 &&\
+    apk add --no-cache openssl=1.0.2k-r0 &&\
+    apk add --no-cache nodejs=6.7.0-r0 &&\
 
- # install shell and nodejs
- && apk add bash=4.3.42-r6 \
- && apk add openssl=1.0.2k-r0 \
- && apk add nodejs=6.7.0-r0 \
+    # install node modules
+    cd /tmp &&\
+    npm install &&\
 
- # install node modules
- && cd /tmp \
- && npm install \
+    # prepare environemnt file (download it from JSENV_FILE_URL or use existing one)
+    wget -O tmp.env.js $JSENV_FILE_URL > /dev/null 2>&1 | : &&\
+    if [ ! -s tmp.env.js ] ; then rm -f tmp.env.js; fi &&\
+    if [ ! -f .env.js ]; then cp .env.example.js .env.js; fi &&\
+    if [ -f tmp.env.js ]; then cp tmp.env.js .env.js; fi &&\
 
- # prepare environemnt file (download it from JSENV_FILE_URL or use existing one)
- && wget -O tmp.env.js $JSENV_FILE_URL > /dev/null 2>&1 | : \
- && if [ ! -s tmp.env.js ] ; then rm -f tmp.env.js; fi \
- && if [ ! -f .env.js ]; then cp .env.example.js .env.js; fi \
- && if [ -f tmp.env.js ]; then cp tmp.env.js .env.js; fi \
+    # build application and publish
+    npm run build:aot &&\
+    mv ./dist/* /usr/share/nginx/html/  &&\
 
- # build application and publish
- && npm run build:aot \
- && cp -af ./dist/. /usr/html \
-
- # clean
- && rm -rf /tmp/*  \
- && rm -rf /root/.npm \
- && apk del nodejs
+    # clean
+    rm -rf /tmp/*  &&\
+    rm -rf /root/.npm &&\
+    apk del nodejs
 
 # this is for virtual host purposes
 EXPOSE 80
