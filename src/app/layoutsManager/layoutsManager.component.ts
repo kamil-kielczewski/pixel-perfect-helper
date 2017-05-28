@@ -209,4 +209,13 @@ export class LayoutsManagerComponent implements OnInit {
             return false;
         }
     }
+
+    public getAiravanaYears() {
+        let made = 2017;
+        let current = new Date().getFullYear();
+        if (current === made) {
+            return made;
+        }
+        return made + '-' + current;
+    }
 }
