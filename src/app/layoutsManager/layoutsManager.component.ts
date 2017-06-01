@@ -7,6 +7,7 @@ import { Lang } from '../common/lang/lang';
 @Component({
     selector: 'layouts-manager',
     templateUrl: './layoutsManager.html',
+    styleUrls: ['./layoutsManager.css'],
     providers: [ LayoutService ],
 })
 export class LayoutsManagerComponent implements OnInit {
