@@ -1,0 +1,235 @@
+textarea, input, button { outline: none; } /* remove blue glow */
+
+.github {
+    margin-top: 50px;
+}
+
+.github-icon {
+    font-size: 50px;
+}
+
+.info-box {
+    background: #e1e9f7;
+    width: 800px;
+    margin: auto;
+    margin-top: 30px;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.align-left {
+    text-align:left;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.get-image {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+label.upload {
+    padding: 30px;
+    font-size: 30px;
+    /*background: rgba(72, 204, 64, 0.56);*/
+}
+
+.upload-or {
+    margin: 20px;
+}
+
+.upload-url {
+    font-size: 20px;
+    width: 500px;
+    border-radius: 5px;
+    border: solid 1px #aaa;
+    padding: 5px 10px;
+}
+
+button.upload-url-button {
+    line-height: normal;
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.button {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+
+}
+
+.button-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+.button-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.button-success:hover {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439;
+}
+
+.button-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.button-danger:hover {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+.button-info {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.button-info:hover {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
+
+.lang {
+    text-decoration: underline;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.title {
+    margin-top: 50px;
+    margin-bottom: 30px;
+    color: #000;
+
+    font-size: 100px;
+    background: -webkit-linear-gradient(#eee, #333);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.container {
+    font-family: 'Lato';
+    text-align: center;
+    height: 100%;
+}
+
+.item-url {
+    font-size:10px;
+    color: gray;
+}
+
+.notification {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+
+    background: #fdffc4;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.notification-button-ok {
+    right: 0;
+}
+
+.preview {
+    max-height:200px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.image-table {
+    width: 1000px;
+    margin: 0 auto;
+    margin-top:20px;
+    border-spacing: 0;
+    border-bottom: solid 1px #bbb;
+}
+
+.image-table thead > tr > td {
+    border-bottom: 1px solid gray;
+    font-weight: bold;
+}
+
+.image-table tbody > tr > td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.image-table tr:nth-child(even) {background: #EEE}
+
+.free-space {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #90b1e6;
+    /*color: #daabab;*/
+}
+
+.donate {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.tutorial {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.airavana {
+    text-align: center;
+    margin-top: 70px;
+    margin-bottom: 50px;
+}
+
+.footer {
+    background: #effbe4;
+    display: flex;
+    align-items: center;
+    margin-top: 100px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #70b168;
+}
+
+.footer-item {
+    flex: 1 2 100%;
+}
+
+.github-link {
+    color: black;
+}
