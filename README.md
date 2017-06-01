@@ -19,7 +19,7 @@ Clone/Download the repo and in console execute commands:
 ```bash
 # clone our repo
 # --depth 1 removes all but one .git commit history
-git clone --depth 1 https://KamilCFD@bitbucket.org/airavana/airavana.git
+git clone --depth 1 https://github.com/kamil-kielczewski/pixel_perfect_helper.git
 
 # change directory to our repo
 cd airavana
@@ -56,119 +56,94 @@ What you need to run this app:
 
 > If you have `nvm` installed, which is highly recommended (`brew install nvm`) you can do a `nvm install --lts && nvm use` in `$` to run with the latest Node LTS. You can also have this `zsh` done for you [automatically](https://github.com/creationix/nvm#calling-nvm-use-automatically-in-a-directory-with-a-nvmrc-file) 
 
-# Docker
+# Deployment
 
-### Install Docker Mac OS
+## Docker
 
-If your previous GUI-instalation not satisfy you, you can [uninstall it](https://therealmarv.com/how-to-fully-uninstall-the-offical-docker-os-x-installation/) (and all images) by:
+To run project you only need host machine with **operationg system** with installed **git** (to clone this repo) 
+and [docker](https://www.docker.com/) and thats all - any other software is non needed
+(other software like node.js etc. will be automatically downloaded and installed inside docker container during build step based on dockerfile).
 
-``` bash
-sudo rm -rf /Applications/Docker
-sudo rm -f /usr/local/bin/docker
-sudo rm -f /usr/local/bin/docker-machine
-sudo rm -f /usr/local/bin/docker-compose
-sudo rm -f /usr/local/bin/docker-credential-osxkeychain
-sudo rm -rf ~/.docker
-sudo rm -rf $HOME/Library/Containers/com.docker.docker  # here we delete stored images
-```
+### Install docker
 
-And install fresh docker by:
+#### MacOs:
 
 `brew cask install docker`
 
-And run docker by Mac bottom menu> launchpad > docker (in first run it want your password) 
+And run docker by Mac bottom menu> launchpad > docker (on first run docker will ask you about password)
 
-### Install Docker on Ubuntu 16.4 (Digital ocean)
+#### Ubuntu:
 
-Below instrucions are based on this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04). After login (as no root user) execute below commands
-
-```bash
+```
 sudo apt-get update
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-
 sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
 sudo apt-get update
 apt-cache policy docker-engine
 sudo apt-get install -y docker-engine
 sudo systemctl status docker  # test:  shoud be ‘active’
-
 ```
-
 And add your user to docker group (to avoid `sudo` before using `docker` command in future):
-
-```bash
+```
 sudo usermod -aG docker $(whoami)
 ```
-
 and lougout and login again.
-
 
 ### Build image
 
-To build docker image first we must create in project directory `.env.js` file as a copy of `.env.example.js` and
-edit (if not scripts in dockerfile make this copy automaticaly). Then when we are in project directory 
-we can build image by choose between small image (slow rebuild, ~25MB): 
+Because *node.js* is big memory consumer you need 1-2GB RAM or virtual memory to build docker image 
+(it was successfully tested on machine with 512MB RAM + 2GB virtual memory - building process take 7min)
 
-`docker build -f Dockerfile-small -t kkielczewski/pixel-perfect:small .`
+Go to main project folder. To build big (~280MB) image which has cached data and is able to **FAST** rebuild  
+(this is good for testing or staging environment) type: 
 
-or fast image (fast rebuild, >400MB)
+`docker build -t pixel-perfect .`
 
-`docker build -f Dockerfile-fast -t kkielczewski/pixel-perfect:fast .`
+To build **SMALL** (~20MB) image without cache (so each rebuild will take the same amount of time as first build)
+(this is good for production environment) type:
 
-We can also add url to .env.js file content in `JSENV_FILE_URL` parameter e.g.:
+`docker build --squash="true" -t pixel-perfect .` 
 
-`docker build -f Dockerfile-small -t kkielczewski/pixel-perfect:small --build-arg JSENV_FILE_URL="https://raw.githubusercontent.com/kamil-kielczewski/pixel_perfect_helper/master/.env.example.js" .`
+The **pixel-perfect** name used in above commands is only example image name. 
+To remove intermediate images created by docker on build process, type:
+ 
+`docker rmi -f $(docker images -f "dangling=true" -q)`
 
 ### Run image
 
-To run image we use e.g:
+To run created docker image on [localhost:8080](localhost:8080) type (parameter `-p 8080:80` is host:container port mapping)
 
-`docker run --name pixel-perfect -p 8080:80 kkielczewski/pixel-perfect:small &`
+`docker run --name pixel-perfect -p 8080:80 pixel-perfect &`
 
-To stop image (and remove container)
+And that's all, you can open browser and go to [localhost:8080](localhost:8080).
 
-`docker rm -f pixel-perfect`
+### Run image on sub-domain
 
+If you wan't run image as virtual-host on sub-domain you must setup [proxy](https://github.com/jwilder/nginx-proxy)
+. You should install proxy and set sub-domain in this way:
+ 
+ ```
+ docker pull jwilder/nginx-proxy:alpine
+ docker run -d -p 80:80 --name nginx-proxy -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy:alpine
+ ```
+ 
+ And in your `/etc/hosts` file (linux) add line: `127.0.0.1 pixel-perfect.your-domain.com` or in yor hosting add
+ folowwing DNS record (wildchar `*` is handy because when you add new sub-domain in future, you don't need touch/add any DNS record)
+  
+ ```
+ Type: CNAME 
+ Hostname: *.your-domain.com
+ Direct to: your-domain.com
+ TTL(sec): 43200 
+ ```
 
-### Run image as virtual host 
+And now you are ready to run image on subdomain by:
 
-We will use [proxy](https://github.com/jwilder/nginx-proxy):
-
-`docker pull jwilder/nginx-proxy:alpine`
-
-And run it:
-
-`docker run -d -p 80:80 --name nginx-proxy -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy:alpine`
-
-Now we shoud edit `/etc/hosts` file in our MacOs by adding following (or similar) line at the bottom:
-
-`127.0.0.1 pixel-perfect.dev`
-
-And now we can run container:
-
-`docker run -e VIRTUAL_HOST=pixel-perfect.dev --name pixel-perfect kkielczewski/pixel-perfect:small &`
-
-And in browser on adresss [http://pixel-perfect.dev](http://pixel-perfect.dev) we shoud see our application :)
-
-### Set subdomain on digital ocean
-
-To run application on subdomain first we need to setup subdomain on digital ocean. 
-First login to online panel and go to menu> Networking> and in table with domains click 
-on "more" in selected domain and choose "Manage domain". Then on new screen below "Create new record" click on "CNAME"
-and fill fields:
-
-```bash
-HOSTNAME: pixel-perfect
-IS AN ALIAS OF: your_domain.com    # '.com' is suffix only example
-TTL Seconds: 43200
 ```
-and click 'create record'.
+docker run -e VIRTUAL_HOST=pixel-perfect.your-domain.com --name pixel-perfect pixel-perfect &
+```
 
-Now in  [section](#run-image-as-virtual-host) ommit changes in `/etc/hosts` file and run docker image in this way:
-
-`docker run -e VIRTUAL_HOST=pixel-perfect.your_domain.com --name pixel-perfect kkielczewski/pixel-perfect:small &`
-
-### Connect to running container via cmd
+### Login into docker container
 
 `docker exec -t -i pixel-perfect /bin/bash`
 
