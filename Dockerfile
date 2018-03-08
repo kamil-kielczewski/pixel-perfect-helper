@@ -18,9 +18,12 @@
 FROM nginx:1.13.0-alpine
 
 # install console and node
-RUN apk add --no-cache bash=4.3.46-r5 &&\
-    apk add --no-cache openssl=1.0.2k-r0 &&\
-    apk add --no-cache nodejs
+# RUN apk add --no-cache bash=4.3.46-r5 &&\
+#     apk add --no-cache openssl=1.0.2k-r0 &&\ # this line cause error - openssl lib not found on net
+#     apk add --no-cache nodejs
+RUN apk update && \
+    apk add bash=4.3.46-r5 && \
+    apk add nodejs=6.9.5-r0
 
 # install npm ( in separate dir due to docker cache)
 ADD package.json /tmp/npm_inst/package.json
