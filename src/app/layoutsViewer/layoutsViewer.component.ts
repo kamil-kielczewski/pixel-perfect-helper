@@ -101,8 +101,8 @@ export class LayoutsViewerComponent implements OnInit {
     }
 
     public updateMousePosition(event) {
-        this.meta.mouseX = event.pageX;
-        this.meta.mouseY = event.pageY;
+        this.meta.mouseX = Math.round(event.pageX);
+        this.meta.mouseY = Math.round(event.pageY);
         this.zoomPixel(event.pageX, event.pageY);
         this.meta.hintBox.moveHint(event);
     }
