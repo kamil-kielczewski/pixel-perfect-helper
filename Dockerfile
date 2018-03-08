@@ -23,7 +23,7 @@ FROM nginx:1.13.0-alpine
 #     apk add --no-cache nodejs
 RUN apk update && \
     apk add bash=4.3.46-r5 && \
-    apk add nodejs=6.9.5-r0
+    apk add nodejs
 
 # install npm ( in separate dir due to docker cache)
 ADD package.json /tmp/npm_inst/package.json
