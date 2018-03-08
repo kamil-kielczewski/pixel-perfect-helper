@@ -157,18 +157,18 @@ export class SelectionBoxComponent {
 
         this.box.isVisible = true;
         this.box.draw = true;
-        this.box.l = event.pageX;
-        this.box.t = event.pageY;
-        this.box.r = event.pageX;
-        this.box.b = event.pageY;
+        this.box.l = Math.round(event.pageX);
+        this.box.t = Math.round(event.pageY);
+        this.box.r = Math.round(event.pageX);
+        this.box.b = Math.round(event.pageY);
 
         this.pointerdown.emit(event);
     }
 
     public boxDraw(event) {
 
-        this.box.b = event.pageY;
-        this.box.r = event.pageX;
+        this.box.b = Math.round(event.pageY);
+        this.box.r = Math.round(event.pageX);
         this.refreshBoxData();
     }
 
@@ -192,8 +192,8 @@ export class SelectionBoxComponent {
     public moveBoxStart(event) {
 
         this.box.move = true;
-        this.box.moveStartMouseX = event.pageX - this.box.l;
-        this.box.moveStartMouseY = event.pageY - this.box.t;
+        this.box.moveStartMouseX = Math.round(event.pageX) - this.box.l;
+        this.box.moveStartMouseY = Math.round(event.pageY) - this.box.t;
 
         this.pointerdown.emit(event);
         event.stopPropagation();
@@ -210,8 +210,8 @@ export class SelectionBoxComponent {
             this.meta.lastAction = 'moveBox';
             let oldL = this.box.l;
             let oldT = this.box.t;
-            this.box.l = event.pageX - this.box.moveStartMouseX;
-            this.box.t = event.pageY - this.box.moveStartMouseY;
+            this.box.l = Math.round(event.pageX) - this.box.moveStartMouseX;
+            this.box.t = Math.round(event.pageY) - this.box.moveStartMouseY;
             this.box.r += this.box.l - oldL;
             this.box.b += this.box.t - oldT;
 
@@ -275,19 +275,19 @@ export class SelectionBoxComponent {
             this.meta.lastAction = 'moveLine';
 
             if (i === 0) { // top line
-                this.box.t = event.pageY;
+                this.box.t = Math.round(event.pageY);
             }
 
             if (i === 1) { // right line
-                this.box.r = event.pageX;
+                this.box.r = Math.round(event.pageX);
             }
 
             if (i === 2) { // bottom line
-                this.box.b = event.pageY;
+                this.box.b = Math.round(event.pageY);
             }
 
             if (i === 3) { // left line
-                this.box.l = event.pageX;
+                this.box.l = Math.round(event.pageX);
             }
 
             this.refreshBoxData();
@@ -340,23 +340,23 @@ export class SelectionBoxComponent {
             this.meta.lastAction = 'moveVertex';
 
             if (i === 0) { // top line
-                this.box.t = event.pageY;
-                this.box.l = event.pageX;
+                this.box.t = Math.round(event.pageY);
+                this.box.l = Math.round(event.pageX);
             }
 
             if (i === 1) { // right line
-                this.box.r = event.pageX;
-                this.box.t = event.pageY;
+                this.box.r = Math.round(event.pageX);
+                this.box.t = Math.round(event.pageY);
             }
 
             if (i === 2) { // bottom line
-                this.box.b = event.pageY;
-                this.box.r = event.pageX;
+                this.box.b = Math.round(event.pageY);
+                this.box.r = Math.round(event.pageX);
             }
 
             if (i === 3) { // left line
-                this.box.l = event.pageX;
-                this.box.b = event.pageY;
+                this.box.l = Math.round(event.pageX);
+                this.box.b = Math.round(event.pageY);
             }
 
             this.refreshBoxData();
