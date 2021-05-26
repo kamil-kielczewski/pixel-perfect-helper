@@ -1,5 +1,13 @@
 # PixelPerfectHelper
 
+This tool if for measure and compare devloped web page with layout created by graphican.
+
+Run online version [HERE](https://kamil-kielczewski.github.io/pixel-perfect-helper/dist/pixel-perfect-helper/index.html)
+
+(currently support only for chrome)
+
+# Info
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.1.1.
 
 ## Development server
